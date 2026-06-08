@@ -62,9 +62,6 @@ To effectively manage our development cycle and deliver a high-quality product, 
 ### 📉 Burn Down Graph
 Below is the Burn Down Graph for tracking the remaining effort during Iteration 1. The total estimated effort starts at 11 days and is planned to burn down linearly to 0 by Day 10.
 
-### 📉 Burn Down Graph
-Below is the Burn Down Graph for tracking the remaining effort during Iteration 1. The total estimated effort starts at 11 days and is planned to burn down linearly to 0 by Day 10.
-
 ```mermaid
 xychart-beta
     title "Iteration 1 Burn Down Graph"
