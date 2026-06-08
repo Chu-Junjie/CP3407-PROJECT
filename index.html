@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Digital Product Recommendation</title>
+    <style>
+        /* Minimalist and modern UI design */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        p.subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            border: 2px solid #e1e4e8;
+            border-radius: 12px;
+            font-size: 16px;
+            resize: none;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #feedback {
+            margin-top: 20px;
+            color: #28a745;
+            font-weight: bold;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Find My Perfect Device</h1>
+        <p class="subtitle">Describe what you need in plain English. For example: "I want a durable phone with a big screen for my mom, budget under $500."</p>
+        
+        <textarea id="userInput" placeholder="Enter your usage habits and needs here..."></textarea>
+        
+        <button id="submitBtn">Get Recommendations</button>
+
+        <div id="feedback">✅ Requirements received! Calling recommendation engine...</div>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const submitBtn = document.getElementById('submitBtn');
+        const userInput = document.getElementById('userInput');
+        const feedback = document.getElementById('feedback');
+
+        // Bind click event listener
+        submitBtn.addEventListener('click', function() {
+            const text = userInput.value.trim();
+            
+            if (text === "") {
+                alert("Please enter your requirements before matching!");
+                return;
+            }
+
+            // Fulfills US-01 Acceptance Criteria: Capture user input and print to console
+            console.log("=== Natural Language Input Captured ===");
+            console.log("User Input: ", text);
+            console.log("=======================================");
+
+            // Simulate UI feedback after sending data
+            submitBtn.style.display = 'none';
+            feedback.style.display = 'block';
+
+            // Just a heads-up for future integration
+            setTimeout(() => {
+                console.log("Ready to send data to backend API for US-03...");
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
