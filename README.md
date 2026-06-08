@@ -60,7 +60,6 @@ To effectively manage our development cycle and deliver a high-quality product, 
 | **US-03** | Customized Leaderboard | **As a** buyer looking for a new device, **I want to** see a Top 5 recommended leaderboard immediately after entering my needs, clearly displaying the matching percentage, **so that** I can intuitively compare and make a quick purchasing decision. | 10 | 5 | 🟡 In-Progress |
 
 ### 📉 Burn Down Graph
-
 Below is the Burn Down Graph for tracking the remaining effort during Iteration 1. The total estimated effort starts at 11 days and is planned to burn down linearly to 0 by Day 10.
 
 ```mermaid
@@ -70,6 +69,8 @@ xychart-beta
     y-axis "Remaining Effort (Days)" 0 --> 12
     bar [11, 9.8, 8.6, 7.3, 6.1, 4.9, 3.7, 2.4, 1.2, 0]
     line [11, 9, 9, 9, 5, 5, 2, 2, 0, 0]
+```
+
 ---
 
 ### 🔍 Iteration 2: Decision Support & Feature Filtering (Total Effort: 8 Days)
