@@ -5,116 +5,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Digital Product Recommendation</title>
     <style>
-        /* Minimalist and modern UI design */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f7fa;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-        }
-        h1 {
-            font-size: 24px;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        p.subtitle {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-        textarea {
-            width: 100%;
-            height: 120px;
-            padding: 15px;
-            border: 2px solid #e1e4e8;
-            border-radius: 12px;
-            font-size: 16px;
-            resize: none;
-            box-sizing: border-box;
-            transition: border-color 0.3s ease;
-        }
-        textarea:focus {
-            outline: none;
-            border-color: #007bff;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 20px;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        #feedback {
-            margin-top: 20px;
-            color: #28a745;
-            font-weight: bold;
-            display: none;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7fa; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .container { background-color: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 100%; max-width: 600px; text-align: center; }
+        #inputSection h1 { font-size: 24px; color: #333; margin-bottom: 10px; }
+        #inputSection p { color: #666; font-size: 14px; margin-bottom: 30px; }
+        textarea { width: 100%; height: 120px; padding: 15px; border: 2px solid #e1e4e8; border-radius: 12px; font-size: 16px; resize: none; box-sizing: border-box; }
+        button.primary-btn { background-color: #007bff; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; transition: 0.3s ease; }
+        button.primary-btn:hover { background-color: #0056b3; }
+        #leaderboardSection { display: none; text-align: left; }
+        .leaderboard-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px;}
+        .leaderboard-header h2 { margin: 0; color: #333; font-size: 22px; }
+        .btn-back { background: none; border: none; color: #007bff; cursor: pointer; font-size: 14px; font-weight: bold; }
+        .product-card { display: flex; align-items: center; justify-content: space-between; background-color: #fff; border: 1px solid #e1e4e8; border-radius: 12px; padding: 15px; margin-bottom: 15px; transition: transform 0.2s, box-shadow 0.2s; }
+        .product-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .rank-badge { font-size: 20px; font-weight: bold; color: #adb5bd; width: 30px;}
+        .product-info { flex-grow: 1; padding: 0 15px; }
+        .product-name { font-size: 18px; font-weight: bold; color: #333; margin: 0 0 5px 0; }
+        .product-specs { font-size: 13px; color: #666; margin: 0; }
+        .match-score { background-color: #e6f4ea; color: #28a745; padding: 8px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; text-align: center; }
+        #loader { display: none; color: #007bff; font-weight: bold; margin-top: 20px; text-align: center; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Find My Perfect Device</h1>
-        <p class="subtitle">Describe what you need in plain English. For example: "I want a durable phone with a big screen for my mom, budget under $500."</p>
-        
-        <textarea id="userInput" placeholder="Enter your usage habits and needs here..."></textarea>
-        
-        <button id="submitBtn">Get Recommendations</button>
+        <div id="inputSection">
+            <h1>Find My Perfect Device</h1>
+            <p>Describe what you need in plain English. We will match the Top 5 products for you.</p>
+            <textarea id="userInput" placeholder="e.g., I need a high-performance laptop for 3D modeling under $2000..."></textarea>
+            <button id="submitBtn" class="primary-btn">Find My Device</button>
+            <div id="loader">🔄 Analyzing your request and fetching data...</div>
+        </div>
 
-        <div id="feedback">✅ Requirements received! Calling recommendation engine...</div>
+        <div id="leaderboardSection">
+            <div class="leaderboard-header">
+                <h2>🏆 Top 5 Recommendations</h2>
+                <button id="backBtn" class="btn-back">← Back to Input</button>
+            </div>
+            <div id="productList"></div>
+        </div>
     </div>
 
     <script>
-        // Get DOM elements
+        const inputSection = document.getElementById('inputSection');
+        const leaderboardSection = document.getElementById('leaderboardSection');
         const submitBtn = document.getElementById('submitBtn');
         const userInput = document.getElementById('userInput');
-        const feedback = document.getElementById('feedback');
+        const loader = document.getElementById('loader');
+        const backBtn = document.getElementById('backBtn');
+        const productList = document.getElementById('productList');
 
-        // Bind click event listener
+        const mockRecommendations = [
+            { id: 1, name: "ASUS Zenbook 14", specs: "Intel Core Ultra 9 · 32GB RAM · 1TB SSD", match: "98%" },
+            { id: 2, name: "MacBook Pro 14", specs: "M3 Pro chip · 18GB RAM · 512GB SSD", match: "92%" },
+            { id: 3, name: "Dell XPS 14", specs: "Intel Core Ultra 7 · 16GB RAM · 512GB SSD", match: "85%" },
+            { id: 4, name: "Lenovo ThinkPad X1", specs: "Intel Core Ultra 7 · 32GB RAM · 1TB SSD", match: "80%" },
+            { id: 5, name: "HP Spectre x360", specs: "Intel Core Ultra 7 · 16GB RAM · 1TB SSD", match: "75%" }
+        ];
+
         submitBtn.addEventListener('click', function() {
             const text = userInput.value.trim();
-            
             if (text === "") {
-                alert("Please enter your requirements before matching!");
+                alert("Please enter your requirements!");
                 return;
             }
-
-            // Fulfills US-01 Acceptance Criteria: Capture user input and print to console
-            console.log("=== Natural Language Input Captured ===");
-            console.log("User Input: ", text);
-            console.log("=======================================");
-
-            // Simulate UI feedback after sending data
+            
             submitBtn.style.display = 'none';
-            feedback.style.display = 'block';
+            loader.style.display = 'block';
 
-            // Just a heads-up for future integration
             setTimeout(() => {
-                console.log("Ready to send data to backend API for US-03...");
-            }, 1000);
+                renderLeaderboard(mockRecommendations);
+                inputSection.style.display = 'none';
+                loader.style.display = 'none';
+                leaderboardSection.style.display = 'block';
+                submitBtn.style.display = 'block'; 
+            }, 1500);
         });
+
+        backBtn.addEventListener('click', function() {
+            leaderboardSection.style.display = 'none';
+            inputSection.style.display = 'block';
+        });
+
+        function renderLeaderboard(data) {
+            productList.innerHTML = ""; 
+            data.forEach((product, index) => {
+                let rankIcon = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `#${index + 1}`;
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="rank-badge">${rankIcon}</div>
+                    <div class="product-info">
+                        <h3 class="product-name">${product.name}</h3>
+                        <p class="product-specs">${product.specs}</p>
+                    </div>
+                    <div class="match-score">${product.match} Match</div>
+                `;
+                productList.appendChild(card);
+            });
+        }
     </script>
 </body>
 </html>
