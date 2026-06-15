@@ -95,6 +95,82 @@ xychart-beta
 | **US-10** | Share Leaderboard | **As a** user helping family or friends choose a device, **I want to** generate a shareable link of the customized leaderboard, **so that** I can easily send the tailored recommendation results for them to view on their own devices. | 50 | 3 | ⚪ Todo |
 ---
 
-## 7. Data and Privacy
+## 7. System Architecture & Modeling
+
+To ensure a robust and scalable platform, we have utilized UML modeling to represent the core domain logic and the runtime interactions between our frontend UI, backend engine, and database.
+
+### 🧩 Class Diagram
+The static structure below illustrates the main entities of our recommendation platform and their relationships:
+```mermaid
+classDiagram
+    class UserPreference {
+        +String rawTextIntent
+        +double budgetLimit
+        +List~String~ excludedFeatures
+        +extractKeywords()
+    }
+
+    class Product {
+        +String productID
+        +String name
+        +String specs
+        +double price
+        +String category
+        +getDetails()
+    }
+
+    class RecommendationEngine {
+        +calculateMatchScore(UserPreference, Product) double
+        +sortAndFilter(List~Product~) List~Product~
+    }
+
+    class DatabaseManager {
+        +connectToDB()
+        +fetchProductsByCategory(String) List~Product~
+    }
+
+    class FrontendController {
+        +captureUserInput()
+        +renderLeaderboard(List~Product~)
+    }
+
+    FrontendController --> UserPreference : creates
+    FrontendController --> RecommendationEngine : requests match
+    RecommendationEngine --> DatabaseManager : fetches
+    DatabaseManager --> Product : returns
+    RecommendationEngine --> Product : evaluates
+```
+
+### 🔄 Sequence Diagram
+The dynamic behavior below maps out the execution flow of US-01 to US-03, showing how natural language input gets processed into a Top 5 leaderboard:
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant UI as Frontend (Guanyu)
+    participant Engine as RecEngine (Zaikun)
+    participant DB as Database (Yuyang)
+
+    User->>UI: Types "I need a gaming laptop under $1500"
+    User->>UI: Clicks "Find My Device"
+    activate UI
+    UI->>UI: Display Loading Spinner
+    UI->>Engine: POST /api/recommend (userIntent)
+    activate Engine
+    Engine->>DB: Query Laptops <= $1500
+    activate DB
+    DB-->>Engine: Return Raw Laptop List
+    deactivate DB
+    Engine->>Engine: Calculate Match % for each
+    Engine->>Engine: Sort Top 5
+    Engine-->>UI: Return JSON (Top 5 Products)
+    deactivate Engine
+    UI->>UI: Hide Loading Spinner
+    UI->>UI: Render Leaderboard HTML
+    UI-->>User: Display Top 5 Recommendations
+    deactivate UI
+```
+---
+## 8. Data and Privacy
 * The digital product specifications (e.g., price, processor, GPU, RAM) used by this platform are sourced from public channels or open-source datasets.
 * The platform strictly adheres to privacy protection principles. All preference data inputted by users in the questionnaire is only used for real-time calculation of the current recommendation and will never be disclosed to any third party without permission.
