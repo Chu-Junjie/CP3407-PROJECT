@@ -42,9 +42,6 @@ This project is collaboratively developed by a team of 4 members. The specific r
 
 ---
 
-## 6. Initial Backlog Ideas
-Below are 10 refined user stories for the platform, combining core functionality and innovative features. We have assigned a priority (10 being the highest, 50 being the lowest) and estimated the effort (in days) for each story:(US means User story)
-
 ## 6. Milestone 1 & Iteration Planning
 
 To effectively manage our development cycle and deliver a high-quality product, we have structured Milestone 1 into three distinct iterations based on user story priorities and effort estimations. 
@@ -140,6 +137,18 @@ classDiagram
     DatabaseManager --> Product : returns
     RecommendationEngine --> Product : evaluates
 ```
+### 🔎 Design Principles Check (SRP & DRY)
+During the end of Iteration 1, we reviewed our Class Diagram against the core principles from Chapter 5:
+
+**1. Single Responsibility Principle (SRP):**
+*Our classes satisfy SRP because each class has only one reason to change:*
+* `DatabaseManager`: Only handles database connection and raw data fetching. It does not care about how products are matched or displayed.
+* `RecommendationEngine`: Only handles the mathematical matching logic (calculating scores).
+* `FrontendController`: Strictly focuses on capturing user input and rendering the UI. It delegates all heavy lifting to the Engine.
+
+**2. Don't Repeat Yourself (DRY):**
+*We applied the DRY principle in our frontend code:*
+* Instead of writing duplicate HTML code for each of the Top 5 products, we created a single reusable JavaScript function `renderLeaderboard(data)`. It iterates through the array and dynamically generates the UI components, ensuring that if we want to change the card style in the future, we only need to update the code in one place.
 
 ### 🔄 Sequence Diagram
 The dynamic behavior below maps out the execution flow of US-01 to US-03, showing how natural language input gets processed into a Top 5 leaderboard:
