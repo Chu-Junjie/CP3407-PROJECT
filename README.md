@@ -65,7 +65,7 @@ Velocity is a measure of how much work our team successfully completed in this i
 
 **Actual Velocity = 4 + 2 + 5 = 11 Days**
 
-**Conclusion:** Our team's actual velocity for Iteration 1 exactly matches our initial planned capacity (11 Days). This proves that our task breakdowns and estimations were highly accurate, giving us a reliable baseline (Velocity = 11) for planning Iteration 2!
+**Conclusion:** Our team's actual velocity for Iteration 1 exactly matches our initial planned capacity (11 Days). This proves that our task breakdowns and estimations were highly accurate, giving us a reliable baseline (Velocity = 11/60=0.18) for planning Iteration 2!
 
 ### 📉 Burn Down Graph
 Below is the Burn Down Graph for tracking the remaining effort during Iteration 1. The total estimated effort starts at 11 days and is planned to burn down linearly to 0 by Day 10.
