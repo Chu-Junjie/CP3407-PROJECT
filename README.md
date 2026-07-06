@@ -52,20 +52,20 @@ To effectively manage our development cycle and deliver a high-quality product, 
 
 | ID | Title | User Story | Priority | Effort (Days) | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **US-01** | Natural Language Needs Description | **As a** consumer with limited hardware knowledge, **I want to** describe my usage habits in everyday natural language (e.g., "a durable phone with a big screen for my mom"), **so that** the system can understand my real needs without requiring me to research technical specs. | 10 | 4 | 🟢 Done |
-| **US-02** | Database Setup & Import | **As a** system administrator, **I want to** import a digital product dataset (e.g., CSV format) into the database, **so that** the platform has enough underlying data to support queries and recommendations. | 10 | 2 | 🟢 Done |
-| **US-03** | Customized Leaderboard | **As a** buyer looking for a new device, **I want to** see a Top 5 recommended leaderboard immediately after entering my needs, clearly displaying the matching percentage, **so that** I can intuitively compare and make a quick purchasing decision. | 10 | 5 | 🟢 Done |
+| **US-01** | Natural Language Needs Description | **As a** consumer with limited hardware knowledge, **I want to** describe my usage habits in everyday natural language (e.g., "a durable phone with a big screen for my mom"), **so that** the system can understand my real needs without requiring me to research technical specs. | 10 | 12 | 🟢 Done |
+| **US-02** | Database Setup & Import | **As a** system administrator, **I want to** import a digital product dataset (e.g., CSV format) into the database, **so that** the platform has enough underlying data to support queries and recommendations. | 10 | 10 | 🟢 Done |
+| **US-03** | Customized Leaderboard | **As a** buyer looking for a new device, **I want to** see a Top 5 recommended leaderboard immediately after entering my needs, clearly displaying the matching percentage, **so that** I can intuitively compare and make a quick purchasing decision. | 10 | 14 | 🟢 Done |
 
 ### ⏱️ Actual Velocity Calculation for Iteration 1
 Velocity is a measure of how much work our team successfully completed in this iteration. We only count the estimates of *100% completed* user stories.
 
-* US-01 Estimate: 4 Days (Completed)
-* US-02 Estimate: 2 Days (Completed)
-* US-03 Estimate: 5 Days (Completed)
+* US-01 Estimate: 12 Days (Completed)
+* US-02 Estimate: 10 Days (Completed)
+* US-03 Estimate: 14 Days (Completed)
 
-**Actual Velocity = 4 + 2 + 5 = 11 Days**
+**Actual Velocity = 12 + 10 + 14 = 36 Days**
 
-**Conclusion:** Our team's actual velocity for Iteration 1 exactly matches our initial planned capacity (11 Days). This proves that our task breakdowns and estimations were highly accurate, giving us a reliable baseline (Velocity = 11/60=0.18) for planning Iteration 2!
+**Conclusion:** Our team's actual velocity for Iteration 1 exactly matches our initial planned capacity (36 Days). This proves that our task breakdowns and estimations were highly accurate, giving us a reliable baseline (Velocity = 36/20*4=0.45) for planning Iteration 2!
 
 ### 📉 Burn Down Graph
 Below is the Burn Down Graph for tracking the remaining effort during Iteration 1. The total estimated effort starts at 11 days and is planned to burn down linearly to 0 by Day 10.
@@ -73,10 +73,10 @@ Below is the Burn Down Graph for tracking the remaining effort during Iteration 
 ```mermaid
 xychart-beta
     title "Iteration 1 Burn Down Graph"
-    x-axis "Days Left" [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
-    y-axis "Work Left (Days)" 0 --> 12
-    bar [11, 9.8, 8.6, 7.3, 6.1, 4.9, 3.7, 2.4, 1.2, 0, 0]
-    line [11, 9, 9, 9, 5, 5, 2, 2, 0, 0, 0]
+    x-axis "Days Left" [20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0]
+    y-axis "Work Left (Days)" 0 --> 40
+    line "Ideal Trend" [36, 32.4, 28.8, 25.2, 21.6, 18.0, 14.4, 10.8, 7.2, 3.6, 0]
+    bar "Actual Remaining" [36, 36, 36, 26, 26, 26, 14, 14, 14, 14, 0]
 ```
 
 ---
@@ -86,9 +86,9 @@ xychart-beta
 
 | ID | Title | User Story | Priority | Effort (Days) | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **US-04** | Personalized Explanation | **As a** skeptical user, **I want to** read a one-sentence, easy-to-understand explanation below each recommended product, **so that** I understand exactly why it was matched to me and can trust the recommendation. | 20 | 3 | ⚪ Todo |
-| **US-05** | Product Spec Comparison | **As a** consumer, **I want to** select multiple products and view their hardware specs side-by-side in a table format, **so that** I can intuitively see the differences in components like RAM and processors. | 20 | 2 | ⚪ Todo |
-| **US-06** | Exclude Unwanted Features | **As a** user with strict personal preferences, **I want to** list features I absolutely cannot accept (e.g., "no curved screens"), **so that** the system automatically filters out products with these dealbreakers. | 30 | 3 | ⚪ Todo |
+| **US-04** | Personalized Explanation | **As a** skeptical user, **I want to** read a one-sentence, easy-to-understand explanation below each recommended product, **so that** I understand exactly why it was matched to me and can trust the recommendation. | 20 | 7 | ⚪ Todo |
+| **US-05** | Product Spec Comparison | **As a** consumer, **I want to** select multiple products and view their hardware specs side-by-side in a table format, **so that** I can intuitively see the differences in components like RAM and processors. | 20 | 6 | ⚪ Todo |
+| **US-06** | Exclude Unwanted Features | **As a** user with strict personal preferences, **I want to** list features I absolutely cannot accept (e.g., "no curved screens"), **so that** the system automatically filters out products with these dealbreakers. | 30 | 7 | ⚪ Todo |
 
 ---
 
