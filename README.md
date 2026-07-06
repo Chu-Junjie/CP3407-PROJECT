@@ -48,7 +48,7 @@ This project is collaboratively developed by a team of 4 members. The specific r
 
 To effectively manage our development cycle and deliver a high-quality product, we have structured Milestone 1 into three distinct iterations based on user story priorities and effort estimations. 
 
-### 🌟 Iteration 1: MVP Core Pipeline (Total Effort: 11 Days)
+### 🌟 Iteration 1: MVP Core Pipeline (Total Effort: 36 Days)
 * **Goal:** Successfully run the core data flow: "Database Setup -> Natural Language Input Processing -> Recommendation Leaderboard Display".
 * **Current Focus:** Week 3 Practical Target.
 
@@ -92,7 +92,7 @@ At the end of Iteration 1, we conducted a Sprint Review to evaluate our delivera
 * *None.* All planned tasks for Iteration 1 were 100% successfully executed and merged into the main branch. No technical debt or unfinished stories need to be carried over to Iteration 2.
 ---
 
-### 🔍 Iteration 2: Decision Support & Feature Filtering (Total Effort: 8 Days)
+### 🔍 Iteration 2: Decision Support & Feature Filtering (Total Effort: 36 Days)
 * **Goal:** Enhance recommendation transparency and implement advanced preference filtering.
 
 | ID | Title | User Story | Priority | Effort (Days) | Status |
@@ -103,7 +103,7 @@ At the end of Iteration 1, we conducted a Sprint Review to evaluate our delivera
 
 ---
 
-### 🚀 Iteration 3: Conversion, Feedback & Sharing (Total Effort: 11 Days)
+### 🚀 Iteration 3: Conversion, Feedback & Sharing (Total Effort: 36 Days)
 * **Goal:** Implement external e-commerce redirection, social sharing, and user feedback loops for continuous algorithm improvement.
 
 | ID | Title | User Story | Priority | Effort (Days) | Status |
