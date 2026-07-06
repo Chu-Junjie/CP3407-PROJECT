@@ -78,7 +78,16 @@ xychart-beta
     line "Ideal Trend" [36, 32.4, 28.8, 25.2, 21.6, 18.0, 14.4, 10.8, 7.2, 3.6, 0]
     bar "Actual Remaining" [36, 36, 36, 26, 26, 26, 14, 14, 14, 14, 0]
 ```
+### Document: Completed vs. Unfinished User Stories (Iteration 1 Review)
+At the end of Iteration 1, we conducted a Sprint Review to evaluate our deliverables against our initial commitments.
 
+**✅ Completed User Stories (Total: 36 Days)**
+* **US-01 (12 Days):** MVP Frontend UI for natural language input is fully functional.
+* **US-02 (10 Days):** Database setup and initial digital product dataset imported successfully.
+* **US-03 (14 Days):** Frontend leaderboard dynamically renders top recommendations based on mock integrated data.
+
+**❌ Unfinished User Stories (Total: 0 Days)**
+* *None.* All planned tasks for Iteration 1 were 100% successfully executed and merged into the main branch. No technical debt or unfinished stories need to be carried over to Iteration 2.
 ---
 
 ### 🔍 Iteration 2: Decision Support & Feature Filtering (Total Effort: 8 Days)
@@ -86,9 +95,9 @@ xychart-beta
 
 | ID | Title | User Story | Priority | Effort (Days) | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **US-04** | Personalized Explanation | **As a** skeptical user, **I want to** read a one-sentence, easy-to-understand explanation below each recommended product, **so that** I understand exactly why it was matched to me and can trust the recommendation. | 20 | 13 | ⚪ Todo |
-| **US-05** | Product Spec Comparison | **As a** consumer, **I want to** select multiple products and view their hardware specs side-by-side in a table format, **so that** I can intuitively see the differences in components like RAM and processors. | 20 | 10 | ⚪ Todo |
-| **US-06** | Exclude Unwanted Features | **As a** user with strict personal preferences, **I want to** list features I absolutely cannot accept (e.g., "no curved screens"), **so that** the system automatically filters out products with these dealbreakers. | 30 | 13 | ⚪ Todo |
+| **US-04** | Personalized Explanation | **As a** skeptical user, **I want to** read a one-sentence, easy-to-understand explanation below each recommended product, **so that** I understand exactly why it was matched to me and can trust the recommendation. | 20 | 13 | 🟡 In-Progress |
+| **US-05** | Product Spec Comparison | **As a** consumer, **I want to** select multiple products and view their hardware specs side-by-side in a table format, **so that** I can intuitively see the differences in components like RAM and processors. | 20 | 10 | 🟡 In-Progress |
+| **US-06** | Exclude Unwanted Features | **As a** user with strict personal preferences, **I want to** list features I absolutely cannot accept (e.g., "no curved screens"), **so that** the system automatically filters out products with these dealbreakers. | 30 | 13 | 🟡 In-Progress |
 
 ---
 
