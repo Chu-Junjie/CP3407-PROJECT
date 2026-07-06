@@ -3,6 +3,7 @@
 Welcome to the Smart Digital Product Recommendation Platform repository. This project aims to help users find the most suitable digital products (e.g., laptops, smartphones, peripherals) that fit their budget and needs through intelligent and personalized assessment algorithms, simplifying the decision-making process in a tech market filled with overwhelming information.
 
 🌟 **Live Demo:** [Click here to experience our Iteration 1 Platform](https://chu-junjie.github.io/CP3407-PROJECT/)
+
 ---
 
 ## 1. Project Overview
