@@ -205,3 +205,32 @@ sequenceDiagram
 ## 8. Data and Privacy
 * The digital product specifications (e.g., price, processor, GPU, RAM) used by this platform are sourced from public channels or open-source datasets.
 * The platform strictly adheres to privacy protection principles. All preference data inputted by users in the questionnaire is only used for real-time calculation of the current recommendation and will never be disclosed to any third party without permission.
+
+## 9. Testing Strategy & Test-Driven Development (TDD)
+
+### 🧪 Testing Plan (Based on TDD Principles)
+In Iteration 2, we adopted **Test-Driven Development (TDD)** as our primary engineering practice. Before implementing new features, we write automated tests to define the desired behavior. Our testing strategy includes:
+1. **Unit Testing:** We test individual Python functions (e.g., `parse_budget_from_text`) in isolation to ensure logic algorithms are mathematically and logically correct.
+2. **Integration Testing:** We test the Flask API endpoints combined with the SQLite database to ensure the system correctly fetches, filters, and returns JSON payloads.
+3. **Acceptance Testing:** We map our tests directly to the Acceptance Criteria of our User Stories to guarantee business value delivery.
+
+### 📋 Test Cases (15 Cases across 5 User Stories)
+Below are 15 carefully designed test cases covering both completed (US-01, 02, 03) and upcoming (US-04, 06) user stories, following the exact standard from the textbook.
+
+| User Story | Test Case ID | Test Description | Expected Result |
+| :--- | :--- | :--- | :--- |
+| **US-01: NLP Input** | TC-01.1 | Input contains explicit budget ("under $1000") | System successfully extracts `1000` as the budget limit. |
+| | TC-01.2 | Input contains NO budget ("I want a gaming laptop") | System assigns the default max budget ($5000). |
+| | TC-01.3 | Input contains non-standard symbols ("below 1,500 bucks") | System correctly parses `1500` despite natural language noise. |
+| **US-02: DB Setup** | TC-02.1 | Initialize empty database on startup | System automatically reads CSV and creates the SQLite table. |
+| | TC-02.2 | Check `/api/health` endpoint | Returns HTTP 200 with the exact row count of the database. |
+| | TC-02.3 | Prevent duplicate imports | Running setup twice does not duplicate records in the database. |
+| **US-03: Leaderboard**| TC-03.1 | Request recommendations | API returns exactly 5 (or fewer) product items in a JSON array. |
+| | TC-03.2 | Verify sorting order | The returned JSON array is strictly sorted by `match_score` descending. |
+| | TC-03.3 | Verify budget constraint | All 5 returned products have a price lower than or equal to the user's budget. |
+| **US-04: Explanation**| TC-04.1 | Verify reason payload | The JSON response object contains a `reason` string field. |
+| | TC-04.2 | Specific feature match | If user asks for "gaming", the reason string contains the keyword "Gaming". |
+| | TC-04.3 | Generic fallback explanation | If no specific feature matches, reason defaults to "general product match". |
+| **US-06: Exclusions** | TC-06.1 | Parse negative keywords ("no Apple") | System identifies "Apple" as an excluded brand/feature. |
+| | TC-06.2 | Verify exclusion filtering | The returned JSON array contains exactly ZERO products from the excluded brand. |
+| | TC-06.3 | Case-insensitive exclusion | "apple" and "APPLE" both successfully trigger the exclusion logic. |
