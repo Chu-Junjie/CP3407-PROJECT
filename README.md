@@ -110,7 +110,7 @@ At the end of Iteration 2, our team successfully completed all planned tasks foc
 
 **Actual Velocity = 13 + 10 + 13 = 36 Ideal Days**
 
-**Reflection:** Our actual velocity (36 Days) perfectly matches our projected capacity. This indicates our team's estimation accuracy and focus factor (0.45) have stabilized. We will use this exact velocity of **36 Days** as the rigid baseline to plan our final sprint (Iteration 3).
+**Reflection:** Our actual velocity (36 Days) perfectly matches our projected capacity. This indicates our team's estimation accuracy and focus factor (36/(20*4)=0.45) have stabilized. We will use this exact velocity of **36 Days** as the rigid baseline to plan our final sprint (Iteration 3).
 
 ### 📉 Iteration 2 Burn Down Graph
 Below is the Burn Down Graph for Iteration 2. The effort started at 36 days and successfully burned down to 0, demonstrating a healthy Agile cadence where tasks were sequentially moved to 'Done'.
