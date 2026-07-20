@@ -33,7 +33,8 @@ def setup_database() -> int:
 
     with get_connection() as connection:
         table_exists = connection.execute(
-            "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = ?",
+            "SELECT COUNT(*) FROM sqlite_master "
+            "WHERE type = 'table' AND name = ?",
             (TABLE_NAME,),
         ).fetchone()[0]
 
@@ -41,6 +42,7 @@ def setup_database() -> int:
             row_count = connection.execute(
                 f"SELECT COUNT(*) FROM {TABLE_NAME}"
             ).fetchone()[0]
+
             if row_count > 0:
                 return int(row_count)
 
@@ -57,13 +59,22 @@ def setup_database() -> int:
             "CustomerSatisfaction",
             "PurchaseIntent",
         }
+
         missing_columns = required_columns.difference(dataframe.columns)
         if missing_columns:
             missing_text = ", ".join(sorted(missing_columns))
-            raise ValueError(f"Dataset is missing required columns: {missing_text}")
+            raise ValueError(
+                f"Dataset is missing required columns: {missing_text}"
+            )
 
-        dataframe.to_sql(TABLE_NAME, connection, if_exists="replace", index=False)
+        dataframe.to_sql(
+            TABLE_NAME,
+            connection,
+            if_exists="replace",
+            index=False,
+        )
         connection.commit()
+
         return int(len(dataframe))
 
 
@@ -77,8 +88,13 @@ def parse_budget_from_text(text: str | None) -> float | None:
         return None
 
     normalised = str(text).lower().replace(",", "")
+
     patterns = [
-        r"(?:under|below|less\s+than|budget(?:\s+(?:of|is))?|around|up\s+to|maximum|max|limit(?:\s+is)?)\s*\$?\s*(\d+(?:\.\d+)?)",
+        (
+            r"(?:under|below|less\s+than|budget(?:\s+(?:of|is))?|"
+            r"around|up\s+to|maximum|max|limit(?:\s+is)?)"
+            r"\s*\$?\s*(\d+(?:\.\d+)?)"
+        ),
         r"\$\s*(\d+(?:\.\d+)?)",
     ]
 
@@ -90,9 +106,32 @@ def parse_budget_from_text(text: str | None) -> float | None:
     return None
 
 
+def parse_exclusions(text: str | None) -> list[str]:
+    """
+    Extract excluded brands or keywords.
+
+    Examples:
+        "no Apple" -> ["apple"]
+        "exclude Sony" -> ["sony"]
+        "without Samsung" -> ["samsung"]
+    """
+    if not text:
+        return []
+
+    matches = re.findall(
+        r"\b(?:no|exclude|without)\s+([a-zA-Z0-9_-]+)\b",
+        str(text),
+        flags=re.IGNORECASE,
+    )
+
+    return [match.strip().lower() for match in matches]
+
+
 def _normalise_optional_text(value: Any) -> str | None:
+    """Convert an optional request value into stripped text or None."""
     if value is None:
         return None
+
     text = str(value).strip()
     return text or None
 
@@ -104,14 +143,24 @@ def read_request_filters() -> dict[str, Any]:
     else:
         payload = request.args
 
-    # 'intent' is accepted for compatibility with earlier Week 7 test examples.
-    query_text = str(payload.get("query") or payload.get("intent") or "").strip()
+    # "intent" is accepted for compatibility with earlier Week 7 tests.
+    query_text = str(
+        payload.get("query")
+        or payload.get("intent")
+        or ""
+    ).strip()
+
     category = _normalise_optional_text(payload.get("category"))
     brand = _normalise_optional_text(payload.get("brand"))
 
     max_price = payload.get("max_price")
+
     try:
-        budget = float(max_price) if max_price not in (None, "") else None
+        budget = (
+            float(max_price)
+            if max_price not in (None, "")
+            else None
+        )
     except (TypeError, ValueError):
         budget = None
 
@@ -126,6 +175,7 @@ def read_request_filters() -> dict[str, Any]:
         "category": category,
         "brand": brand,
         "budget": budget,
+        "exclusions": parse_exclusions(query_text),
     }
 
 
@@ -133,8 +183,13 @@ def read_request_filters() -> dict[str, Any]:
 # RECOMMENDATION ENGINE
 # ============================================================
 
-def fetch_candidate_products(filters: dict[str, Any]) -> list[dict[str, Any]]:
-    """Return database candidates that satisfy strict category and budget filters."""
+def fetch_candidate_products(
+    filters: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """
+    Return database candidates that satisfy category, budget,
+    and exclusion filters.
+    """
     where_clauses: list[str] = []
     params: list[Any] = []
 
@@ -142,12 +197,22 @@ def fetch_candidate_products(filters: dict[str, Any]) -> list[dict[str, Any]]:
         where_clauses.append("ProductCategory = ?")
         params.append(filters["category"])
 
-    # The UI describes this as a maximum budget, so no result may exceed it.
+    # The UI describes this as a maximum budget.
     if filters.get("budget") is not None:
         where_clauses.append("ProductPrice <= ?")
         params.append(float(filters["budget"]))
 
-    where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
+    # US-06: Exclude unwanted brands.
+    if filters.get("exclusions"):
+        for exclusion in filters["exclusions"]:
+            where_clauses.append("LOWER(TRIM(ProductBrand)) != ?")
+            params.append(str(exclusion).strip().lower())
+
+    where_sql = (
+        f"WHERE {' AND '.join(where_clauses)}"
+        if where_clauses
+        else ""
+    )
 
     sql = f"""
         SELECT
@@ -172,9 +237,10 @@ def fetch_candidate_products(filters: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def calculate_match_score(
-    product: dict[str, Any], filters: dict[str, Any]
+    product: dict[str, Any],
+    filters: dict[str, Any],
 ) -> tuple[int, list[str]]:
-    """Calculate a score from 0 to 100 and return short explanation reasons."""
+    """Calculate a score from 0 to 100 and return explanation reasons."""
     score = 8
     reasons: list[str] = []
 
@@ -202,17 +268,23 @@ def calculate_match_score(
         if budget_value > 0 and price <= budget_value:
             price_ratio = price / budget_value
             ideal_ratio = 0.70
-            price_score = round(18 - abs(price_ratio - ideal_ratio) * 24)
+
+            price_score = round(
+                18 - abs(price_ratio - ideal_ratio) * 24
+            )
             price_score = max(6, min(18, price_score))
+
             score += price_score
             reasons.append(f"within budget ${budget_value:.0f}")
 
     satisfaction = int(product["CustomerSatisfaction"])
     score += satisfaction * 2
+
     if satisfaction >= 4:
         reasons.append("high customer satisfaction")
 
     purchase_frequency = int(product["PurchaseFrequency"])
+
     if purchase_frequency >= 7:
         score += 4
         reasons.append("strong purchase frequency")
@@ -227,17 +299,21 @@ def calculate_match_score(
 
 
 def build_leaderboard(
-    filters: dict[str, Any], limit: int = 5
+    filters: dict[str, Any],
+    limit: int = 5,
 ) -> list[dict[str, Any]]:
     """Build and sort the recommendation leaderboard."""
     setup_database()
     candidates = fetch_candidate_products(filters)
 
     leaderboard: list[dict[str, Any]] = []
+
     for product in candidates:
         score, reasons = calculate_match_score(product, filters)
+
         product_name = (
-            f"{product['ProductBrand']} {product['ProductCategory']} "
+            f"{product['ProductBrand']} "
+            f"{product['ProductCategory']} "
             f"#{product['ProductID']}"
         )
 
@@ -250,15 +326,22 @@ def build_leaderboard(
                 "brand": product["ProductBrand"],
                 "price": round(float(product["ProductPrice"]), 2),
                 "match_score": score,
-                "reason": "; ".join(reasons) or "general product match",
+                "reason": (
+                    "; ".join(reasons)
+                    or "general product match"
+                ),
             }
         )
 
     leaderboard.sort(
-        key=lambda item: (item["match_score"], -item["price"]),
+        key=lambda item: (
+            item["match_score"],
+            -item["price"],
+        ),
         reverse=True,
     )
-    return leaderboard[: max(0, int(limit))]
+
+    return leaderboard[:max(0, int(limit))]
 
 
 # ============================================================
@@ -267,7 +350,9 @@ def build_leaderboard(
 
 @app.route("/api/health", methods=["GET"])
 def health_check():
+    """Return database and API health information."""
     row_count = setup_database()
+
     return jsonify(
         {
             "status": "success",
@@ -280,12 +365,17 @@ def health_check():
 
 @app.route("/api/products", methods=["GET"])
 def products():
+    """Return the five lowest-priced products."""
     setup_database()
 
     with get_connection() as connection:
         rows = connection.execute(
             f"""
-            SELECT ProductID, ProductCategory, ProductBrand, ProductPrice
+            SELECT
+                ProductID,
+                ProductCategory,
+                ProductBrand,
+                ProductPrice
             FROM {TABLE_NAME}
             ORDER BY ProductPrice ASC
             LIMIT 5
@@ -302,6 +392,7 @@ def products():
 
 @app.route("/api/recommend", methods=["GET", "POST"])
 def recommend():
+    """Return up to five ranked product recommendations."""
     filters = read_request_filters()
     leaderboard = build_leaderboard(filters, limit=5)
 
@@ -314,17 +405,41 @@ def recommend():
     )
 
 
+# ============================================================
+# ERROR HANDLERS
+# ============================================================
+
 @app.errorhandler(FileNotFoundError)
 def handle_missing_file(error: FileNotFoundError):
-    return jsonify({"status": "error", "message": str(error)}), 500
+    """Return a JSON error when the CSV file is missing."""
+    return jsonify(
+        {
+            "status": "error",
+            "message": str(error),
+        }
+    ), 500
 
 
 @app.errorhandler(ValueError)
 def handle_invalid_dataset(error: ValueError):
-    return jsonify({"status": "error", "message": str(error)}), 500
+    """Return a JSON error when the CSV columns are invalid."""
+    return jsonify(
+        {
+            "status": "error",
+            "message": str(error),
+        }
+    ), 500
 
+
+# ============================================================
+# APPLICATION START
+# ============================================================
 
 if __name__ == "__main__":
     print("Starting backend API server at http://127.0.0.1:5000")
     print("Health check: http://127.0.0.1:5000/api/health")
-    app.run(debug=True, port=5000)
+
+    app.run(
+        debug=True,
+        port=5000,
+    )
