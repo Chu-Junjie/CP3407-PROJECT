@@ -97,21 +97,48 @@ At the end of Iteration 1, we conducted a Sprint Review to evaluate our delivera
 
 | ID | Title | User Story | Priority | Effort (Days) | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **US-04** | Personalized Explanation | **As a** skeptical user, **I want to** read a one-sentence, easy-to-understand explanation below each recommended product, **so that** I understand exactly why it was matched to me and can trust the recommendation. | 20 | 13 | 🟡 In-Progress |
-| **US-05** | Product Spec Comparison | **As a** consumer, **I want to** select multiple products and view their hardware specs side-by-side in a table format, **so that** I can intuitively see the differences in components like RAM and processors. | 20 | 10 | 🟡 In-Progress |
-| **US-06** | Exclude Unwanted Features | **As a** user with strict personal preferences, **I want to** list features I absolutely cannot accept (e.g., "no curved screens"), **so that** the system automatically filters out products with these dealbreakers. | 30 | 13 | 🟡 In-Progress |
+| **US-04** | Personalized Explanation | **As a** skeptical user, **I want to** read a one-sentence, easy-to-understand explanation below each recommended product, **so that** I understand exactly why it was matched to me and can trust the recommendation. | 20 | 13 | 🟢 Done |
+| **US-05** | Product Spec Comparison | **As a** consumer, **I want to** select multiple products and view their hardware specs side-by-side in a table format, **so that** I can intuitively see the differences in components like RAM and processors. | 20 | 10 | 🟢 Done|
+| **US-06** | Exclude Unwanted Features | **As a** user with strict personal preferences, **I want to** list features I absolutely cannot accept (e.g., "no curved screens"), **so that** the system automatically filters out products with these dealbreakers. | 30 | 13 | 🟢 Done |
 
+### ⏱️ Actual Velocity Calculation for Iteration 2
+At the end of Iteration 2, our team successfully completed all planned tasks focusing on decision support and filtering. 
+
+* **US-04 Estimate:** 13 Days (Completed)
+* **US-05 Estimate:** 10 Days (Completed)
+* **US-06 Estimate:** 13 Days (Completed)
+
+**Actual Velocity = 13 + 10 + 13 = 36 Ideal Days**
+
+**Reflection:** Our actual velocity (36 Days) perfectly matches our projected capacity. This indicates our team's estimation accuracy and focus factor (0.45) have stabilized. We will use this exact velocity of **36 Days** as the rigid baseline to plan our final sprint (Iteration 3).
+
+### 📉 Iteration 2 Burn Down Graph
+Below is the Burn Down Graph for Iteration 2. The effort started at 36 days and successfully burned down to 0, demonstrating a healthy Agile cadence where tasks were sequentially moved to 'Done'.
+
+```mermaid
+xychart-beta
+    title "Iteration 2 End-of-Sprint Burn Down"
+    x-axis "Days Left" [20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0]
+    y-axis "Work Left (Days)" 0 --> 40
+    line "Ideal Trend" [36, 32.4, 28.8, 25.2, 21.6, 18.0, 14.4, 10.8, 7.2, 3.6, 0]
+    bar "Actual Remaining" [36, 36, 36, 23, 23, 23, 13, 13, 13, 13, 0]
+```
 ---
 
 ### 🚀 Iteration 3: Conversion, Feedback & Sharing (Total Effort: 36 Days)
 * **Goal:** Implement external e-commerce redirection, social sharing, and user feedback loops for continuous algorithm improvement.
+ 
+Based on our Iteration 2 Actual Velocity of 36 Days, we have updated the backlog for Iteration 3 to exactly match this capacity.
 
 | ID | Title | User Story | Priority | Effort (Days) | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **US-07** | Direct Purchase Links | **As an** eager buyer, **I want to** click on a recommended product to be redirected to official e-commerce stores, **so that** I can make a purchase directly without manually searching for it elsewhere. | 40 | 7 | ⚪ Todo |
-| **US-08** | Feedback Mechanism | **As an** engaged user, **I want to** click a "thumbs up" or "thumbs down" button at the bottom of the leaderboard, **so that** I can provide feedback to the developers to improve future algorithm accuracy. | 40 | 7 | ⚪ Todo |
-| **US-09** | Budget Alternatives | **As a** budget-conscious consumer, **I want to** see a cheaper "budget alternative" for top-tier expensive recommendations, **so that** I can save money without sacrificing core experiences. | 50 | 12 | ⚪ Todo |
-| **US-10** | Share Leaderboard | **As a** user helping family or friends choose a device, **I want to** generate a shareable link of the customized leaderboard, **so that** I can easily send the tailored recommendation results for them to view on their own devices. | 50 | 10 | ⚪ Todo |
+| **US-07** | Direct Purchase Links | **As an** eager buyer, **I want to** click on a recommended product to be redirected to official e-commerce stores, **so that** I can make a purchase directly without manually searching for it elsewhere. | 40 | 7 | 🟡 In-Progress |
+| **US-08** | Feedback Mechanism | **As an** engaged user, **I want to** click a "thumbs up" or "thumbs down" button at the bottom of the leaderboard, **so that** I can provide feedback to the developers to improve future algorithm accuracy. | 40 | 7 | 🟡 In-Progress |
+| **US-09** | Budget Alternatives | **As a** budget-conscious consumer, **I want to** see a cheaper "budget alternative" for top-tier expensive recommendations, **so that** I can save money without sacrificing core experiences. | 50 | 12 | 🟡 In-Progress |
+| **US-10** | Share Leaderboard | **As a** user helping family or friends choose a device, **I want to** generate a shareable link of the customized leaderboard, **so that** I can easily send the tailored recommendation results for them to view on their own devices. | 50 | 10 | 🟡 In-Progress |
+
+**Total Iteration 3 Effort Estimate = 7 + 7 + 12 + 10 = 36 Days** *(Perfectly aligned with team velocity!)*
+
 ---
 
 ## 7. System Architecture & Modeling
