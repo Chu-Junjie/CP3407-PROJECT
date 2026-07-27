@@ -261,3 +261,33 @@ Below are 15 carefully designed test cases covering both completed (US-01, 02, 0
 | **US-06: Exclusions** | TC-06.1 | Parse negative keywords ("no Apple") | System identifies "Apple" as an excluded brand/feature. |
 | | TC-06.2 | Verify exclusion filtering | The returned JSON array contains exactly ZERO products from the excluded brand. |
 | | TC-06.3 | Case-insensitive exclusion | "apple" and "APPLE" both successfully trigger the exclusion logic. |
+
+## 10. System Testing Plan (Week 10 Demo Script)
+
+**Objective:** To conduct an end-to-end black-box system test, ensuring the platform satisfies all user requirements and functions flawlessly from the initial user input to the final e-commerce redirection. When executing this plan during the final demo, we will cross-reference the UI flow directly with our initial Figma product logic sketches to ensure the final implementation hasn't drifted from the original design intent.
+
+### 🎬 Scenario 1: The "Happy Path" (Standard Recommendation)
+* **Goal:** Verify core pipeline functionality (US-01, US-02, US-03).
+* **Test Steps:**
+  1. User selects "Laptops" and "Apple".
+  2. User inputs a Max Budget of `$2000`.
+  3. Click "Generate Recommendations".
+* **Expected Result:** The system loads seamlessly and displays the Top 5 Apple laptops under $2000, ranked by match score.
+
+### 🎬 Scenario 2: Decision Support & Edge Cases (US-04, US-05, US-06)
+* **Goal:** Verify advanced filtering and spec comparison.
+* **Test Steps:**
+  1. User reads the personalized "💡 Reason" under the top recommendation (US-04).
+  2. User inputs "no Apple" in the natural language text box (US-06).
+  3. User selects the top 3 products using the checkboxes.
+  4. Click "⚖️ Compare Selected Specs".
+* **Expected Result:** Apple products are strictly excluded from the list. The comparison table generates dynamically, displaying exactly the 3 selected products side-by-side.
+
+### 🎬 Scenario 3: Conversion & Engagement (US-07, US-08, US-09, US-10)
+* **Goal:** Verify Iteration 3 features.
+* **Test Steps:**
+  1. User notices the distinct "💰 Budget Pick" card for a cheaper alternative (US-09).
+  2. User clicks the "👍 Thumbs up" feedback button at the bottom (US-08).
+  3. User clicks the "🔗 Share Results" button and pastes the link into a new incognito tab (US-10).
+  4. User clicks the "🛒 Buy Now" button on the top product (US-07).
+* **Expected Result:** Feedback is logged without crashing. The copied URL perfectly restores the leaderboard state in the new tab. The Buy Now button redirects successfully to the external store.
