@@ -3,167 +3,1175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="description"
+        content="Smart Digital Product Recommendation System — personalised product recommendations based on your requirements."
+    >
+    <meta name="theme-color" content="#0f62fe">
     <title>Smart Digital Product Recommendation</title>
+
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7fa; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-        .container { background-color: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 100%; max-width: 650px; text-align: center; }
-        #inputSection h1 { font-size: 24px; color: #333; margin-bottom: 10px; }
-        #inputSection p { color: #666; font-size: 14px; margin-bottom: 30px; }
-        textarea { width: 100%; height: 120px; padding: 15px; border: 2px solid #e1e4e8; border-radius: 12px; font-size: 16px; resize: none; box-sizing: border-box; }
-        button.primary-btn { background-color: #007bff; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; transition: 0.3s ease; }
-        button.primary-btn:hover { background-color: #0056b3; }
-        #leaderboardSection, #compareSection { display: none; text-align: left; }
-        .leaderboard-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px;}
-        .leaderboard-header h2 { margin: 0; color: #333; font-size: 22px; }
-        .btn-back { background: none; border: none; color: #007bff; cursor: pointer; font-size: 14px; font-weight: bold; }
-        .product-card { display: flex; align-items: center; justify-content: space-between; background-color: #fff; border: 1px solid #e1e4e8; border-radius: 12px; padding: 15px; margin-bottom: 15px; transition: transform 0.2s; }
-        .product-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .rank-badge { font-size: 20px; font-weight: bold; color: #adb5bd; width: 30px;}
-        .product-info { flex-grow: 1; padding: 0 15px; }
-        .product-name { font-size: 18px; font-weight: bold; color: #333; margin: 0 0 5px 0; }
-        .product-specs { font-size: 13px; color: #666; margin: 0 0 5px 0; }
-        .product-reason { font-size: 12px; font-style: italic; color: #888; margin: 0; } /* US-04 */
-        .match-score { background-color: #e6f4ea; color: #28a745; padding: 8px 12px; border-radius: 20px; font-weight: bold; font-size: 14px; text-align: center; }
-        #loader { display: none; color: #007bff; font-weight: bold; margin-top: 20px; text-align: center; }
-        /* US-05 Compare Styles */
-        .compare-checkbox { transform: scale(1.5); margin-right: 10px; cursor: pointer; }
-        #compareBtn { background-color: #28a745; margin-top: 10px; display: none; }
-        #compareBtn:hover { background-color: #218838; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; font-size: 14px; }
-        th { background-color: #f8f9fa; color: #333; }
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+            --text: #1f2937;
+            --muted: #667085;
+            --border: #e4e7ec;
+            --primary: #0f62fe;
+            --primary-hover: #0043ce;
+            --success: #16803a;
+            --success-soft: #eaf7ef;
+            --danger: #b42318;
+            --danger-soft: #fff1f0;
+            --warning: #8a6116;
+            --warning-soft: #fff8e8;
+            --shadow: 0 18px 50px rgba(31, 41, 55, 0.08);
+            --radius-lg: 18px;
+            --radius-md: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 32px 18px;
+            background:
+                radial-gradient(circle at top left, rgba(15, 98, 254, 0.08), transparent 30%),
+                var(--bg);
+            color: var(--text);
+            font-family:
+                Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+                "Segoe UI", sans-serif;
+        }
+
+        button,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .app-shell {
+            width: min(100%, 820px);
+            margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 0 16px 4px;
+            color: #344054;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 9px;
+            background: var(--primary);
+            color: white;
+            font-size: 16px;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid rgba(228, 231, 236, 0.9);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 38px;
+        }
+
+        .section-title {
+            margin: 0;
+            font-size: clamp(25px, 5vw, 34px);
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        .section-description {
+            max-width: 680px;
+            margin: 12px 0 28px;
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.65;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 9px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        textarea {
+            display: block;
+            width: 100%;
+            min-height: 138px;
+            padding: 15px 16px;
+            resize: vertical;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            background: #fff;
+            color: var(--text);
+            outline: none;
+            font-size: 16px;
+            line-height: 1.55;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(15, 98, 254, 0.11);
+        }
+
+        .input-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .primary-btn {
+            width: 100%;
+            margin-top: 22px;
+            padding: 14px 20px;
+            border: 0;
+            border-radius: 10px;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 750;
+            cursor: pointer;
+            transition:
+                background 0.2s ease,
+                transform 0.15s ease,
+                opacity 0.2s ease;
+        }
+
+        .primary-btn:hover:not(:disabled) {
+            background: var(--primary-hover);
+        }
+
+        .primary-btn:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        .primary-btn:disabled {
+            opacity: 0.58;
+            cursor: not-allowed;
+        }
+
+        .secondary-btn {
+            padding: 8px 0;
+            border: 0;
+            background: transparent;
+            color: var(--primary);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .secondary-btn:hover {
+            text-decoration: underline;
+        }
+
+        .status {
+            display: none;
+            margin-top: 16px;
+            padding: 13px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.55;
+        }
+
+        .status.loading {
+            background: #eef5ff;
+            color: #174ea6;
+        }
+
+        .status.error {
+            background: var(--danger-soft);
+            color: var(--danger);
+            border: 1px solid #fecdca;
+        }
+
+        .status.empty {
+            background: var(--warning-soft);
+            color: var(--warning);
+            border: 1px solid #f6d98a;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            margin-right: 8px;
+            vertical-align: -2px;
+            border: 2px solid rgba(15, 98, 254, 0.25);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        #leaderboardSection,
+        #compareSection {
+            display: none;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            padding-bottom: 18px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: -0.01em;
+        }
+
+        .section-header p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .query-summary {
+            margin-bottom: 20px;
+            padding: 13px 15px;
+            border: 1px solid #dce6ff;
+            border-radius: 10px;
+            background: #f6f9ff;
+            color: #475467;
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        .query-summary strong {
+            color: #344054;
+        }
+
+        .product-list {
+            display: grid;
+            gap: 14px;
+        }
+
+        .product-card {
+            display: grid;
+            grid-template-columns: auto auto minmax(0, 1fr) auto;
+            gap: 13px;
+            align-items: center;
+            padding: 17px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: #fff;
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 22px rgba(31, 41, 55, 0.07);
+        }
+
+        .product-card.selected {
+            border-color: var(--success);
+            box-shadow: 0 0 0 2px rgba(22, 128, 58, 0.08);
+        }
+
+        .compare-checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--success);
+            cursor: pointer;
+        }
+
+        .rank {
+            min-width: 34px;
+            text-align: center;
+            color: #98a2b3;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .product-info {
+            min-width: 0;
+        }
+
+        .product-name {
+            margin: 0 0 5px;
+            font-size: 17px;
+            line-height: 1.4;
+        }
+
+        .product-meta,
+        .product-specs,
+        .product-reason {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .product-reason {
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .match-score {
+            display: inline-block;
+            padding: 7px 11px;
+            border-radius: 999px;
+            background: var(--success-soft);
+            color: var(--success);
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        #compareBtn {
+            display: none;
+            background: var(--success);
+        }
+
+        #compareBtn:hover:not(:disabled) {
+            background: #116b31;
+        }
+
+        .compare-note {
+            margin: 15px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 580px;
+            border-collapse: collapse;
+            margin-top: 4px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+            font-size: 13px;
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--surface-soft);
+            color: #344054;
+        }
+
+        th:first-child,
+        td:first-child {
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .footer-note {
+            margin: 16px 0 0;
+            color: #98a2b3;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        @media (max-width: 680px) {
+            body {
+                padding: 18px 10px;
+            }
+
+            .panel {
+                padding: 24px 17px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .product-card {
+                grid-template-columns: auto auto minmax(0, 1fr);
+            }
+
+            .product-card .match-score {
+                grid-column: 3;
+                justify-self: start;
+                margin-top: 3px;
+            }
+
+            .input-meta {
+                flex-direction: column;
+                gap: 4px;
+            }
+        }
     </style>
 </head>
+
 <body>
-
-    <div class="container">
-        <!-- Input Section -->
-        <div id="inputSection">
-            <h1>Find My Perfect Device</h1>
-            <p>Describe what you need in plain English. We will match the Top 5 products for you.</p>
-            <textarea id="userInput" placeholder="e.g., I need a high-performance laptop for 3D modeling under $2000, no Apple..."></textarea>
-            <button id="submitBtn" class="primary-btn">Find My Device</button>
-            <div id="loader">🔄 Analyzing your request and fetching data...</div>
+    <div class="app-shell">
+        <div class="brand" aria-label="Smart Digital Product Recommendation">
+            <span class="brand-mark" aria-hidden="true">S</span>
+            <span>Smart Digital Product Recommendation</span>
         </div>
 
-        <!-- Leaderboard Section -->
-        <div id="leaderboardSection">
-            <div class="leaderboard-header">
-                <h2>🏆 Top 5 Recommendations</h2>
-                <button class="btn-back" onclick="location.reload()">← Start Over</button>
-            </div>
-            <div id="productList"></div>
-            <!-- US-05 Compare Button -->
-            <button id="compareBtn" class="primary-btn">⚖️ Compare Selected Specs</button>
-        </div>
+        <main class="panel">
+            <!-- Input -->
+            <section id="inputSection" aria-labelledby="inputTitle">
+                <h1 id="inputTitle" class="section-title">Find My Perfect Device</h1>
 
-        <!-- US-05 Compare Section -->
-        <div id="compareSection">
-            <div class="leaderboard-header">
-                <h2>⚖️ Spec Comparison</h2>
-                <button class="btn-back" onclick="backToLeaderboard()">← Back to Leaderboard</button>
-            </div>
-            <div id="compareTableContainer"></div>
-        </div>
+                <p class="section-description">
+                    Describe what you need in plain English. Your request will be sent to
+                    the recommendation service, which ranks the best matching products.
+                </p>
+
+                <form id="recommendationForm" novalidate>
+                    <label class="input-label" for="userInput">Your requirements</label>
+
+                    <textarea
+                        id="userInput"
+                        name="query"
+                        maxlength="1000"
+                        autocomplete="off"
+                        placeholder="e.g., I need a laptop under $1500, no Apple..."
+                        aria-describedby="inputHint characterCount"
+                    ></textarea>
+
+                    <div class="input-meta">
+                        <span id="inputHint">
+                            Include details such as budget and excluded brands.
+                        </span>
+                        <span id="characterCount">0 / 1000</span>
+                    </div>
+
+                    <button id="submitBtn" class="primary-btn" type="submit">
+                        Find My Device
+                    </button>
+                </form>
+
+                <div id="loader" class="status loading" role="status" aria-live="polite">
+                    <span class="spinner" aria-hidden="true"></span>
+                    Analyzing your request and retrieving recommendations...
+                </div>
+
+                <div id="errorBox" class="status error" role="alert" aria-live="assertive"></div>
+
+                <div id="emptyBox" class="status empty" role="status" aria-live="polite">
+                    No matching products were found. Try increasing your budget or changing
+                    your preferences.
+                </div>
+            </section>
+
+            <!-- Recommendations -->
+            <section id="leaderboardSection" aria-labelledby="leaderboardTitle">
+                <div class="section-header">
+                    <div>
+                        <h2 id="leaderboardTitle">🏆 Top Recommendations</h2>
+                        <p>Select 2–3 products to compare them side by side.</p>
+                    </div>
+
+                    <button id="startOverBtn" class="secondary-btn" type="button">
+                        ← Start Over
+                    </button>
+                </div>
+
+                <div id="querySummary" class="query-summary"></div>
+
+                <div id="productList" class="product-list" aria-live="polite"></div>
+
+                <button id="compareBtn" class="primary-btn" type="button">
+                    ⚖️ Compare Selected Products
+                </button>
+
+                <p class="compare-note">
+                    Comparison only displays specifications provided by the backend database.
+                </p>
+            </section>
+
+            <!-- Comparison -->
+            <section id="compareSection" aria-labelledby="compareTitle">
+                <div class="section-header">
+                    <div>
+                        <h2 id="compareTitle">⚖️ Product Comparison</h2>
+                        <p>Compare the selected recommendations using available product data.</p>
+                    </div>
+
+                    <button id="backToLeaderboardBtn" class="secondary-btn" type="button">
+                        ← Back to Recommendations
+                    </button>
+                </div>
+
+                <div id="compareTableContainer" class="table-wrap"></div>
+            </section>
+        </main>
+
+        <p class="footer-note">
+            CP3407 Project · Recommendation results depend on the connected backend data.
+        </p>
     </div>
 
     <script>
-        const inputSection = document.getElementById('inputSection');
-        const leaderboardSection = document.getElementById('leaderboardSection');
-        const compareSection = document.getElementById('compareSection');
-        const submitBtn = document.getElementById('submitBtn');
-        const compareBtn = document.getElementById('compareBtn');
-        const userInput = document.getElementById('userInput');
-        const loader = document.getElementById('loader');
-        const productList = document.getElementById('productList');
-        const compareTableContainer = document.getElementById('compareTableContainer');
+        "use strict";
 
-        const mockRecommendations = [
-            { id: 1, name: "ASUS Zenbook 14", specs: "Intel Core Ultra 9 · 32GB RAM · 1TB SSD", price: "$1400", match: "98%", reason: "Matches category: Laptops; within budget; high customer satisfaction." },
-            { id: 2, name: "MacBook Pro 14", specs: "M3 Pro chip · 18GB RAM · 512GB SSD", price: "$1999", match: "92%", reason: "Matches brand preference; premium build quality." },
-            { id: 3, name: "Dell XPS 14", specs: "Intel Core Ultra 7 · 16GB RAM · 512GB SSD", price: "$1699", match: "85%", reason: "Strong purchase frequency and positive intent." },
-            { id: 4, name: "Lenovo ThinkPad X1", specs: "Intel Core Ultra 7 · 32GB RAM · 1TB SSD", price: "$1850", match: "80%", reason: "General product match based on price ratio." },
-            { id: 5, name: "HP Spectre x360", specs: "Intel Core Ultra 7 · 16GB RAM · 1TB SSD", price: "$1550", match: "75%", reason: "Matches battery life requirements." }
-        ];
-
-        let selectedForCompare = [];
-
-        submitBtn.addEventListener('click', function() {
-            if (userInput.value.trim() === "") return alert("Please enter your requirements!");
-            
-            submitBtn.style.display = 'none';
-            loader.style.display = 'block';
-
-            setTimeout(() => {
-                renderLeaderboard(mockRecommendations);
-                inputSection.style.display = 'none';
-                loader.style.display = 'none';
-                leaderboardSection.style.display = 'block';
-            }, 1000);
+        /*
+         * GitHub Pages frontend:
+         * https://chu-junjie.github.io/CP3407-PROJECT/
+         *
+         * IMPORTANT:
+         * GitHub Pages hosts this static frontend only.
+         * Once the Flask backend is deployed, place its HTTPS base URL below.
+         *
+         * Example:
+         * productionApiBaseUrl: "https://your-backend.example.com"
+         *
+         * Do not add a trailing slash.
+         */
+        const APP_CONFIG = Object.freeze({
+            productionApiBaseUrl: "",
+            localApiBaseUrl: "http://127.0.0.1:5000",
+            requestTimeoutMs: 15000,
+            maximumRecommendations: 5,
+            maximumCompareItems: 3
         });
 
-        function renderLeaderboard(data) {
-            productList.innerHTML = ""; 
-            selectedForCompare = [];
-            compareBtn.style.display = 'none';
+        const recommendationForm = document.getElementById("recommendationForm");
+        const inputSection = document.getElementById("inputSection");
+        const leaderboardSection = document.getElementById("leaderboardSection");
+        const compareSection = document.getElementById("compareSection");
 
-            data.forEach((product, index) => {
-                let rankIcon = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `#${index + 1}`;
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                // US-04: Added reason rendering
-                // US-05: Added checkbox for comparison
-                card.innerHTML = `
-                    <input type="checkbox" class="compare-checkbox" value="${product.id}" onchange="handleCompareSelect(this)">
-                    <div class="rank-badge">${rankIcon}</div>
-                    <div class="product-info">
-                        <h3 class="product-name">${product.name}</h3>
-                        <p class="product-specs">${product.specs} | <b>${product.price}</b></p>
-                        <p class="product-reason">💡 ${product.reason}</p> 
-                    </div>
-                    <div class="match-score">${product.match} Match</div>
-                `;
+        const userInput = document.getElementById("userInput");
+        const characterCount = document.getElementById("characterCount");
+        const submitBtn = document.getElementById("submitBtn");
+        const compareBtn = document.getElementById("compareBtn");
+        const startOverBtn = document.getElementById("startOverBtn");
+        const backToLeaderboardBtn = document.getElementById("backToLeaderboardBtn");
+
+        const loader = document.getElementById("loader");
+        const errorBox = document.getElementById("errorBox");
+        const emptyBox = document.getElementById("emptyBox");
+
+        const querySummary = document.getElementById("querySummary");
+        const productList = document.getElementById("productList");
+        const compareTableContainer = document.getElementById("compareTableContainer");
+
+        let currentRecommendations = [];
+        let selectedForCompare = [];
+
+        function isLocalDevelopment() {
+            return (
+                window.location.hostname === "localhost" ||
+                window.location.hostname === "127.0.0.1" ||
+                window.location.protocol === "file:"
+            );
+        }
+
+        function getApiBaseUrl() {
+            if (isLocalDevelopment()) {
+                return APP_CONFIG.localApiBaseUrl;
+            }
+
+            if (!APP_CONFIG.productionApiBaseUrl) {
+                throw new Error(
+                    "The production recommendation API has not been configured yet."
+                );
+            }
+
+            return APP_CONFIG.productionApiBaseUrl.replace(/\/+$/, "");
+        }
+
+        async function fetchRecommendations(query) {
+            const controller = new AbortController();
+            const timeoutId = window.setTimeout(
+                () => controller.abort(),
+                APP_CONFIG.requestTimeoutMs
+            );
+
+            try {
+                const apiBaseUrl = getApiBaseUrl();
+
+                const response = await fetch(`${apiBaseUrl}/api/recommend`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({ query }),
+                    signal: controller.signal
+                });
+
+                let payload;
+
+                try {
+                    payload = await response.json();
+                } catch {
+                    throw new Error("The recommendation service returned invalid JSON.");
+                }
+
+                if (!response.ok) {
+                    throw new Error(
+                        payload?.message ||
+                        payload?.error ||
+                        `Recommendation request failed (${response.status}).`
+                    );
+                }
+
+                if (payload?.status && payload.status !== "success") {
+                    throw new Error(
+                        payload?.message ||
+                        payload?.error ||
+                        "The recommendation request was not successful."
+                    );
+                }
+
+                const data =
+                    Array.isArray(payload?.data) ? payload.data :
+                    Array.isArray(payload?.recommendations) ? payload.recommendations :
+                    Array.isArray(payload) ? payload :
+                    [];
+
+                return {
+                    data,
+                    filters: payload?.filters ?? {}
+                };
+
+            } catch (error) {
+                if (error instanceof DOMException && error.name === "AbortError") {
+                    throw new Error("The recommendation service took too long to respond.");
+                }
+
+                throw error;
+
+            } finally {
+                window.clearTimeout(timeoutId);
+            }
+        }
+
+        function normalizeProduct(product, index) {
+            return {
+                id: String(
+                    product?.product_id ??
+                    product?.id ??
+                    product?.ProductID ??
+                    `product-${index + 1}`
+                ),
+
+                name:
+                    product?.product_name ??
+                    product?.name ??
+                    product?.ProductName ??
+                    `Product ${index + 1}`,
+
+                brand:
+                    product?.brand ??
+                    product?.product_brand ??
+                    product?.ProductBrand ??
+                    "Unknown brand",
+
+                category:
+                    product?.category ??
+                    product?.product_category ??
+                    product?.ProductCategory ??
+                    "Unknown category",
+
+                price: normalizeNumber(
+                    product?.price ??
+                    product?.product_price ??
+                    product?.ProductPrice
+                ),
+
+                matchScore: normalizeScore(
+                    product?.match_score ??
+                    product?.matchScore ??
+                    product?.score ??
+                    product?.match
+                ),
+
+                reason:
+                    product?.reason ??
+                    product?.recommendation_reason ??
+                    product?.explanation ??
+                    "General product match.",
+
+                cpu: product?.cpu ?? product?.specs?.cpu ?? null,
+                gpu: product?.gpu ?? product?.specs?.gpu ?? null,
+                ram: product?.ram ?? product?.ram_gb ?? product?.specs?.ram ?? null,
+                storage:
+                    product?.storage ??
+                    product?.storage_gb ??
+                    product?.specs?.storage ??
+                    null,
+                screen:
+                    product?.screen ??
+                    product?.screen_size ??
+                    product?.specs?.screen ??
+                    null,
+                battery:
+                    product?.battery ??
+                    product?.battery_life ??
+                    product?.specs?.battery ??
+                    null,
+                weight:
+                    product?.weight ??
+                    product?.weight_kg ??
+                    product?.specs?.weight ??
+                    null,
+                purchaseUrl:
+                    product?.purchase_url ??
+                    product?.url ??
+                    null
+            };
+        }
+
+        function normalizeNumber(value) {
+            if (typeof value === "number" && Number.isFinite(value)) {
+                return value;
+            }
+
+            if (typeof value === "string") {
+                const parsed = Number(value.replace(/[^0-9.-]/g, ""));
+                return Number.isFinite(parsed) ? parsed : null;
+            }
+
+            return null;
+        }
+
+        function normalizeScore(value) {
+            if (value === null || value === undefined || value === "") {
+                return null;
+            }
+
+            const parsed = typeof value === "number"
+                ? value
+                : Number(String(value).replace("%", "").trim());
+
+            if (!Number.isFinite(parsed)) {
+                return null;
+            }
+
+            const percentage = parsed >= 0 && parsed <= 1
+                ? parsed * 100
+                : parsed;
+
+            return Math.max(0, Math.min(100, percentage));
+        }
+
+        function formatPrice(price) {
+            if (typeof price !== "number" || !Number.isFinite(price)) {
+                return "Price unavailable";
+            }
+
+            return new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+                maximumFractionDigits: 2
+            }).format(price);
+        }
+
+        function formatScore(score) {
+            return typeof score === "number" && Number.isFinite(score)
+                ? `${Math.round(score)}%`
+                : "N/A";
+        }
+
+        function appendUnit(value, unit) {
+            if (value === null || value === undefined || value === "") {
+                return null;
+            }
+
+            const text = String(value).trim();
+
+            return /[a-zA-Z]/.test(text)
+                ? text
+                : `${text}${unit}`;
+        }
+
+        function buildSpecSummary(product) {
+            const specs = [];
+
+            if (product.cpu) specs.push(`CPU: ${product.cpu}`);
+            if (product.gpu) specs.push(`GPU: ${product.gpu}`);
+
+            const ram = appendUnit(product.ram, "GB");
+            if (ram) specs.push(`RAM: ${ram}`);
+
+            const storage = appendUnit(product.storage, "GB");
+            if (storage) specs.push(`Storage: ${storage}`);
+
+            if (product.screen) specs.push(`Screen: ${product.screen}`);
+            if (product.battery) specs.push(`Battery: ${product.battery}`);
+            if (product.weight) specs.push(`Weight: ${product.weight}`);
+
+            return specs.join(" · ");
+        }
+
+        function clearStatus() {
+            loader.style.display = "none";
+            errorBox.style.display = "none";
+            emptyBox.style.display = "none";
+            errorBox.textContent = "";
+        }
+
+        function setLoading(isLoading) {
+            submitBtn.disabled = isLoading;
+            submitBtn.textContent = isLoading
+                ? "Finding Devices..."
+                : "Find My Device";
+            loader.style.display = isLoading ? "block" : "none";
+        }
+
+        function showError(message) {
+            errorBox.textContent = message;
+            errorBox.style.display = "block";
+        }
+
+        function renderQuerySummary(query, filters) {
+            querySummary.textContent = "";
+
+            const queryLine = document.createElement("div");
+            const queryLabel = document.createElement("strong");
+            queryLabel.textContent = "Your request: ";
+            queryLine.append(queryLabel, document.createTextNode(query));
+            querySummary.appendChild(queryLine);
+
+            const details = [];
+
+            const budget =
+                filters?.budget ??
+                filters?.max_budget ??
+                filters?.maxBudget;
+
+            if (budget !== undefined && budget !== null) {
+                const numericBudget = normalizeNumber(budget);
+                details.push(
+                    numericBudget === null
+                        ? `Budget: ${budget}`
+                        : `Budget: ${formatPrice(numericBudget)}`
+                );
+            }
+
+            const exclusions =
+                filters?.exclusions ??
+                filters?.excluded_brands ??
+                filters?.excludedBrands;
+
+            if (Array.isArray(exclusions) && exclusions.length > 0) {
+                details.push(`Excluded brands: ${exclusions.join(", ")}`);
+            }
+
+            if (details.length > 0) {
+                const detailLine = document.createElement("div");
+                detailLine.textContent = details.join(" · ");
+                querySummary.appendChild(detailLine);
+            }
+        }
+
+        function renderLeaderboard(products) {
+            productList.replaceChildren();
+            selectedForCompare = [];
+            compareBtn.style.display = "none";
+
+            products.forEach((product, index) => {
+                const card = document.createElement("article");
+                card.className = "product-card";
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.className = "compare-checkbox";
+                checkbox.value = product.id;
+                checkbox.setAttribute(
+                    "aria-label",
+                    `Select ${product.name} for comparison`
+                );
+
+                checkbox.addEventListener("change", () => {
+                    handleCompareSelection(checkbox, card);
+                });
+
+                const rank = document.createElement("div");
+                rank.className = "rank";
+                rank.textContent =
+                    index === 0 ? "🥇" :
+                    index === 1 ? "🥈" :
+                    index === 2 ? "🥉" :
+                    `#${index + 1}`;
+
+                const info = document.createElement("div");
+                info.className = "product-info";
+
+                const name = document.createElement("h3");
+                name.className = "product-name";
+                name.textContent = product.name;
+
+                const meta = document.createElement("p");
+                meta.className = "product-meta";
+                meta.textContent =
+                    `${product.brand} · ${product.category} · ${formatPrice(product.price)}`;
+
+                const specText = buildSpecSummary(product);
+                const specs = document.createElement("p");
+                specs.className = "product-specs";
+                specs.textContent = specText ||
+                    "Detailed specifications are not available in the current dataset.";
+
+                const reason = document.createElement("p");
+                reason.className = "product-reason";
+                reason.textContent = `💡 ${product.reason}`;
+
+                info.append(name, meta, specs, reason);
+
+                const score = document.createElement("div");
+                score.className = "match-score";
+                score.textContent = `${formatScore(product.matchScore)} Match`;
+
+                card.append(checkbox, rank, info, score);
                 productList.appendChild(card);
             });
         }
 
-        function handleCompareSelect(checkbox) {
+        function handleCompareSelection(checkbox, card) {
+            const id = checkbox.value;
+
             if (checkbox.checked) {
-                if (selectedForCompare.length >= 3) {
-                    alert("You can only compare up to 3 products!");
+                if (selectedForCompare.length >= APP_CONFIG.maximumCompareItems) {
                     checkbox.checked = false;
+                    alert(
+                        `You can compare up to ${APP_CONFIG.maximumCompareItems} products at a time.`
+                    );
                     return;
                 }
-                selectedForCompare.push(checkbox.value);
+
+                if (!selectedForCompare.includes(id)) {
+                    selectedForCompare.push(id);
+                }
+
+                card.classList.add("selected");
+
             } else {
-                selectedForCompare = selectedForCompare.filter(id => id !== checkbox.value);
+                selectedForCompare =
+                    selectedForCompare.filter(productId => productId !== id);
+
+                card.classList.remove("selected");
             }
-            compareBtn.style.display = selectedForCompare.length > 1 ? 'block' : 'none';
+
+            compareBtn.style.display =
+                selectedForCompare.length >= 2 ? "block" : "none";
         }
 
-        compareBtn.addEventListener('click', function() {
-            leaderboardSection.style.display = 'none';
-            compareSection.style.display = 'block';
-            
-            const items = mockRecommendations.filter(p => selectedForCompare.includes(p.id.toString()));
-            
-            let tableHTML = `<table><tr><th>Feature</th>`;
-            items.forEach(p => tableHTML += `<th>${p.name}</th>`);
-            tableHTML += `</tr><tr><td><b>Price</b></td>`;
-            items.forEach(p => tableHTML += `<td>${p.price}</td>`);
-            tableHTML += `</tr><tr><td><b>Core Specs</b></td>`;
-            items.forEach(p => tableHTML += `<td>${p.specs.split(' · ').join('<br>')}</td>`);
-            tableHTML += `</tr><tr><td><b>Match Score</b></td>`;
-            items.forEach(p => tableHTML += `<td><span class="match-score">${p.match}</span></td>`);
-            tableHTML += `</tr></table>`;
-            
-            compareTableContainer.innerHTML = tableHTML;
+        function renderComparison(items) {
+            const alwaysVisibleRows = [
+                ["Brand", product => product.brand],
+                ["Category", product => product.category],
+                ["Price", product => formatPrice(product.price)],
+                ["Match Score", product => formatScore(product.matchScore)]
+            ];
+
+            const optionalRows = [
+                ["CPU", product => product.cpu],
+                ["GPU", product => product.gpu],
+                ["RAM", product => appendUnit(product.ram, "GB")],
+                ["Storage", product => appendUnit(product.storage, "GB")],
+                ["Screen", product => product.screen],
+                ["Battery", product => product.battery],
+                ["Weight", product => product.weight]
+            ];
+
+            const rows = [...alwaysVisibleRows];
+
+            optionalRows.forEach(([label, getter]) => {
+                const hasValue = items.some(product => {
+                    const value = getter(product);
+                    return value !== null && value !== undefined && value !== "";
+                });
+
+                if (hasValue) {
+                    rows.push([label, getter]);
+                }
+            });
+
+            const table = document.createElement("table");
+
+            const headerRow = document.createElement("tr");
+            const featureHeader = document.createElement("th");
+            featureHeader.scope = "col";
+            featureHeader.textContent = "Feature";
+            headerRow.appendChild(featureHeader);
+
+            items.forEach(product => {
+                const heading = document.createElement("th");
+                heading.scope = "col";
+                heading.textContent = product.name;
+                headerRow.appendChild(heading);
+            });
+
+            table.appendChild(headerRow);
+
+            rows.forEach(([label, getter]) => {
+                const row = document.createElement("tr");
+
+                const labelCell = document.createElement("td");
+                labelCell.textContent = label;
+                row.appendChild(labelCell);
+
+                items.forEach(product => {
+                    const value = getter(product);
+                    const cell = document.createElement("td");
+
+                    cell.textContent =
+                        value === null || value === undefined || value === ""
+                            ? "N/A"
+                            : String(value);
+
+                    row.appendChild(cell);
+                });
+
+                table.appendChild(row);
+            });
+
+            compareTableContainer.replaceChildren(table);
+        }
+
+        recommendationForm.addEventListener("submit", async event => {
+            event.preventDefault();
+
+            const query = userInput.value.trim();
+
+            clearStatus();
+
+            if (!query) {
+                showError("Please enter your requirements before searching.");
+                userInput.focus();
+                return;
+            }
+
+            setLoading(true);
+
+            try {
+                const { data, filters } = await fetchRecommendations(query);
+
+                const normalized = data
+                    .map(normalizeProduct)
+                    .slice(0, APP_CONFIG.maximumRecommendations);
+
+                if (normalized.length === 0) {
+                    currentRecommendations = [];
+                    emptyBox.style.display = "block";
+                    return;
+                }
+
+                currentRecommendations = normalized;
+
+                renderLeaderboard(currentRecommendations);
+                renderQuerySummary(query, filters);
+
+                inputSection.style.display = "none";
+                compareSection.style.display = "none";
+                leaderboardSection.style.display = "block";
+
+                leaderboardSection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+            } catch (error) {
+                console.error("Recommendation request failed:", error);
+
+                showError(
+                    error instanceof Error
+                        ? error.message
+                        : "Unable to retrieve recommendations. Please try again."
+                );
+
+            } finally {
+                setLoading(false);
+            }
         });
 
-        function backToLeaderboard() {
-            compareSection.style.display = 'none';
-            leaderboardSection.style.display = 'block';
-        }
+        userInput.addEventListener("input", () => {
+            characterCount.textContent =
+                `${userInput.value.length} / ${userInput.maxLength}`;
+        });
+
+        userInput.addEventListener("keydown", event => {
+            if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+                recommendationForm.requestSubmit();
+            }
+        });
+
+        compareBtn.addEventListener("click", () => {
+            const selectedProducts = currentRecommendations.filter(product =>
+                selectedForCompare.includes(product.id)
+            );
+
+            if (selectedProducts.length < 2) {
+                return;
+            }
+
+            renderComparison(selectedProducts);
+
+            leaderboardSection.style.display = "none";
+            compareSection.style.display = "block";
+
+            compareSection.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        });
+
+        backToLeaderboardBtn.addEventListener("click", () => {
+            compareSection.style.display = "none";
+            leaderboardSection.style.display = "block";
+        });
+
+        startOverBtn.addEventListener("click", () => {
+            leaderboardSection.style.display = "none";
+            compareSection.style.display = "none";
+            inputSection.style.display = "block";
+
+            productList.replaceChildren();
+            compareTableContainer.replaceChildren();
+            querySummary.replaceChildren();
+
+            currentRecommendations = [];
+            selectedForCompare = [];
+
+            compareBtn.style.display = "none";
+            clearStatus();
+
+            userInput.focus();
+        });
     </script>
 </body>
 </html>
