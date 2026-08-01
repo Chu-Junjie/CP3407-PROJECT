@@ -2,6 +2,24 @@
 
 This is a live matrix. `Candidate` means code was supplied but is not verified until merged and tested.
 
+## Task 1 foundation evidence
+
+| Evidence item | Record |
+|---|---|
+| Coordinator | Chu Junjie |
+| Documentation branch | `docs/project-foundation-yuyang-unified` |
+| Source branch | `main` |
+| Source commit | `c1ac237` |
+| Adoption decision | `docs/yuyang-pack-integration-decision.md` |
+| Frozen contracts | `docs/frozen-decisions.md` |
+| Definition of Done | `docs/definition-of-done.md` |
+| Team ownership | `docs/team-task-allocation.md` |
+| Current project status | `docs/project-status.md` |
+| Candidate test result | `Not executed` |
+| Pull Request | `Not opened` |
+| Non-author review | `Not started` |
+| Current Task 1 status | `In Progress` |
+
 | US | Requirement | Implementation / target | Tests / evidence | Owner | Current status |
 |---|---|---|---|---|---|
 | US-01 | Natural-language requirement extraction | Yuyang server candidate: category, brand, budget, exclusions, use cases | parser, validation and invalid input tests | Zaikun | Candidate / needs validation fixes |

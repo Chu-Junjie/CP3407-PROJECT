@@ -57,6 +57,7 @@ Owns:
 
 | Branch | Owner | Purpose | Reviewer |
 |---|---|---|---|
+| `docs/project-foundation-yuyang-unified` | Junjie | Task 1 adoption decision, contracts, traceability, DoD, project status and risk records | Guanyu + Zaikun |
 | `feature/database-us05-specs` | Yuyang | Integrate product_specs, compare baseline, feedback schema | Zaikun |
 | `feature/final-backend` | Zaikun | Final recommend/compare/feedback/US-09/test compatibility | Guanyu + Yuyang |
 | `feature/final-frontend` | Guanyu | Real API, US-05 and US-07–10 UI | Zaikun |

@@ -3,6 +3,22 @@
 **Evidence date:** 1 August 2026  
 **Purpose:** Shared factual baseline for the team and AI assistants
 
+## Task 1 governance status
+
+| Item | Current status |
+|---|---|
+| Document owner | Chu Junjie |
+| Working branch | `docs/project-foundation-yuyang-unified` |
+| Source branch | `main` |
+| Source commit | `c1ac237` |
+| Yuyang baseline | `Candidate` |
+| Automated tests for the candidate | `Not executed` |
+| Non-author review | `Not started` |
+| Pull Request | `Not opened` |
+| Merge to main | `Not completed` |
+
+The documentation branch records the adopted direction only. It does not prove that the Yuyang candidate implementation works or that its tests pass.
+
 ## Current repository before Yuyang integration
 
 The original source snapshot contains Flask, SQLite, a 9,000-row `products` table, a Streamlit prototype, a static HTML page with mock recommendations, and existing pytest/mock tests.
@@ -70,6 +86,17 @@ The updated backend candidate adds:
 6. Feedback and budget alternative are not implemented in the candidate.
 7. Final HTML still needs real API and comparison integration.
 8. Test execution has not been verified in the current packaging environment because Flask is unavailable there.
+
+## Task 1 risk register
+
+| ID | Risk | Impact | Responsible technical owner | Tracking owner | Status |
+|---|---|---|---|---|---|
+| R-01 | Old documents or prompts still describe `brand_links` as part of the final design | Database, API and frontend may follow conflicting contracts | Relevant document owner | Junjie | Open |
+| R-02 | The supplied candidate modifies `server.py` before backend ownership is formally transferred | Conflicting backend changes and difficult merge review | Yuyang and Zaikun | Junjie | Open |
+| R-03 | Existing tests and mocks are incompatible with the two-table setup | Tests may fail to collect or may report misleading results | Yuyang and Zaikun | Junjie | Open |
+| R-04 | The 9,000 behavioural records may be incorrectly described as 9,000 fully specified products | Misleading technical documentation and demonstration claims | All members | Junjie | Open |
+| R-05 | The static HTML mock may be mistaken for completed frontend integration | User Stories may be marked Done without real API evidence | Guanyu | Junjie | Open |
+| R-06 | Candidate or unexecuted work may be reported as Passed, Verified or Done | Invalid project evidence and unreliable traceability | All members | Junjie | Open |
 
 ## Verification rule
 

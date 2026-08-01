@@ -1,6 +1,11 @@
 # Frozen Decisions for Final Integration — Yuyang Unified Baseline
 
 **Freeze date:** 1 August 2026
+**Document owner:** Chu Junjie  
+**Working branch:** `docs/project-foundation-yuyang-unified`  
+**Source commit:** `c1ac237`  
+**Decision status:** `Candidate for review`  
+**Change control:** Any change to the frozen database, API, ownership, or scope decisions must be recorded in a reviewed Pull Request.
 
 ## Architecture
 

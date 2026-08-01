@@ -1,5 +1,20 @@
 # Yuyang Database / US-05 Pack Integration Decision
 
+## Document control
+
+- Decision owner: Chu Junjie
+- Task: Task 1 — Adopt and freeze the Yuyang database / US-05 baseline
+- Evidence date: 1 August 2026
+- Working branch: `docs/project-foundation-yuyang-unified`
+- Source branch: `main`
+- Source commit: `c1ac237`
+- Baseline status: `Candidate`
+- Test status: `Not executed`
+- Pull Request status: `Not opened`
+- Required reviewers: Guanyu and Zaikun
+
+`Candidate` means the supplied baseline has been selected as the integration direction, but it has not yet been merged, independently reviewed, fully tested, or verified.
+
 ## Decision
 
 The team will use `yuyang_database_us05_update_v2.zip` as the database and US-05 comparison baseline.

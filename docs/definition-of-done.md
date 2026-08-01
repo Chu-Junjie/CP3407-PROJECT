@@ -7,6 +7,22 @@
 
 This Definition of Done prevents a task from being marked complete merely because code was written. It aligns implementation with testing, integration, documentation, version control, deployment, and acceptance evidence.
 
+## Task 1 application note
+
+The Yuyang database / US-05 baseline is currently `Candidate`, not `Done`.
+
+For the Task 1 foundation work to be marked Done:
+
+- the adoption decision and frozen contracts must be committed on `docs/project-foundation-yuyang-unified`;
+- the branch must be pushed to GitHub;
+- the Pull Request must identify the 9,000/33 data limitation, removal of `brand_links`, `/api/compare` rules, `server.py` ownership transition and old-test compatibility risks;
+- at least one non-author teammate must review the Pull Request;
+- review comments must be resolved;
+- the Pull Request must be merged into `main`;
+- Project Board and Requirements Traceability statuses must match the real evidence.
+
+Copying candidate files into a branch is not sufficient evidence that implementation or tests are complete.
+
 ## 2. User Story Definition of Done
 
 A User Story may be moved to **Done** only when every applicable item below is complete.
