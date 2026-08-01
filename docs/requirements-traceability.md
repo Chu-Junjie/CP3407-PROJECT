@@ -4,23 +4,26 @@ This is a live matrix. `Candidate` means code was supplied but is not verified u
 
 ## Task 1 foundation evidence
 
-| Evidence item | Record |
+| Evidence item | Final record |
 |---|---|
 | Coordinator | Chu Junjie |
-| Documentation branch | `docs/project-foundation-yuyang-unified` |
+| Tracking Issue | `#16` — Closed |
+| Foundation Pull Request | `#17` — Merged |
+| Foundation branch | `docs/project-foundation` |
+| Closeout branch | `docs/task1-closeout` |
 | Source branch | `main` |
-| Source commit | `c1ac237` |
-| Adoption decision | `docs/yuyang-pack-integration-decision.md` |
-| Frozen contracts | `docs/frozen-decisions.md` |
+| Baseline decision | `docs/project-baseline-decision.md` |
 | Definition of Done | `docs/definition-of-done.md` |
 | Team ownership | `docs/team-task-allocation.md` |
-| Current project status | `docs/project-status.md` |
-| Tracking Issue | `#16` — Open |
-| Project Board status | `In Progress` |
-| Candidate test result | `Not executed` |
-| Non-author review | `Requested` |
-| Pull Request | `#17` — Open |
-| Current Task 1 status | `In Progress` |
+| Project status | `docs/project-status.md` |
+| Closeout record | `docs/task1-closeout.md` |
+| Non-author reviewer | `@Chu Junjie` |
+| Review result | `Approved` |
+| Merge commit | `ae9366d` |
+| Project Board status | `Done` |
+| Project baseline status | `Merged` |
+| Implementation tests | `Not executed as part of Task 1` |
+| Task 1 status | `Completed` |
 
 | US | Requirement | Implementation / target | Tests / evidence | Owner | Current status |
 |---|---|---|---|---|---|

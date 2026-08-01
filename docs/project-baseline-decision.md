@@ -3,18 +3,16 @@
 ## Document control
 
 - Decision owner: Chu Junjie
-- Task: Task 1 — Adopt and freeze the Yuyang database / US-05 baseline
-- Evidence date: 1 August 2026
-- Working branch: `docs/project-foundation-yuyang-unified`
-- Source branch: `main`
-- Source commit: `c1ac237`
-- Baseline status: `Candidate`
-- Tracking Issue: `#16` — Open 
-- Project Board status:  `In Progress` 
-- Test status: `Not executed`
-- Non-author review  `Requested` 
-- Pull Request  `#17` — Open 
-- Required reviewers: Guanyu and Zaikun
+- Task: Task 1 — Establish and freeze the project foundation
+- Foundation branch: `docs/project-foundation`
+- Tracking Issue: `#16`
+- Foundation Pull Request: `#17`
+- Non-author reviewer: `@Chu Junjie`
+- Review result: `Approved`
+- Merge commit: `ae9366d`
+- Project Board status: `Done`
+- Project baseline status: `Merged`
+- Implementation verification status: `Not verified in Task 1`
 
 `Candidate` means the supplied baseline has been selected as the integration direction, but it has not yet been merged, independently reviewed, fully tested, or verified.
 
