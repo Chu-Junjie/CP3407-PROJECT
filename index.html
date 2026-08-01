@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta
         name="description"
-        content="Smart Digital Product Recommendation System — personalised product recommendations based on your requirements."
+        content="Smart Digital Product Recommendation System — personalised product recommendations based on a Flask recommendation API."
     >
     <meta name="theme-color" content="#0f62fe">
     <title>Smart Digital Product Recommendation</title>
@@ -26,6 +26,8 @@
             --danger-soft: #fff1f0;
             --warning: #8a6116;
             --warning-soft: #fff8e8;
+            --info-soft: #eef5ff;
+            --info: #174ea6;
             --shadow: 0 18px 50px rgba(31, 41, 55, 0.08);
             --radius-lg: 18px;
             --radius-md: 12px;
@@ -57,12 +59,13 @@
             font: inherit;
         }
 
-        button {
+        button,
+        a {
             -webkit-tap-highlight-color: transparent;
         }
 
         .app-shell {
-            width: min(100%, 820px);
+            width: min(100%, 920px);
             margin: 0 auto;
         }
 
@@ -103,7 +106,7 @@
         }
 
         .section-description {
-            max-width: 680px;
+            max-width: 720px;
             margin: 12px 0 28px;
             color: var(--muted);
             font-size: 15px;
@@ -147,31 +150,53 @@
             font-size: 12px;
         }
 
+        .primary-btn,
+        .success-btn,
+        .neutral-btn,
+        .danger-btn,
+        .link-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            min-height: 40px;
+            padding: 11px 16px;
+            border-radius: 10px;
+            border: 0;
+            font-weight: 750;
+            line-height: 1.2;
+            cursor: pointer;
+            text-decoration: none;
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease,
+                transform 0.15s ease,
+                opacity 0.2s ease;
+        }
+
         .primary-btn {
             width: 100%;
             margin-top: 22px;
-            padding: 14px 20px;
-            border: 0;
-            border-radius: 10px;
             background: var(--primary);
             color: #fff;
-            font-weight: 750;
-            cursor: pointer;
-            transition:
-                background 0.2s ease,
-                transform 0.15s ease,
-                opacity 0.2s ease;
         }
 
         .primary-btn:hover:not(:disabled) {
             background: var(--primary-hover);
         }
 
-        .primary-btn:active:not(:disabled) {
+        .primary-btn:active:not(:disabled),
+        .success-btn:active:not(:disabled),
+        .neutral-btn:active:not(:disabled),
+        .danger-btn:active:not(:disabled),
+        .link-btn:active {
             transform: translateY(1px);
         }
 
-        .primary-btn:disabled {
+        .primary-btn:disabled,
+        .success-btn:disabled,
+        .neutral-btn:disabled,
+        .danger-btn:disabled {
             opacity: 0.58;
             cursor: not-allowed;
         }
@@ -189,6 +214,40 @@
             text-decoration: underline;
         }
 
+        .success-btn {
+            background: var(--success);
+            color: white;
+        }
+
+        .success-btn:hover:not(:disabled) {
+            background: #116b31;
+        }
+
+        .neutral-btn {
+            background: #ffffff;
+            color: #344054;
+            border: 1px solid var(--border);
+        }
+
+        .neutral-btn:hover:not(:disabled),
+        .link-btn:hover {
+            border-color: #bfd0ff;
+            background: #f6f9ff;
+        }
+
+        .danger-btn {
+            background: var(--danger-soft);
+            color: var(--danger);
+            border: 1px solid #fecdca;
+        }
+
+        .link-btn {
+            color: var(--primary);
+            background: #f6f9ff;
+            border: 1px solid #dce6ff;
+            font-size: 13px;
+        }
+
         .status {
             display: none;
             margin-top: 16px;
@@ -199,8 +258,8 @@
         }
 
         .status.loading {
-            background: #eef5ff;
-            color: #174ea6;
+            background: var(--info-soft);
+            color: var(--info);
         }
 
         .status.error {
@@ -213,6 +272,12 @@
             background: var(--warning-soft);
             color: var(--warning);
             border: 1px solid #f6d98a;
+        }
+
+        .status.success {
+            background: var(--success-soft);
+            color: var(--success);
+            border: 1px solid #bde8ca;
         }
 
         .spinner {
@@ -258,19 +323,55 @@
             font-size: 13px;
         }
 
-        .query-summary {
+        .query-summary,
+        .budget-card,
+        .feedback-panel {
             margin-bottom: 20px;
             padding: 13px 15px;
-            border: 1px solid #dce6ff;
             border-radius: 10px;
-            background: #f6f9ff;
             color: #475467;
             font-size: 13px;
             line-height: 1.55;
         }
 
-        .query-summary strong {
+        .query-summary {
+            border: 1px solid #dce6ff;
+            background: #f6f9ff;
+        }
+
+        .query-summary strong,
+        .budget-card strong,
+        .feedback-panel strong {
             color: #344054;
+        }
+
+        .budget-card {
+            display: none;
+            border: 1px solid #f6d98a;
+            background: var(--warning-soft);
+        }
+
+        .feedback-panel {
+            border: 1px solid var(--border);
+            background: var(--surface-soft);
+        }
+
+        .feedback-actions,
+        .utility-actions,
+        .product-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .feedback-actions {
+            margin-top: 10px;
+        }
+
+        .utility-actions {
+            justify-content: space-between;
+            margin: 18px 0 0;
         }
 
         .product-list {
@@ -330,7 +431,8 @@
 
         .product-meta,
         .product-specs,
-        .product-reason {
+        .product-reason,
+        .small-note {
             margin: 4px 0 0;
             color: var(--muted);
             font-size: 13px;
@@ -340,6 +442,10 @@
         .product-reason {
             color: #6b7280;
             font-style: italic;
+        }
+
+        .product-actions {
+            margin-top: 10px;
         }
 
         .match-score {
@@ -355,11 +461,8 @@
 
         #compareBtn {
             display: none;
-            background: var(--success);
-        }
-
-        #compareBtn:hover:not(:disabled) {
-            background: #116b31;
+            width: auto;
+            margin: 0;
         }
 
         .compare-note {
@@ -377,7 +480,7 @@
 
         table {
             width: 100%;
-            min-width: 580px;
+            min-width: 620px;
             border-collapse: collapse;
             margin-top: 4px;
         }
@@ -409,7 +512,19 @@
             text-align: center;
         }
 
-        @media (max-width: 680px) {
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        @media (max-width: 760px) {
             body {
                 padding: 18px 10px;
             }
@@ -433,9 +548,16 @@
                 margin-top: 3px;
             }
 
-            .input-meta {
+            .input-meta,
+            .utility-actions {
                 flex-direction: column;
-                gap: 4px;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            #compareBtn,
+            .utility-actions .neutral-btn {
+                width: 100%;
             }
         }
     </style>
@@ -449,13 +571,13 @@
         </div>
 
         <main class="panel">
-            <!-- Input -->
             <section id="inputSection" aria-labelledby="inputTitle">
                 <h1 id="inputTitle" class="section-title">Find My Perfect Device</h1>
 
                 <p class="section-description">
-                    Describe what you need in plain English. Your request will be sent to
-                    the recommendation service, which ranks the best matching products.
+                    Describe what you need in plain English. The page sends your request to the
+                    Flask recommendation API and renders products returned from the SQLite-backed
+                    recommendation service.
                 </p>
 
                 <form id="recommendationForm" novalidate>
@@ -466,13 +588,13 @@
                         name="query"
                         maxlength="1000"
                         autocomplete="off"
-                        placeholder="e.g., I need a laptop under $1500, no Apple..."
+                        placeholder="e.g., I need a gaming laptop under $1500, no Apple..."
                         aria-describedby="inputHint characterCount"
                     ></textarea>
 
                     <div class="input-meta">
                         <span id="inputHint">
-                            Include details such as budget and excluded brands.
+                            Include budget, product type, preferred use and excluded brands.
                         </span>
                         <span id="characterCount">0 / 1000</span>
                     </div>
@@ -495,12 +617,11 @@
                 </div>
             </section>
 
-            <!-- Recommendations -->
             <section id="leaderboardSection" aria-labelledby="leaderboardTitle">
                 <div class="section-header">
                     <div>
                         <h2 id="leaderboardTitle">🏆 Top Recommendations</h2>
-                        <p>Select 2–3 products to compare them side by side.</p>
+                        <p>Select exactly 2 or 3 products to compare their available specifications.</p>
                     </div>
 
                     <button id="startOverBtn" class="secondary-btn" type="button">
@@ -509,24 +630,43 @@
                 </div>
 
                 <div id="querySummary" class="query-summary"></div>
-
+                <div id="budgetAlternative" class="budget-card"></div>
                 <div id="productList" class="product-list" aria-live="polite"></div>
 
-                <button id="compareBtn" class="primary-btn" type="button">
-                    ⚖️ Compare Selected Products
-                </button>
+                <div class="utility-actions" aria-label="Recommendation actions">
+                    <button id="compareBtn" class="success-btn" type="button">
+                        ⚖️ Compare Selected Products
+                    </button>
+                    <button id="shareBtn" class="neutral-btn" type="button">
+                        🔗 Share Results
+                    </button>
+                </div>
+
+                <div id="compareStatus" class="status error" role="alert" aria-live="assertive"></div>
+                <div id="shareStatus" class="status success" role="status" aria-live="polite"></div>
 
                 <p class="compare-note">
-                    Comparison only displays specifications provided by the backend database.
+                    Comparison calls the backend /api/compare endpoint and only displays specifications returned by the database.
                 </p>
+
+                <div class="feedback-panel" aria-labelledby="feedbackTitle">
+                    <strong id="feedbackTitle">Was this recommendation helpful?</strong>
+                    <p class="small-note">
+                        Your vote is sent to the Flask /api/feedback endpoint and stored in SQLite when available.
+                    </p>
+                    <div class="feedback-actions">
+                        <button id="helpfulBtn" class="success-btn" type="button">👍 Helpful</button>
+                        <button id="notHelpfulBtn" class="danger-btn" type="button">👎 Not Helpful</button>
+                    </div>
+                    <div id="feedbackStatus" class="status success" role="status" aria-live="polite"></div>
+                </div>
             </section>
 
-            <!-- Comparison -->
             <section id="compareSection" aria-labelledby="compareTitle">
                 <div class="section-header">
                     <div>
                         <h2 id="compareTitle">⚖️ Product Comparison</h2>
-                        <p>Compare the selected recommendations using available product data.</p>
+                        <p>Comparison data is returned by /api/compare for the selected ProductID values.</p>
                     </div>
 
                     <button id="backToLeaderboardBtn" class="secondary-btn" type="button">
@@ -539,26 +679,13 @@
         </main>
 
         <p class="footer-note">
-            CP3407 Project · Recommendation results depend on the connected backend data.
+            CP3407 Project · Recommendation results depend on the connected backend data. Product links may be manufacturer pages rather than checkout pages.
         </p>
     </div>
 
     <script>
         "use strict";
 
-        /*
-         * GitHub Pages frontend:
-         * https://chu-junjie.github.io/CP3407-PROJECT/
-         *
-         * IMPORTANT:
-         * GitHub Pages hosts this static frontend only.
-         * Once the Flask backend is deployed, place its HTTPS base URL below.
-         *
-         * Example:
-         * productionApiBaseUrl: "https://your-backend.example.com"
-         *
-         * Do not add a trailing slash.
-         */
         const APP_CONFIG = Object.freeze({
             productionApiBaseUrl: "",
             localApiBaseUrl: "http://127.0.0.1:5000",
@@ -576,18 +703,28 @@
         const characterCount = document.getElementById("characterCount");
         const submitBtn = document.getElementById("submitBtn");
         const compareBtn = document.getElementById("compareBtn");
+        const shareBtn = document.getElementById("shareBtn");
         const startOverBtn = document.getElementById("startOverBtn");
         const backToLeaderboardBtn = document.getElementById("backToLeaderboardBtn");
+        const helpfulBtn = document.getElementById("helpfulBtn");
+        const notHelpfulBtn = document.getElementById("notHelpfulBtn");
 
         const loader = document.getElementById("loader");
         const errorBox = document.getElementById("errorBox");
         const emptyBox = document.getElementById("emptyBox");
+        const compareStatus = document.getElementById("compareStatus");
+        const feedbackStatus = document.getElementById("feedbackStatus");
+        const shareStatus = document.getElementById("shareStatus");
 
         const querySummary = document.getElementById("querySummary");
+        const budgetAlternative = document.getElementById("budgetAlternative");
         const productList = document.getElementById("productList");
         const compareTableContainer = document.getElementById("compareTableContainer");
 
+        let currentQuery = "";
+        let currentFilters = {};
         let currentRecommendations = [];
+        let currentBudgetAlternative = null;
         let selectedForCompare = [];
 
         function isLocalDevelopment() {
@@ -604,15 +741,13 @@
             }
 
             if (!APP_CONFIG.productionApiBaseUrl) {
-                throw new Error(
-                    "The production recommendation API has not been configured yet."
-                );
+                throw new Error("The production recommendation API has not been configured yet.");
             }
 
             return APP_CONFIG.productionApiBaseUrl.replace(/\/+$/, "");
         }
 
-        async function fetchRecommendations(query) {
+        async function requestJson(path, options = {}) {
             const controller = new AbortController();
             const timeoutId = window.setTimeout(
                 () => controller.abort(),
@@ -620,179 +755,129 @@
             );
 
             try {
-                const apiBaseUrl = getApiBaseUrl();
-
-                const response = await fetch(`${apiBaseUrl}/api/recommend`, {
-                    method: "POST",
+                const response = await fetch(`${getApiBaseUrl()}${path}`, {
+                    ...options,
                     headers: {
-                        "Content-Type": "application/json",
-                        "Accept": "application/json"
+                        "Accept": "application/json",
+                        ...(options.body ? { "Content-Type": "application/json" } : {}),
+                        ...(options.headers || {})
                     },
-                    body: JSON.stringify({ query }),
                     signal: controller.signal
                 });
 
                 let payload;
-
                 try {
                     payload = await response.json();
                 } catch {
-                    throw new Error("The recommendation service returned invalid JSON.");
+                    throw new Error("The backend returned invalid JSON.");
                 }
 
-                if (!response.ok) {
+                if (!response.ok || (payload?.status && payload.status !== "success")) {
                     throw new Error(
                         payload?.message ||
                         payload?.error ||
-                        `Recommendation request failed (${response.status}).`
+                        `API request failed (${response.status}).`
                     );
                 }
 
-                if (payload?.status && payload.status !== "success") {
-                    throw new Error(
-                        payload?.message ||
-                        payload?.error ||
-                        "The recommendation request was not successful."
-                    );
-                }
-
-                const data =
-                    Array.isArray(payload?.data) ? payload.data :
-                    Array.isArray(payload?.recommendations) ? payload.recommendations :
-                    Array.isArray(payload) ? payload :
-                    [];
-
-                return {
-                    data,
-                    filters: payload?.filters ?? {}
-                };
+                return payload;
 
             } catch (error) {
                 if (error instanceof DOMException && error.name === "AbortError") {
-                    throw new Error("The recommendation service took too long to respond.");
+                    throw new Error("The backend service took too long to respond.");
                 }
-
                 throw error;
-
             } finally {
                 window.clearTimeout(timeoutId);
             }
         }
 
-        function normalizeProduct(product, index) {
+        async function fetchRecommendations(query) {
+            const payload = await requestJson("/api/recommend", {
+                method: "POST",
+                body: JSON.stringify({ query })
+            });
+
+            const data =
+                Array.isArray(payload?.data) ? payload.data :
+                Array.isArray(payload?.recommendations) ? payload.recommendations :
+                Array.isArray(payload) ? payload :
+                [];
+
             return {
-                id: String(
-                    product?.product_id ??
-                    product?.id ??
-                    product?.ProductID ??
-                    `product-${index + 1}`
-                ),
+                data,
+                filters: payload?.filters ?? {},
+                message: payload?.message ?? "Recommendations retrieved.",
+                budgetAlternative: payload?.budget_alternative ?? payload?.budgetAlternative ?? null
+            };
+        }
 
-                name:
-                    product?.product_name ??
-                    product?.name ??
-                    product?.ProductName ??
-                    `Product ${index + 1}`,
+        async function fetchComparison(productIds) {
+            const payload = await requestJson("/api/compare", {
+                method: "POST",
+                body: JSON.stringify({ product_ids: productIds })
+            });
 
-                brand:
-                    product?.brand ??
-                    product?.product_brand ??
-                    product?.ProductBrand ??
-                    "Unknown brand",
+            return Array.isArray(payload?.data) ? payload.data : [];
+        }
 
-                category:
-                    product?.category ??
-                    product?.product_category ??
-                    product?.ProductCategory ??
-                    "Unknown category",
+        async function sendFeedback(vote) {
+            const topProduct = currentRecommendations[0] || null;
+            const payload = await requestJson("/api/feedback", {
+                method: "POST",
+                body: JSON.stringify({
+                    vote,
+                    query: currentQuery,
+                    filters: currentFilters,
+                    top_product_id: topProduct?.id ? Number(topProduct.id) : null,
+                    recommendation_ids: currentRecommendations.map(product => Number(product.id))
+                })
+            });
+            return payload;
+        }
 
-                price: normalizeNumber(
-                    product?.price ??
-                    product?.product_price ??
-                    product?.ProductPrice
-                ),
+        function normalizeProduct(product, index = 0) {
+            const specs = product?.specs && typeof product.specs === "object" ? product.specs : {};
 
-                matchScore: normalizeScore(
-                    product?.match_score ??
-                    product?.matchScore ??
-                    product?.score ??
-                    product?.match
-                ),
-
-                reason:
-                    product?.reason ??
-                    product?.recommendation_reason ??
-                    product?.explanation ??
-                    "General product match.",
-
-                cpu: product?.cpu ?? product?.specs?.cpu ?? null,
-                gpu: product?.gpu ?? product?.specs?.gpu ?? null,
-                ram: product?.ram ?? product?.ram_gb ?? product?.specs?.ram ?? null,
-                storage:
-                    product?.storage ??
-                    product?.storage_gb ??
-                    product?.specs?.storage ??
-                    null,
-                screen:
-                    product?.screen ??
-                    product?.screen_size ??
-                    product?.specs?.screen ??
-                    null,
-                battery:
-                    product?.battery ??
-                    product?.battery_life ??
-                    product?.specs?.battery ??
-                    null,
-                weight:
-                    product?.weight ??
-                    product?.weight_kg ??
-                    product?.specs?.weight ??
-                    null,
-                purchaseUrl:
-                    product?.purchase_url ??
-                    product?.url ??
-                    null
+            return {
+                id: String(product?.product_id ?? product?.id ?? product?.ProductID ?? `product-${index + 1}`),
+                name: product?.product_name ?? product?.name ?? product?.ProductName ?? `Product ${index + 1}`,
+                brand: product?.brand ?? product?.product_brand ?? product?.ProductBrand ?? "Unknown brand",
+                category: product?.category ?? product?.product_category ?? product?.ProductCategory ?? "Unknown category",
+                price: normalizeNumber(product?.price ?? product?.product_price ?? product?.ProductPrice),
+                matchScore: normalizeScore(product?.match_score ?? product?.matchScore ?? product?.score ?? product?.match),
+                reason: product?.reason ?? product?.recommendation_reason ?? product?.explanation ?? "General product match.",
+                cpu: product?.cpu ?? specs.cpu ?? product?.CPU ?? null,
+                gpu: product?.gpu ?? specs.gpu ?? product?.GPU ?? null,
+                ram: product?.ram ?? product?.ram_gb ?? specs.ram ?? product?.RAM ?? null,
+                storage: product?.storage ?? product?.storage_gb ?? specs.storage ?? product?.Storage ?? null,
+                screen: product?.screen ?? product?.screen_size ?? specs.screen_size ?? specs.screen ?? product?.ScreenSize ?? null,
+                battery: product?.battery ?? product?.battery_life ?? specs.battery_life ?? specs.battery ?? product?.BatteryLife ?? null,
+                weight: product?.weight ?? product?.weight_kg ?? specs.weight ?? product?.Weight ?? null,
+                useCase: product?.use_case ?? specs.use_case ?? product?.UseCase ?? null,
+                purchaseUrl: product?.purchase_url ?? product?.PurchaseURL ?? product?.url ?? null
             };
         }
 
         function normalizeNumber(value) {
-            if (typeof value === "number" && Number.isFinite(value)) {
-                return value;
-            }
-
+            if (typeof value === "number" && Number.isFinite(value)) return value;
             if (typeof value === "string") {
                 const parsed = Number(value.replace(/[^0-9.-]/g, ""));
                 return Number.isFinite(parsed) ? parsed : null;
             }
-
             return null;
         }
 
         function normalizeScore(value) {
-            if (value === null || value === undefined || value === "") {
-                return null;
-            }
-
-            const parsed = typeof value === "number"
-                ? value
-                : Number(String(value).replace("%", "").trim());
-
-            if (!Number.isFinite(parsed)) {
-                return null;
-            }
-
-            const percentage = parsed >= 0 && parsed <= 1
-                ? parsed * 100
-                : parsed;
-
+            if (value === null || value === undefined || value === "") return null;
+            const parsed = typeof value === "number" ? value : Number(String(value).replace("%", "").trim());
+            if (!Number.isFinite(parsed)) return null;
+            const percentage = parsed >= 0 && parsed <= 1 ? parsed * 100 : parsed;
             return Math.max(0, Math.min(100, percentage));
         }
 
         function formatPrice(price) {
-            if (typeof price !== "number" || !Number.isFinite(price)) {
-                return "Price unavailable";
-            }
-
+            if (typeof price !== "number" || !Number.isFinite(price)) return "Price unavailable";
             return new Intl.NumberFormat("en-US", {
                 style: "currency",
                 currency: "USD",
@@ -807,58 +892,55 @@
         }
 
         function appendUnit(value, unit) {
-            if (value === null || value === undefined || value === "") {
+            if (value === null || value === undefined || value === "") return null;
+            const text = String(value).trim();
+            return /[a-zA-Z]/.test(text) ? text : `${text}${unit}`;
+        }
+
+        function safeExternalUrl(rawUrl) {
+            if (!rawUrl) return null;
+            try {
+                const parsed = new URL(String(rawUrl));
+                return ["http:", "https:"].includes(parsed.protocol) ? parsed.href : null;
+            } catch {
                 return null;
             }
-
-            const text = String(value).trim();
-
-            return /[a-zA-Z]/.test(text)
-                ? text
-                : `${text}${unit}`;
         }
 
         function buildSpecSummary(product) {
             const specs = [];
-
             if (product.cpu) specs.push(`CPU: ${product.cpu}`);
             if (product.gpu) specs.push(`GPU: ${product.gpu}`);
-
             const ram = appendUnit(product.ram, "GB");
             if (ram) specs.push(`RAM: ${ram}`);
-
             const storage = appendUnit(product.storage, "GB");
             if (storage) specs.push(`Storage: ${storage}`);
-
             if (product.screen) specs.push(`Screen: ${product.screen}`);
             if (product.battery) specs.push(`Battery: ${product.battery}`);
             if (product.weight) specs.push(`Weight: ${product.weight}`);
-
             return specs.join(" · ");
         }
 
+        function showStatus(element, message, display = "block") {
+            element.textContent = message;
+            element.style.display = display;
+        }
+
         function clearStatus() {
-            loader.style.display = "none";
-            errorBox.style.display = "none";
-            emptyBox.style.display = "none";
-            errorBox.textContent = "";
+            [loader, errorBox, emptyBox, compareStatus, feedbackStatus, shareStatus].forEach(element => {
+                element.style.display = "none";
+                if (element !== loader && element !== emptyBox) element.textContent = "";
+            });
         }
 
         function setLoading(isLoading) {
             submitBtn.disabled = isLoading;
-            submitBtn.textContent = isLoading
-                ? "Finding Devices..."
-                : "Find My Device";
+            submitBtn.textContent = isLoading ? "Finding Devices..." : "Find My Device";
             loader.style.display = isLoading ? "block" : "none";
         }
 
-        function showError(message) {
-            errorBox.textContent = message;
-            errorBox.style.display = "block";
-        }
-
-        function renderQuerySummary(query, filters) {
-            querySummary.textContent = "";
+        function renderQuerySummary(query, filters, message) {
+            querySummary.replaceChildren();
 
             const queryLine = document.createElement("div");
             const queryLabel = document.createElement("strong");
@@ -867,26 +949,16 @@
             querySummary.appendChild(queryLine);
 
             const details = [];
+            if (filters?.category) details.push(`Category: ${filters.category}`);
+            if (filters?.brand) details.push(`Preferred brand: ${filters.brand}`);
 
-            const budget =
-                filters?.budget ??
-                filters?.max_budget ??
-                filters?.maxBudget;
-
+            const budget = filters?.budget ?? filters?.max_price ?? filters?.maxBudget;
             if (budget !== undefined && budget !== null) {
                 const numericBudget = normalizeNumber(budget);
-                details.push(
-                    numericBudget === null
-                        ? `Budget: ${budget}`
-                        : `Budget: ${formatPrice(numericBudget)}`
-                );
+                details.push(numericBudget === null ? `Budget: ${budget}` : `Budget: ${formatPrice(numericBudget)}`);
             }
 
-            const exclusions =
-                filters?.exclusions ??
-                filters?.excluded_brands ??
-                filters?.excludedBrands;
-
+            const exclusions = filters?.exclusions ?? filters?.excluded_brands ?? filters?.excludedBrands;
             if (Array.isArray(exclusions) && exclusions.length > 0) {
                 details.push(`Excluded brands: ${exclusions.join(", ")}`);
             }
@@ -896,12 +968,44 @@
                 detailLine.textContent = details.join(" · ");
                 querySummary.appendChild(detailLine);
             }
+
+            if (message) {
+                const messageLine = document.createElement("div");
+                messageLine.textContent = message;
+                querySummary.appendChild(messageLine);
+            }
+        }
+
+        function renderBudgetAlternative(rawAlternative) {
+            budgetAlternative.replaceChildren();
+            currentBudgetAlternative = rawAlternative ? normalizeProduct(rawAlternative) : null;
+
+            if (!currentBudgetAlternative) {
+                budgetAlternative.style.display = "none";
+                return;
+            }
+
+            const title = document.createElement("strong");
+            title.textContent = "Budget Alternative: ";
+
+            const text = document.createTextNode(
+                `${currentBudgetAlternative.name} · ${currentBudgetAlternative.brand} · ${formatPrice(currentBudgetAlternative.price)}`
+            );
+
+            budgetAlternative.append(title, text);
+
+            const reason = document.createElement("div");
+            reason.textContent = currentBudgetAlternative.reason || "A cheaper product in the same category is available.";
+            budgetAlternative.appendChild(reason);
+
+            budgetAlternative.style.display = "block";
         }
 
         function renderLeaderboard(products) {
             productList.replaceChildren();
             selectedForCompare = [];
             compareBtn.style.display = "none";
+            compareBtn.disabled = false;
 
             products.forEach((product, index) => {
                 const card = document.createElement("article");
@@ -911,22 +1015,12 @@
                 checkbox.type = "checkbox";
                 checkbox.className = "compare-checkbox";
                 checkbox.value = product.id;
-                checkbox.setAttribute(
-                    "aria-label",
-                    `Select ${product.name} for comparison`
-                );
-
-                checkbox.addEventListener("change", () => {
-                    handleCompareSelection(checkbox, card);
-                });
+                checkbox.setAttribute("aria-label", `Select ${product.name} for comparison`);
+                checkbox.addEventListener("change", () => handleCompareSelection(checkbox, card));
 
                 const rank = document.createElement("div");
                 rank.className = "rank";
-                rank.textContent =
-                    index === 0 ? "🥇" :
-                    index === 1 ? "🥈" :
-                    index === 2 ? "🥉" :
-                    `#${index + 1}`;
+                rank.textContent = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `#${index + 1}`;
 
                 const info = document.createElement("div");
                 info.className = "product-info";
@@ -937,20 +1031,37 @@
 
                 const meta = document.createElement("p");
                 meta.className = "product-meta";
-                meta.textContent =
-                    `${product.brand} · ${product.category} · ${formatPrice(product.price)}`;
+                meta.textContent = `${product.brand} · ${product.category} · ${formatPrice(product.price)}`;
 
                 const specText = buildSpecSummary(product);
                 const specs = document.createElement("p");
                 specs.className = "product-specs";
-                specs.textContent = specText ||
-                    "Detailed specifications are not available in the current dataset.";
+                specs.textContent = specText || "Detailed specifications are not available for this product.";
 
                 const reason = document.createElement("p");
                 reason.className = "product-reason";
                 reason.textContent = `💡 ${product.reason}`;
 
-                info.append(name, meta, specs, reason);
+                const actions = document.createElement("div");
+                actions.className = "product-actions";
+
+                const safeUrl = safeExternalUrl(product.purchaseUrl);
+                if (safeUrl) {
+                    const link = document.createElement("a");
+                    link.className = "link-btn";
+                    link.href = safeUrl;
+                    link.target = "_blank";
+                    link.rel = "noopener noreferrer";
+                    link.textContent = "View Product / Manufacturer Page";
+                    actions.appendChild(link);
+                } else {
+                    const unavailable = document.createElement("span");
+                    unavailable.className = "small-note";
+                    unavailable.textContent = "Product link unavailable";
+                    actions.appendChild(unavailable);
+                }
+
+                info.append(name, meta, specs, reason, actions);
 
                 const score = document.createElement("div");
                 score.className = "match-score";
@@ -967,63 +1078,48 @@
             if (checkbox.checked) {
                 if (selectedForCompare.length >= APP_CONFIG.maximumCompareItems) {
                     checkbox.checked = false;
-                    alert(
-                        `You can compare up to ${APP_CONFIG.maximumCompareItems} products at a time.`
-                    );
+                    showStatus(compareStatus, `You can compare up to ${APP_CONFIG.maximumCompareItems} products at a time.`);
                     return;
                 }
 
-                if (!selectedForCompare.includes(id)) {
-                    selectedForCompare.push(id);
-                }
-
+                if (!selectedForCompare.includes(id)) selectedForCompare.push(id);
                 card.classList.add("selected");
-
             } else {
-                selectedForCompare =
-                    selectedForCompare.filter(productId => productId !== id);
-
+                selectedForCompare = selectedForCompare.filter(productId => productId !== id);
                 card.classList.remove("selected");
             }
 
-            compareBtn.style.display =
-                selectedForCompare.length >= 2 ? "block" : "none";
+            compareStatus.style.display = "none";
+            compareBtn.style.display = selectedForCompare.length >= 2 ? "inline-flex" : "none";
         }
 
         function renderComparison(items) {
-            const alwaysVisibleRows = [
+            const rows = [
                 ["Brand", product => product.brand],
                 ["Category", product => product.category],
                 ["Price", product => formatPrice(product.price)],
-                ["Match Score", product => formatScore(product.matchScore)]
-            ];
-
-            const optionalRows = [
+                ["Match Score", product => formatScore(product.matchScore)],
                 ["CPU", product => product.cpu],
                 ["GPU", product => product.gpu],
                 ["RAM", product => appendUnit(product.ram, "GB")],
                 ["Storage", product => appendUnit(product.storage, "GB")],
                 ["Screen", product => product.screen],
                 ["Battery", product => product.battery],
-                ["Weight", product => product.weight]
+                ["Weight", product => product.weight],
+                ["Use Case", product => product.useCase]
             ];
 
-            const rows = [...alwaysVisibleRows];
-
-            optionalRows.forEach(([label, getter]) => {
-                const hasValue = items.some(product => {
+            const visibleRows = rows.filter(([label, getter]) => {
+                if (["Brand", "Category", "Price", "Match Score"].includes(label)) return true;
+                return items.some(product => {
                     const value = getter(product);
                     return value !== null && value !== undefined && value !== "";
                 });
-
-                if (hasValue) {
-                    rows.push([label, getter]);
-                }
             });
 
             const table = document.createElement("table");
-
             const headerRow = document.createElement("tr");
+
             const featureHeader = document.createElement("th");
             featureHeader.scope = "col";
             featureHeader.textContent = "Feature";
@@ -1038,9 +1134,8 @@
 
             table.appendChild(headerRow);
 
-            rows.forEach(([label, getter]) => {
+            visibleRows.forEach(([label, getter]) => {
                 const row = document.createElement("tr");
-
                 const labelCell = document.createElement("td");
                 labelCell.textContent = label;
                 row.appendChild(labelCell);
@@ -1048,12 +1143,7 @@
                 items.forEach(product => {
                     const value = getter(product);
                     const cell = document.createElement("td");
-
-                    cell.textContent =
-                        value === null || value === undefined || value === ""
-                            ? "N/A"
-                            : String(value);
-
+                    cell.textContent = value === null || value === undefined || value === "" ? "N/A" : String(value);
                     row.appendChild(cell);
                 });
 
@@ -1065,13 +1155,11 @@
 
         recommendationForm.addEventListener("submit", async event => {
             event.preventDefault();
-
             const query = userInput.value.trim();
-
             clearStatus();
 
             if (!query) {
-                showError("Please enter your requirements before searching.");
+                showStatus(errorBox, "Please enter your requirements before searching.");
                 userInput.focus();
                 return;
             }
@@ -1079,75 +1167,151 @@
             setLoading(true);
 
             try {
-                const { data, filters } = await fetchRecommendations(query);
-
-                const normalized = data
-                    .map(normalizeProduct)
-                    .slice(0, APP_CONFIG.maximumRecommendations);
+                const { data, filters, message, budgetAlternative } = await fetchRecommendations(query);
+                const normalized = data.map(normalizeProduct).slice(0, APP_CONFIG.maximumRecommendations);
 
                 if (normalized.length === 0) {
                     currentRecommendations = [];
-                    emptyBox.style.display = "block";
+                    showStatus(emptyBox, message || "No matching products were found.");
                     return;
                 }
 
+                currentQuery = query;
+                currentFilters = filters;
                 currentRecommendations = normalized;
 
                 renderLeaderboard(currentRecommendations);
-                renderQuerySummary(query, filters);
+                renderQuerySummary(query, filters, message);
+                renderBudgetAlternative(budgetAlternative);
 
                 inputSection.style.display = "none";
                 compareSection.style.display = "none";
                 leaderboardSection.style.display = "block";
-
-                leaderboardSection.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-
+                leaderboardSection.scrollIntoView({ behavior: "smooth", block: "start" });
             } catch (error) {
                 console.error("Recommendation request failed:", error);
-
-                showError(
-                    error instanceof Error
-                        ? error.message
-                        : "Unable to retrieve recommendations. Please try again."
+                showStatus(
+                    errorBox,
+                    error instanceof Error ? error.message : "Unable to retrieve recommendations. Please try again."
                 );
-
             } finally {
                 setLoading(false);
             }
         });
 
-        userInput.addEventListener("input", () => {
-            characterCount.textContent =
-                `${userInput.value.length} / ${userInput.maxLength}`;
+        compareBtn.addEventListener("click", async () => {
+            compareStatus.style.display = "none";
+
+            if (selectedForCompare.length < 2 || selectedForCompare.length > APP_CONFIG.maximumCompareItems) {
+                showStatus(compareStatus, "Please select exactly 2 or 3 products before comparing.");
+                return;
+            }
+
+            compareBtn.disabled = true;
+            compareBtn.textContent = "Comparing...";
+
+            try {
+                const rawItems = await fetchComparison(selectedForCompare.map(id => Number(id)));
+                const items = rawItems.map(normalizeProduct);
+
+                renderComparison(items);
+                leaderboardSection.style.display = "none";
+                compareSection.style.display = "block";
+                compareSection.scrollIntoView({ behavior: "smooth", block: "start" });
+            } catch (error) {
+                console.error("Compare request failed:", error);
+                showStatus(
+                    compareStatus,
+                    error instanceof Error ? error.message : "Unable to compare selected products."
+                );
+            } finally {
+                compareBtn.disabled = false;
+                compareBtn.textContent = "⚖️ Compare Selected Products";
+            }
         });
+
+        async function handleFeedback(vote) {
+            feedbackStatus.style.display = "none";
+            helpfulBtn.disabled = true;
+            notHelpfulBtn.disabled = true;
+
+            try {
+                const payload = await sendFeedback(vote);
+                const feedbackId = payload?.feedback_id ? ` Feedback ID: ${payload.feedback_id}.` : "";
+                feedbackStatus.className = "status success";
+                showStatus(feedbackStatus, `Thanks — your feedback was saved.${feedbackId}`);
+            } catch (error) {
+                feedbackStatus.className = "status error";
+                showStatus(
+                    feedbackStatus,
+                    error instanceof Error ? error.message : "Feedback could not be saved."
+                );
+            } finally {
+                helpfulBtn.disabled = false;
+                notHelpfulBtn.disabled = false;
+            }
+        }
+
+        helpfulBtn.addEventListener("click", () => handleFeedback("up"));
+        notHelpfulBtn.addEventListener("click", () => handleFeedback("down"));
+
+        shareBtn.addEventListener("click", async () => {
+            const shareUrl = buildShareUrl();
+            shareStatus.className = "status success";
+
+            try {
+                await copyTextToClipboard(shareUrl);
+                showStatus(shareStatus, "Share link copied. It restores the recommendation query in another browser.");
+            } catch {
+                showStatus(shareStatus, `Copy failed. Share this URL manually: ${shareUrl}`);
+            }
+        });
+
+        function buildShareUrl() {
+            const url = new URL(window.location.href);
+            const params = new URLSearchParams();
+
+            params.set("query", currentQuery || userInput.value.trim());
+            params.set("auto", "1");
+
+            if (currentFilters?.category) params.set("category", currentFilters.category);
+            if (currentFilters?.brand) params.set("brand", currentFilters.brand);
+            if (currentFilters?.budget !== null && currentFilters?.budget !== undefined) {
+                params.set("max_price", String(currentFilters.budget));
+            }
+
+            const exclusions = currentFilters?.exclusions ?? currentFilters?.excluded_brands;
+            if (Array.isArray(exclusions) && exclusions.length > 0) {
+                params.set("excluded_brands", exclusions.join(","));
+            }
+
+            url.search = params.toString();
+            return url.toString();
+        }
+
+        async function copyTextToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(text);
+                return;
+            }
+
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.className = "sr-only";
+            document.body.appendChild(textArea);
+            textArea.select();
+            const copied = document.execCommand("copy");
+            textArea.remove();
+
+            if (!copied) throw new Error("Clipboard copy failed.");
+        }
+
+        userInput.addEventListener("input", updateCharacterCount);
 
         userInput.addEventListener("keydown", event => {
             if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
                 recommendationForm.requestSubmit();
             }
-        });
-
-        compareBtn.addEventListener("click", () => {
-            const selectedProducts = currentRecommendations.filter(product =>
-                selectedForCompare.includes(product.id)
-            );
-
-            if (selectedProducts.length < 2) {
-                return;
-            }
-
-            renderComparison(selectedProducts);
-
-            leaderboardSection.style.display = "none";
-            compareSection.style.display = "block";
-
-            compareSection.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
         });
 
         backToLeaderboardBtn.addEventListener("click", () => {
@@ -1163,15 +1327,40 @@
             productList.replaceChildren();
             compareTableContainer.replaceChildren();
             querySummary.replaceChildren();
+            budgetAlternative.replaceChildren();
+            budgetAlternative.style.display = "none";
 
+            currentQuery = "";
+            currentFilters = {};
             currentRecommendations = [];
+            currentBudgetAlternative = null;
             selectedForCompare = [];
 
             compareBtn.style.display = "none";
             clearStatus();
-
             userInput.focus();
         });
+
+        function updateCharacterCount() {
+            characterCount.textContent = `${userInput.value.length} / ${userInput.maxLength}`;
+        }
+
+        function restoreSharedQuery() {
+            const params = new URLSearchParams(window.location.search);
+            const query = params.get("query") || params.get("q") || "";
+
+            if (!query) return;
+
+            userInput.value = query;
+            updateCharacterCount();
+
+            if (params.get("auto") === "1") {
+                window.setTimeout(() => recommendationForm.requestSubmit(), 250);
+            }
+        }
+
+        updateCharacterCount();
+        restoreSharedQuery();
     </script>
 </body>
 </html>
