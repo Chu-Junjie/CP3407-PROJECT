@@ -12,6 +12,8 @@
 | Source branch | `main` |
 | Source commit | `c1ac237` |
 | Yuyang baseline | `Candidate` |
+| Tracking Issue | `#16` — Open |
+| Project Board status | `In Progress` |
 | Automated tests for the candidate | `Not executed` |
 | Non-author review | `Not started` |
 | Pull Request | `Not opened` |

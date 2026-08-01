@@ -15,6 +15,8 @@ This is a live matrix. `Candidate` means code was supplied but is not verified u
 | Definition of Done | `docs/definition-of-done.md` |
 | Team ownership | `docs/team-task-allocation.md` |
 | Current project status | `docs/project-status.md` |
+| Tracking Issue | `#16` — Open |
+| Project Board status | `In Progress` |
 | Candidate test result | `Not executed` |
 | Pull Request | `Not opened` |
 | Non-author review | `Not started` |
