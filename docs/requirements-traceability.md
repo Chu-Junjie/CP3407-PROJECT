@@ -18,8 +18,8 @@ This is a live matrix. `Candidate` means code was supplied but is not verified u
 | Tracking Issue | `#16` — Open |
 | Project Board status | `In Progress` |
 | Candidate test result | `Not executed` |
-| Pull Request | `Not opened` |
-| Non-author review | `Not started` |
+| Non-author review | `Requested` |
+| Pull Request | `#17` — Open |
 | Current Task 1 status | `In Progress` |
 
 | US | Requirement | Implementation / target | Tests / evidence | Owner | Current status |

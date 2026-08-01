@@ -15,8 +15,8 @@
 | Tracking Issue | `#16` — Open |
 | Project Board status | `In Progress` |
 | Automated tests for the candidate | `Not executed` |
-| Non-author review | `Not started` |
-| Pull Request | `Not opened` |
+| Non-author review | `Requested` |
+| Pull Request | `#17` — Open |
 | Merge to main | `Not completed` |
 
 The documentation branch records the adopted direction only. It does not prove that the Yuyang candidate implementation works or that its tests pass.
