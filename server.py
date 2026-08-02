@@ -1,7 +1,7 @@
 """
 Backend API for the Smart Digital Product Recommendation project.
 
-Unified Yuyang US-05 version:
+Unified US-05 backend version:
 - products table: original 9,000 behaviour/product records.
 - product_specs table: 33 educational demonstration specification records.
 - feedback table: Helpful / Not Helpful votes saved to SQLite.
@@ -41,10 +41,50 @@ PRODUCTS_TABLE = "products"
 SPECS_TABLE = "product_specs"
 FEEDBACK_TABLE = "feedback"
 
-API_VERSION = "2.0.0-yuyang-unified"
+API_VERSION = "2.0.1-unified"
 DEFAULT_RECOMMENDATION_LIMIT = 5
 MAX_RECOMMENDATION_LIMIT = 5
 MAX_QUERY_LENGTH = 1000
+
+SUPPORTED_CATEGORIES = {
+    "Laptops",
+    "Smartphones",
+    "Tablets",
+    "Headphones",
+    "Smart Watches",
+}
+
+CATEGORY_ALIASES = {
+    "laptop": "Laptops",
+    "laptops": "Laptops",
+    "notebook": "Laptops",
+    "computer": "Laptops",
+    "macbook": "Laptops",
+    "phone": "Smartphones",
+    "phones": "Smartphones",
+    "smartphone": "Smartphones",
+    "smartphones": "Smartphones",
+    "mobile": "Smartphones",
+    "android": "Smartphones",
+    "iphone": "Smartphones",
+    "tablet": "Tablets",
+    "tablets": "Tablets",
+    "ipad": "Tablets",
+    "headphone": "Headphones",
+    "headphones": "Headphones",
+    "headset": "Headphones",
+    "headsets": "Headphones",
+    "earphone": "Headphones",
+    "earphones": "Headphones",
+    "earbud": "Headphones",
+    "earbuds": "Headphones",
+    "watch": "Smart Watches",
+    "watches": "Smart Watches",
+    "smartwatch": "Smart Watches",
+    "smartwatches": "Smart Watches",
+    "smart watch": "Smart Watches",
+    "smart watches": "Smart Watches",
+}
 
 GITHUB_PAGES_ORIGIN = "https://chu-junjie.github.io"
 
@@ -127,6 +167,14 @@ class APIError(Exception):
 # =============================================================================
 # DATABASE SETUP AND VALIDATION
 # =============================================================================
+
+def _environment_flag(name: str, default: bool = False) -> bool:
+    """Read a boolean environment variable using common true/false values."""
+    raw_value = os.getenv(name)
+    if raw_value is None:
+        return default
+    return raw_value.strip().lower() in {"1", "true", "yes", "on"}
+
 
 def get_connection() -> sqlite3.Connection:
     """Return a SQLite connection configured for row dictionaries."""
@@ -305,7 +353,7 @@ def _validate_spec_integrity(connection: sqlite3.Connection) -> None:
 
 def setup_database() -> dict[str, int]:
     """Ensure products, product_specs and feedback tables exist."""
-    force_reload = os.getenv("FORCE_DB_REBUILD", "0") == "1"
+    force_reload = _environment_flag("FORCE_DB_REBUILD")
 
     with get_connection() as connection:
         product_count = _import_csv_if_needed(
@@ -332,11 +380,18 @@ def setup_database() -> dict[str, int]:
             ).fetchone()[0]
         )
 
-    return {
+    counts = {
         "products": product_count,
         "product_specs": specs_count,
         "feedback": feedback_count,
     }
+    logger.info(
+        "Database ready: products=%s, product_specs=%s, feedback=%s",
+        product_count,
+        specs_count,
+        feedback_count,
+    )
+    return counts
 
 
 def _joined_candidate_count(connection: sqlite3.Connection) -> int:
@@ -369,9 +424,33 @@ def _parse_positive_float(value: Any, field_name: str) -> float | None:
         number = float(value)
     except (TypeError, ValueError) as exc:
         raise APIError(f"'{field_name}' must be a valid number.", 400) from exc
-    if number < 0:
-        raise APIError(f"'{field_name}' cannot be negative.", 400)
+    if number <= 0:
+        raise APIError(f"'{field_name}' must be greater than zero.", 400)
     return number
+
+
+def _first_provided(*values: Any) -> Any:
+    """Return the first value that is not None and not an empty string."""
+    for value in values:
+        if value not in (None, ""):
+            return value
+    return None
+
+
+def _normalise_category(value: Any) -> str | None:
+    """Normalise common category names and reject unsupported categories."""
+    text = _normalise_optional_text(value)
+    if text is None:
+        return None
+
+    category = CATEGORY_ALIASES.get(text.lower(), text)
+    if category not in SUPPORTED_CATEGORIES:
+        allowed = ", ".join(sorted(SUPPORTED_CATEGORIES))
+        raise APIError(
+            f"Unsupported category '{text}'. Allowed values: {allowed}.",
+            400,
+        )
+    return category
 
 
 def parse_budget_from_text(text: str | None) -> float | None:
@@ -425,17 +504,15 @@ def infer_category_from_text(text: str | None) -> str | None:
         return None
 
     lowered = str(text).lower()
-    category_terms = {
-        "Laptops": ("laptop", "notebook", "computer", "macbook"),
-        "Smartphones": ("smartphone", "phone", "mobile", "android", "iphone"),
-        "Tablets": ("tablet", "ipad"),
-        "Headphones": ("headphone", "headset", "earphone", "earbud"),
-        "Smart Watches": ("smart watch", "smartwatch", "watch"),
-    }
+    ordered_terms = sorted(
+        CATEGORY_ALIASES,
+        key=len,
+        reverse=True,
+    )
 
-    for category, terms in category_terms.items():
-        if any(term in lowered for term in terms):
-            return category
+    for term in ordered_terms:
+        if re.search(rf"\b{re.escape(term)}\b", lowered):
+            return CATEGORY_ALIASES[term]
     return None
 
 
@@ -501,6 +578,8 @@ def _read_request_payload() -> dict[str, Any]:
     if request.method == "POST":
         payload = request.get_json(silent=True)
         if payload is None:
+            if request.data:
+                raise APIError("Request body must contain valid JSON.", 400)
             return {}
         if not isinstance(payload, dict):
             raise APIError("JSON request body must be an object.", 400)
@@ -515,7 +594,7 @@ def read_request_filters() -> dict[str, Any]:
     if len(query_text) > MAX_QUERY_LENGTH:
         raise APIError(f"'query' must not exceed {MAX_QUERY_LENGTH} characters.", 400)
 
-    category = _normalise_optional_text(payload.get("category")) or infer_category_from_text(query_text)
+    category = _normalise_category(payload.get("category")) or infer_category_from_text(query_text)
 
     explicit_exclusions = (
         payload.get("excluded_brands")
@@ -586,7 +665,11 @@ def _base_join_sql() -> str:
     """
 
 
-def fetch_candidate_products(filters: dict[str, Any]) -> list[dict[str, Any]]:
+def fetch_candidate_products(
+    filters: dict[str, Any],
+    *,
+    strict_brand: bool = False,
+) -> list[dict[str, Any]]:
     setup_database()
 
     where_clauses: list[str] = []
@@ -599,6 +682,12 @@ def fetch_candidate_products(filters: dict[str, Any]) -> list[dict[str, Any]]:
     if filters.get("budget") is not None:
         where_clauses.append("CAST(p.ProductPrice AS REAL) <= ?")
         params.append(float(filters["budget"]))
+
+    if strict_brand and filters.get("brand"):
+        where_clauses.append(
+            "LOWER(TRIM(p.ProductBrand)) = LOWER(TRIM(?))"
+        )
+        params.append(str(filters["brand"]))
 
     for exclusion in filters.get("exclusions", []):
         where_clauses.append("LOWER(TRIM(p.ProductBrand)) != LOWER(TRIM(?))")
@@ -718,6 +807,11 @@ def product_payload(
         "category": product["ProductCategory"],
         "brand": product["ProductBrand"],
         "price": round(float(product["ProductPrice"]), 2),
+        "price_type": "prototype",
+        "price_note": (
+            "Used for course-project filtering and comparison; "
+            "not guaranteed to be a current Singapore retail price."
+        ),
         "specs": specs,
         "cpu": specs["cpu"],
         "gpu": specs["gpu"],
@@ -811,12 +905,15 @@ def _parse_compare_ids() -> list[int]:
         if not candidate_text:
             continue
         try:
-            product_ids.append(int(candidate_text))
+            product_id = int(candidate_text)
         except ValueError as exc:
             raise APIError(
                 f"Invalid product ID: {candidate_text}. Product IDs must be integers.",
                 400,
             ) from exc
+        if product_id <= 0:
+            raise APIError("Product IDs must be greater than zero.", 400)
+        product_ids.append(product_id)
 
     if len(product_ids) not in (2, 3):
         raise APIError("Provide exactly 2 or 3 product IDs.", 400)
@@ -874,7 +971,12 @@ def save_feedback(payload: dict[str, Any]) -> int:
     category = _normalise_optional_text(payload.get("category") or filters.get("category"))
     brand = _normalise_optional_text(payload.get("brand") or filters.get("brand"))
     max_price = _parse_positive_float(
-        payload.get("max_price") or payload.get("budget") or filters.get("max_price") or filters.get("budget"),
+        _first_provided(
+            payload.get("max_price"),
+            payload.get("budget"),
+            filters.get("max_price"),
+            filters.get("budget"),
+        ),
         "max_price",
     )
 
@@ -892,7 +994,7 @@ def save_feedback(payload: dict[str, Any]) -> int:
     if not isinstance(recommendation_ids, list):
         recommendation_ids = []
 
-    top_product_id = payload.get("top_product_id") or payload.get("product_id")
+    top_product_id = _first_provided(payload.get("top_product_id"), payload.get("product_id"))
     if top_product_id in (None, ""):
         top_product_id_value = None
     else:
@@ -982,14 +1084,14 @@ def products():
 
     filters = {
         "query": "",
-        "category": _normalise_optional_text(request.args.get("category")),
+        "category": _normalise_category(request.args.get("category")),
         "brand": _normalise_optional_text(request.args.get("brand")),
         "budget": None,
         "exclusions": [],
         "use_cases": [],
     }
 
-    rows = fetch_candidate_products(filters)[:limit]
+    rows = fetch_candidate_products(filters, strict_brand=True)[:limit]
     data = [product_payload(row) for row in rows]
     return jsonify({"status": "success", "count": len(data), "data": data})
 
@@ -1113,7 +1215,7 @@ def handle_unexpected_error(error: Exception):
 if __name__ == "__main__":
     host = os.getenv("HOST", "127.0.0.1")
     port = int(os.getenv("PORT", "5000"))
-    debug = os.getenv("FLASK_DEBUG", "0") == "1"
+    debug = _environment_flag("FLASK_DEBUG")
 
     logger.info("Starting recommendation API on http://%s:%s", host, port)
     logger.info("Allowed CORS origins: %s", ", ".join(ALLOWED_ORIGINS))
