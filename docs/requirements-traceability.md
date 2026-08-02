@@ -38,6 +38,30 @@ This is a live matrix. `Candidate` means code was supplied but is not verified u
 | US-09 | Budget alternative | same category, cheaper, different ID, spec-complete | same category, cheaper, different, null case | Zaikun + Guanyu | Planned |
 | US-10 | Share leaderboard | URL encode/restore and rerun recommend | special chars, exclusions, second-browser test | Junjie + Guanyu | Planned |
 
+## Task 2 database evidence
+
+| Evidence item | Current record |
+|---|---|
+| Coordinator | Chu Junjie |
+| Tracking Issue | `#17` — Open |
+| Evidence tracker | `docs/task2-database-evidence.md` |
+| Working branch | `feature/share-ci-evidence` |
+| Project Board status | `In Progress` |
+| Database Pull Request | `Not confirmed` |
+| Non-author review | `Not confirmed` |
+| Database tests | `Not executed or not yet evidenced` |
+| Merge status | `Not completed` |
+| Task 2 status | `In Progress` |
+
+### Traceability targets
+
+| User Story | Task 2 evidence requirement | Current status |
+|---|---|---|
+| US-02 | Database setup, schema, counts and initialization evidence | In Progress |
+| US-05 | Comparison database records and ProductID validation evidence | In Progress |
+| US-07 | `PurchaseURL` source and missing-link behaviour evidence | In Progress |
+| US-08 | Joined recommendation records and data-limit evidence | In Progress |
+
 ## Required evidence columns before final release
 
 For every Story add:

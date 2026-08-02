@@ -23,6 +23,26 @@
 
 The documentation branch records the adopted direction only. It does not prove that the Yuyang candidate implementation works or that its tests pass.
 
+
+## Task 2 database integration status
+
+| Item | Current status |
+|---|---|
+| Coordinator | Chu Junjie |
+| Tracking Issue | `#17` — Open |
+| Working branch | `feature/share-ci-evidence` |
+| Project Board status | `In Progress` |
+| Database implementation | `In Progress` |
+| Record-count evidence | `Not confirmed` |
+| ProductID integrity evidence | `Not confirmed` |
+| Feedback persistence evidence | `Not confirmed` |
+| Database tests | `Not executed or not yet evidenced` |
+| Non-author review | `Not confirmed` |
+| Database Pull Request | `Not confirmed` |
+| Merge to main | `Not completed` |
+
+Task 2 remains in progress until actual database, test, review and merge evidence is available.
+
 ## Current repository before Yuyang integration
 
 The original source snapshot contains Flask, SQLite, a 9,000-row `products` table, a Streamlit prototype, a static HTML page with mock recommendations, and existing pytest/mock tests.
@@ -101,6 +121,11 @@ The updated backend candidate adds:
 | R-04 | The 9,000 behavioural records may be incorrectly described as 9,000 fully specified products | Misleading technical documentation and demonstration claims | All members | Junjie | Open |
 | R-05 | The static HTML mock may be mistaken for completed frontend integration | User Stories may be marked Done without real API evidence | Guanyu | Junjie | Open |
 | R-06 | Candidate or unexecuted work may be reported as Passed, Verified or Done | Invalid project evidence and unreliable traceability | All members | Junjie | Open |
+| R-07 | Database record counts are reported without actual query or test evidence | Misleading project evidence | Database owner | Junjie | Open |
+| R-08 | Specification ProductIDs do not match the main products dataset | Comparison and recommendation failures | Database owner | Junjie | Open |
+| R-09 | Feedback endpoint reports success without database persistence | False completion of feedback requirements | Database and backend owners | Junjie | Open |
+| R-10 | Database tests modify the production or shared database | Unreliable tests and damaged project data | Database owner | Junjie | Open |
+| R-11 | Database Pull Request is merged without a non-author technical review | Defects and weak version-control evidence | Database owner | Junjie | Open |
 
 ## Verification rule
 
