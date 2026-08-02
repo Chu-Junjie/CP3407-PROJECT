@@ -5,19 +5,21 @@
 
 ## Task 1 governance status
 
-| Item | Current status |
+| Item | Final status |
 |---|---|
-| Document owner | Chu Junjie |
-| Working branch | `docs/project-foundation-yuyang-unified` |
-| Source branch | `main` |
-| Source commit | `c1ac237` |
-| Yuyang baseline | `Candidate` |
-| Tracking Issue | `#16` — Open |
-| Project Board status | `In Progress` |
-| Automated tests for the candidate | `Not executed` |
-| Non-author review | `Requested` |
-| Pull Request | `#17` — Open |
-| Merge to main | `Not completed` |
+| Coordinator | Chu Junjie |
+| Tracking Issue | `#16` — Closed |
+| Foundation Pull Request | `#17` — Merged |
+| Foundation branch | `docs/project-foundation` |
+| Closeout branch | `docs/task1-closeout` |
+| Target branch | `main` |
+| Non-author reviewer | `@Chu Junjie` |
+| Review result | `Approved` |
+| Merge commit | `ae9366d` |
+| Project Board status | `Done` |
+| Project baseline | `Merged` |
+| Implementation verification | `Not verified in Task 1` |
+| Automated PR checks | `Not run` |
 
 The documentation branch records the adopted direction only. It does not prove that the Yuyang candidate implementation works or that its tests pass.
 
