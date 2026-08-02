@@ -1,6 +1,6 @@
 # CP3407 Project Status — Yuyang Unified Baseline
 
-**Evidence date:** 1 August 2026  
+**Evidence date:** 2 August 2026
 **Purpose:** Shared factual baseline for the team and AI assistants
 
 ## Task 1 governance status
@@ -41,7 +41,24 @@ The documentation branch records the adopted direction only. It does not prove t
 | Project Board status | `Done` |
 | Task 2 status | `Completed` |
 
-Task 2 remains in progress until actual database, test, review and merge evidence is available.
+Task 2 is recorded as completed by the retained database, review, and merge evidence above. The Task 3 update below does not re-run or revalidate Task 2 acceptance checks.
+
+## Task 3 backend CI and compatibility status
+
+| Item | Actual current status |
+|---|---|
+| Coordinator branch | `feature/share-ci-evidence` |
+| Dependency manifest | **Candidate** - audited to `Flask`, `Flask-Cors`, `pandas`, `pytest`, and `requests`; clean installation not executed |
+| Installed dependency consistency | **Passed** - `python -m pip check` reported no broken requirements; exit code `0` |
+| Python compilation | **Passed** - `python -m compileall -q .`; exit code `0` |
+| Test collection | **Passed** - 21 tests collected; exit code `0` |
+| Full test baseline | **Failed** - 5 failed, 1 passed, 15 errors; exit code `1` |
+| Legacy fixture compatibility | **Blocked** - obsolete `server.CSV_PATH` patch causes all 15 `test_server.py` setup errors |
+| Mock compatibility | **Failed** - 5 failed and 1 passed in `test_mock.py` |
+| Backend Pull Request | **Not confirmed** |
+| Task 3 | **In Progress** |
+
+The successful collection result proves discoverability only. It does not override the failed full-suite result.
 
 ## Current repository before Yuyang integration
 
@@ -73,7 +90,7 @@ The updated backend candidate adds:
 |---|---|---|
 | `products` | Existing, 9,000 rows | Category, brand, price and behavioural scoring |
 | `product_specs` | Supplied candidate, 33 rows | Real display names, specs, use cases and PurchaseURL for US-05/07 |
-| `feedback` | Still to implement | US-08 persisted up/down feedback |
+| `feedback` | Backend candidate; Task 3 acceptance not evidenced | US-08 persisted up/down feedback |
 
 `brand_links` is removed from the final plan.
 
@@ -96,20 +113,20 @@ The updated backend candidate adds:
 | US-05 | Database/backend candidate | Merge product_specs and `/api/compare`; integrate 2–3 product comparison UI |
 | US-06 | Partial | Support query and explicit excluded_brands consistently |
 | US-07 | Data candidate | Use PurchaseURL and safe frontend fallback; document URL limitation |
-| US-08 | Planned | Add feedback schema, route, UI and tests |
-| US-09 | Planned | Add same-category cheaper spec-complete alternative |
+| US-08 | Backend candidate / Task 3 not evidenced | Verify valid and invalid votes, HTTP response, persistence, and integrated UI |
+| US-09 | Backend candidate / Task 3 not evidenced | Verify same-category, cheaper, different-ID, specification-complete alternative and null behavior |
 | US-10 | Planned | URL sharing/restoration |
 
 ## Known integration blockers
 
-1. Old tests assume `setup_database()` returns an integer; Yuyang candidate returns a count dictionary.
-2. Old temporary DB fixtures do not create a temporary `product_specs.csv`.
-3. Old mocks refer to `TABLE_NAME`; the candidate uses `PRODUCTS_TABLE` and `SPECS_TABLE`.
-4. Invalid `max_price` currently falls back silently instead of returning 400.
-5. Explicit `excluded_brands` is not fully merged with text exclusions.
-6. Feedback and budget alternative are not implemented in the candidate.
-7. Final HTML still needs real API and comparison integration.
-8. Test execution has not been verified in the current packaging environment because Flask is unavailable there.
+1. All 15 legacy `test_server.py` items stop in fixture setup because the fixture patches obsolete `server.CSV_PATH`.
+2. The legacy fixture does not provide separate current-schema products and `product_specs` inputs with matching ProductIDs and a temporary SQLite database.
+3. The old mocks do not fully model the current `setup_database()` count-dictionary contract, two-table imports, schema checks, `PRAGMA` responses, or joined queries.
+4. Health and recommend endpoint mocks do not isolate all current database and initialization paths.
+5. One leaderboard mock asserts an obsolete internal `setup_database()` call.
+6. The full test baseline remains failed: 5 failed, 1 passed, and 15 errors.
+7. Current acceptance evidence is missing for comparison, exclusion merging, product links, feedback, and the budget-alternative rules.
+8. The backend Pull Request, review, and merge are not confirmed.
 
 ## Task 1 risk register
 
@@ -117,7 +134,7 @@ The updated backend candidate adds:
 |---|---|---|---|---|---|
 | R-01 | Old documents or prompts still describe `brand_links` as part of the final design | Database, API and frontend may follow conflicting contracts | Relevant document owner | Junjie | Closed |
 | R-02 | The supplied candidate modifies `server.py` before backend ownership is formally transferred | Conflicting backend changes and difficult merge review | Yuyang and Zaikun | Junjie | Closed |
-| R-03 | Existing tests and mocks are incompatible with the two-table setup | Tests may fail to collect or may report misleading results | Yuyang and Zaikun | Junjie | Closed |
+| R-03 | Existing tests and mocks are incompatible with the two-table setup | Tests collect, but the preserved run reports 5 failures and 15 setup errors | Yuyang and Zaikun | Junjie | Open |
 | R-04 | The 9,000 behavioural records may be incorrectly described as 9,000 fully specified products | Misleading technical documentation and demonstration claims | All members | Junjie | Closed |
 | R-05 | The static HTML mock may be mistaken for completed frontend integration | User Stories may be marked Done without real API evidence | Guanyu | Junjie | Closed |
 | R-06 | Candidate or unexecuted work may be reported as Passed, Verified or Done | Invalid project evidence and unreliable traceability | All members | Junjie | Closed |

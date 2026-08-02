@@ -62,6 +62,24 @@ This is a live matrix. `Candidate` means code was supplied but is not verified u
 | US-07 | `PurchaseURL` source and missing-link limitation | Verified |
 | US-08 | Joined database recommendation scope and data limitations | Verified |
 
+## Task 3 backend verification evidence
+
+This section records the actual Task 3 collection and failed baseline. It does not replace the earlier implementation-candidate or Task 2 records.
+
+| User Story | Actual Task 3 tests or evidence | Actual result | Task 3 status |
+|---|---|---|---|
+| US-01 | `test_us01_parse_explicit_budget`; `test_us01_parse_no_budget`; `test_us01_parse_budget_with_comma` | All three are prevented from executing by the autouse fixture's obsolete `server.CSV_PATH` patch | **Blocked by fixture setup** |
+| US-02 | `test_us02_database_setup_imports_rows`; `test_us02_database_setup_does_not_duplicate_rows`; `test_us02_health_endpoint_reports_database` | All three are prevented from executing by the same fixture error | **Blocked by fixture setup** |
+| US-03 | `test_us03_process_post_filters`; `test_us03_accept_intent_as_query`; `test_us03_invalid_max_price_falls_back_to_query` | All three are prevented from executing; the last test name also encodes an obsolete fallback expectation rather than the current HTTP 400 gate | **Blocked by fixture setup** |
+| US-04 | `test_us04_match_score_is_between_zero_and_one_hundred`; `test_us04_matching_preferences_receive_higher_score`; `test_us04_reasons_describe_matching_preferences` | All three are prevented from executing by the fixture error | **Blocked by fixture setup** |
+| US-05 | `test_us05_candidates_never_exceed_maximum_budget`; `test_us05_leaderboard_contains_at_most_five_sorted_items`; `test_us05_recommendation_api_returns_required_fields` | All three are prevented from executing; despite their legacy prefixes, none verifies the current `/api/compare` requirement | **Blocked by fixture setup** |
+| US-06 | No complete collected test proves text-exclusion and explicit `excluded_brands` merging | No successful applicable evidence | **Not evidenced** |
+| US-07 | No collected test verifies `PurchaseURL` or product-link behavior | No successful applicable evidence | **Not evidenced** |
+| US-08 | No collected test verifies feedback validation or persistence; the preserved mock/API baseline is incomplete and failed overall | Feedback completion cannot be claimed | **Incomplete / not evidenced** |
+| US-09 | No complete test covers same-category, cheaper, different-ProductID, specification-complete budget alternatives and the null case | No successful applicable evidence | **Not evidenced** |
+
+Task 3 collection succeeded with 21 tests and exit code `0`. The preserved full run remains **Failed** with `5 failed, 1 passed, 15 errors` and exit code `1`. Collection is not pass evidence.
+
 ## Required evidence columns before final release
 
 For every Story add:

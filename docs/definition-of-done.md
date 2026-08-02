@@ -53,6 +53,23 @@ This closeout confirms completion of Task 1 governance work. It does not represe
 
 Task 2 is only complete when all required evidence above is confirmed.
 
+## Task 3 backend CI evidence checkpoint
+
+The following checklist records only evidence that has actually succeeded. It is not a claim that Task 3 is Done.
+
+- [x] `requirements.txt` contains only the five confirmed direct dependencies for this Task 3 baseline.
+- [x] `python -m pip check` completed successfully with exit code `0` in the current Python 3.14.6 environment.
+- [x] `python -m compileall -q .` completed successfully with exit code `0`.
+- [x] `python -m pytest --collect-only -q` collected 21 tests with exit code `0`.
+- [x] The failed full-suite baseline is preserved and accurately records `5 failed, 1 passed, 15 errors` with exit code `1`.
+- [ ] The full backend suite passes.
+- [ ] Legacy fixtures are compatible with the current products and `product_specs` database contract.
+- [ ] Mock tests are compatible with the current setup, schema, health, recommend, and leaderboard contracts.
+- [ ] All API completion gates are verified with successful evidence.
+- [ ] The backend Pull Request is reviewed and merged.
+
+Task 3 remains **In Progress**. Successful compilation and collection do not satisfy the unchecked compatibility, API, full-suite, review, or merge gates.
+
 ## 2. User Story Definition of Done
 
 A User Story may be moved to **Done** only when every applicable item below is complete.

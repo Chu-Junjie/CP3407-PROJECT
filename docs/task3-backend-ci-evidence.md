@@ -1,287 +1,165 @@
 # Task 3 Backend CI and Test Evidence
 
-## 1. Document control
+## Document control
 
 | Item | Current record |
 |---|---|
+| Evidence date | 2 August 2026 |
 | Coordinator | Chu Junjie |
-| Task | Task 3 — Backend API, US-09, feedback and legacy test compatibility |
+| Repository | `C:\JCU\CP3407\CP3407-PROJECT` |
 | Working branch | `feature/share-ci-evidence` |
-| Current backend branch available remotely | `feature/product-database` |
-| Planned final backend branch | `feature/final-backend` |
-| Planned final backend branch status | Not present on the remote repository at the time of audit |
-| Backend Pull Request | Not yet confirmed |
-| Tracking Issue | Not yet recorded |
-| Baseline commit | Not yet recorded |
-| Overall Task 3 status | In Progress |
+| Coordinator scope | Dependency, test, CI-readiness, traceability, and handoff evidence only |
+| Backend Pull Request | Not confirmed |
+| Overall Task 3 status | **In Progress** |
 
-## 2. Coordinator scope
+No backend or test implementation changes are part of this coordinator evidence update. In particular, `server.py`, `test_server.py`, and `test_mock.py` must remain unchanged.
 
-The coordinator evidence work for Task 3 covers:
-
-- dependency and `requirements.txt` auditing;
-- CI dependency preparation;
-- Python compilation evidence;
-- pytest discovery and execution evidence;
-- test mapping for US-01–09;
-- legacy and new test compatibility;
-- regression and TDD evidence review;
-- backend Pull Request completeness;
-- Requirements Traceability, Definition of Done and Project Board updates.
-
-Backend business logic changes to `server.py` remain the responsibility of the backend implementation owner. The coordinator records failures and evidence gaps rather than changing backend behaviour to force a passing result.
-
-## 3. Status vocabulary
+## Status vocabulary
 
 | Status | Meaning |
 |---|---|
-| Not executed | The command has not yet been run |
-| Passed | The command completed successfully with supporting output |
-| Failed | The command ran and reported one or more failures |
-| Blocked | The command could not complete because of a documented blocker |
-| Candidate | Code or configuration exists but has not been fully verified |
-| Merged | The implementation Pull Request has entered `main` |
-| Verified | The required evidence has been reviewed and confirmed |
+| Passed | The check ran successfully and has saved output with exit code `0`. |
+| Failed | The check ran and reported failures. |
+| Blocked | A named incompatibility prevents the relevant test bodies or completion gate from being exercised. |
+| Candidate | The artifact exists and has been audited, but its clean-environment use has not been verified. |
+| Not evidenced | No applicable successful test or retained acceptance evidence was found. |
+| Not confirmed | Repository evidence is insufficient to make the claim. |
 
-## 4. Repository baseline
+## Dependency status
 
-| Check | Actual result | Status |
-|---|---|---|
-| Current coordinator branch | `feature/share-ci-evidence` | Confirmed |
-| `server.py` tracked in current `HEAD` | Present | Confirmed |
-| `server.py` tracked in `origin/main` | Present | Confirmed |
-| Local working-tree state observed during audit | `D server.py` | Blocked — local deletion must be restored before testing |
-| Remote `feature/final-backend` branch | Not found | Not available |
-| Remote `feature/product-database` branch | Present | Confirmed |
-| Python source files observed | `CP3407_recommender_ui.py`, `server.py`, `test_mock.py`, `test_server.py` | Confirmed |
-
-### Required local correction
-
-Before running the Task 3 baseline, restore the tracked backend file:
-
-```powershell
-git restore --source=HEAD -- server.py
-git status --short
-Test-Path .\server.py
-git diff -- server.py
-```
-
-Expected result:
-
-- `D server.py` no longer appears in `git status --short`;
-- `Test-Path .\server.py` returns `True`;
-- `git diff -- server.py` produces no output.
-
-## 5. Dependency baseline
-
-| Check | Actual result | Status |
-|---|---|---|
-| `requirements.txt` in repository root | Missing | Blocked |
-| Other dependency manifests | No `pyproject.toml`, `Pipfile`, `setup.py`, `setup.cfg` or `environment.yml` found | Confirmed |
-| `python -m pip check` | `No broken requirements found.` | Passed for currently installed packages only |
-| Flask import | `ModuleNotFoundError: No module named 'flask'` | Blocked |
-| `requests` usage | Imported by `CP3407_recommender_ui.py` | Confirmed |
-| `pytest` usage | Imported by `test_server.py` | Confirmed |
-| Flask dependency | Required by the backend and Flask test client | Confirmed |
-| Dependency installation from project manifest | Not executed | Blocked — manifest missing |
-| Dependency consistency after installation | Not executed | Pending |
-
-### Interpretation note
-
-The successful `pip check` result only confirms that currently installed packages do not report broken dependencies. It does not confirm that all project dependencies are installed.
-
-## 6. Proposed minimal dependency manifest
-
-The initial dependency manifest should contain only direct dependencies confirmed by the current project:
+`requirements.txt` has been audited to contain only these confirmed direct dependencies:
 
 ```text
 Flask
+Flask-Cors
+pandas
 pytest
 requests
 ```
 
-Before committing, audit all Python imports and add another package only when the project directly imports or invokes it.
+The previous local manifest was a UTF-16 package-freeze-style list containing unrelated environment packages. It was replaced with the direct dependency list; `pip freeze` was not used.
 
-Recommended creation command:
-
-```powershell
-@(
-    "Flask"
-    "pytest"
-    "requests"
-) | Set-Content -Encoding utf8 .\requirements.txt
-```
-
-Do not generate the file using `pip freeze`, because that would include unrelated packages from the local machine.
-
-## 7. Dependency installation evidence
-
-| Check | Command | Actual result | Status |
-|---|---|---|---|
-| Install dependencies | `python -m pip install -r requirements.txt` | Not executed | Pending |
-| Check installed dependencies | `python -m pip check` | Not executed after installation | Pending |
-| Confirm Flask version | `python -c "from importlib.metadata import version; print(version('Flask'))"` | Not executed | Pending |
-| Confirm pytest version | `python -c "from importlib.metadata import version; print(version('pytest'))"` | Not executed | Pending |
-| Confirm requests version | `python -c "from importlib.metadata import version; print(version('requests'))"` | Not executed | Pending |
-
-## 8. CI baseline
-
-| Check | Command or evidence | Actual result | Status |
-|---|---|---|---|
-| GitHub Actions workflow | Repository workflow audit | No matching workflow evidence found during the initial search | Not confirmed |
-| Python compilation | `python -m compileall -q .` | Not executed | Pending |
-| Pytest collection | `python -m pytest --collect-only -q` | Not executed | Pending |
-| Full pytest baseline | `python -m pytest -q` | Not executed | Pending |
-| Coverage | Coverage tool/configuration not yet confirmed | Not executed |
-| CI result | No completed CI run recorded | Not executed |
-
-## 9. Evidence file locations
-
-The following files should be generated from real command output:
-
-| Evidence | File |
-|---|---|
-| Python compilation | `docs/evidence/task3-compile.txt` |
-| Pytest collection | `docs/evidence/task3-pytest-collection.txt` |
-| Full pytest baseline | `docs/evidence/task3-pytest-baseline.txt` |
-| Coverage result, when configured | `docs/evidence/task3-coverage.txt` |
-
-Recommended commands:
-
-```powershell
-New-Item -ItemType Directory -Force .\docs\evidence
-
-python -m compileall -q . 2>&1 |
-    Tee-Object -FilePath .\docs\evidence\task3-compile.txt
-
-python -m pytest --collect-only -q 2>&1 |
-    Tee-Object -FilePath .\docs\evidence\task3-pytest-collection.txt
-
-python -m pytest -q 2>&1 |
-    Tee-Object -FilePath .\docs\evidence\task3-pytest-baseline.txt
-```
-
-The exit code must be recorded immediately after each command.
-
-## 10. Test baseline
-
-| Check | Command | Actual result | Status |
-|---|---|---|---|
-| Python compilation | `python -m compileall -q .` | Not executed | Not executed |
-| Test collection | `python -m pytest --collect-only -q` | Not executed | Not executed |
-| Full test suite | `python -m pytest -q` | Not executed | Not executed |
-| Legacy `test_server.py` | `python -m pytest test_server.py -v` | Not executed | Not executed |
-| Legacy `test_mock.py` | `python -m pytest test_mock.py -v` | Not executed | Not executed |
-
-## 11. Test-to-requirement mapping
-
-Only real collected test names should replace the pending entries below.
-
-| User Story | Required backend behaviour | Test evidence | Current status | Evidence gap |
-|---|---|---|---|---|
-| US-01 | Request and query input handling | Pending test discovery | Not confirmed | Test mapping required |
-| US-02 | Database setup and product access | Pending test discovery | Not confirmed | Test mapping required |
-| US-03 | Recommendation response behaviour | Pending test discovery | Not confirmed | Test mapping required |
-| US-04 | Filters and response contract | Pending test discovery | Not confirmed | Test mapping required |
-| US-05 | Compare exactly 2–3 unique valid ProductIDs | Pending test discovery | Not confirmed | Success and invalid-input tests required |
-| US-06 | Empty-result and server-error handling | Pending test discovery | Not confirmed | Response-status tests required |
-| US-07 | Product and purchase URL fields | Pending test discovery | Not confirmed | Field and null-handling tests required |
-| US-08 | Count, message and budget alternative | Pending test discovery | Not confirmed | Contract tests required |
-| US-09 | Category, brand, budget, exclusions and use-case rules | Pending test discovery | Not confirmed | Rule and regression tests required |
-
-## 12. Task 3 completion gates
-
-| Completion gate | Current status | Required evidence |
+| Check | Actual result | Status |
 |---|---|---|
-| `/api/recommend` returns the complete contract | Not verified | API response tests and actual output |
-| `/api/compare` accepts only 2 or 3 unique valid ProductIDs | Not verified | Success, count, duplicate and invalid-ID tests |
-| Invalid `max_price` returns HTTP 400 | Not verified | Regression test |
-| Explicit and text-based exclusions are combined | Not verified | US-09 filter tests |
-| `/api/feedback` returns HTTP 201 and persists the record | Not verified | API test and database query |
-| US-09 rules are fully tested | Not verified | Test mapping and actual results |
-| Legacy and new tests can be collected | Not verified | Successful pytest collection output |
-| Backend Pull Request is reviewed and merged | Not completed | GitHub review and merge evidence |
+| Manifest content audit | All five confirmed direct dependencies are present; unrelated packages were removed | Candidate |
+| Installed-environment consistency | `python -m pip check` reported `No broken requirements found.`; exit code `0` | Passed |
+| Clean installation from this manifest | Not executed as part of this evidence-only task | Not evidenced |
 
-Task 3 remains **In Progress** until every completion gate has supporting evidence.
+The manifest remains a **Candidate** until installation from the manifest is verified in a clean environment. A passing `pip check` validates the currently installed environment, not a fresh installation.
 
-## 13. Backend Pull Request audit
+## Current check results
 
-| Audit item | Current status |
-|---|---|
-| Backend implementation owner | Not recorded in this evidence file |
-| Source branch | Not yet confirmed |
-| Target branch | Expected `main`, not yet confirmed |
-| Related Issue | Not confirmed |
-| Pull Request | Not opened or not yet confirmed |
-| Test commands included in PR | Not confirmed |
-| Actual test output included | Not confirmed |
-| Regression evidence | Not confirmed |
-| Legacy test compatibility | Not confirmed |
-| Non-author review | Not requested or not confirmed |
-| Merge conflicts | Not confirmed |
-| Merge status | Not completed |
+The managed terminal did not expose `python` on `PATH`; the first literal `python -m pip check` attempt therefore exited `1` before Python ran. The requested checks were then executed with the existing interpreter at `C:\Users\29034\AppData\Local\Programs\Python\Python314\python.exe`, which reported Python `3.14.6`.
 
-## 14. Pull Request quality checklist
+| Check | Requested command | Actual result | Exit code | Status | Evidence |
+|---|---|---|---:|---|---|
+| Dependency consistency | `python -m pip check` | `No broken requirements found.` | `0` | Passed | `docs/evidence/task3-pip-check.txt` |
+| Python compilation | `python -m compileall -q .` | No output | `0` | Passed | `docs/evidence/task3-python-compileall.txt` |
+| Dedicated pytest collection | `python -m pytest --collect-only -q` | `21 tests collected in 2.12s` | `0` | Passed | `docs/evidence/task3-pytest-collect-only.txt` |
 
-- [ ] The backend PR is linked to a Task 3 Issue.
-- [ ] The source and target branches are correct.
-- [ ] The PR does not remove required database joins to make legacy tests pass.
-- [ ] `/api/recommend` response keys match the agreed contract.
-- [ ] `/api/compare` preserves 2–3 unique valid ID validation.
-- [ ] Invalid `max_price` has a regression test and returns HTTP 400.
-- [ ] Explicit and text exclusions are tested together.
-- [ ] `/api/feedback` returns HTTP 201 and writes to the database.
-- [ ] US-09 rules have mapped tests.
-- [ ] Old and new tests are collected successfully.
-- [ ] Test output is provided, not only statements that testing was completed.
-- [ ] A non-author reviewer has completed a GitHub review.
-- [ ] All review conversations are resolved before merge.
+Collection success proves discovery only. It does not show that the collected tests pass.
 
-## 15. Current blockers
+## Preserved full-suite baseline
 
-| Blocker | Impact | Required action | Owner |
-|---|---|---|---|
-| `server.py` is locally deleted in the coordinator working tree | Compilation and test evidence would not represent the repository baseline | Restore from `HEAD` before testing | Chu Junjie |
-| No dependency manifest exists | Clean installation and CI setup cannot be reproduced | Add a minimal audited `requirements.txt` | Chu Junjie |
-| Flask is not installed in the current Python environment | Backend import and test collection may fail | Install from the new dependency manifest | Chu Junjie |
-| Final backend branch is not present remotely | Final backend PR cannot yet be audited | Confirm the actual backend branch and PR with the implementation owner | Backend owner |
-| Test discovery has not been executed | US-01–09 mapping cannot be completed | Run pytest collection and record output | Chu Junjie |
-| GitHub Actions workflow is not confirmed | Automated CI status is unavailable | Audit or create the agreed workflow after dependencies are confirmed | Chu Junjie |
-
-## 16. Next evidence actions
-
-1. Restore `server.py` and confirm a clean source-code working tree.
-2. Create the audited minimal `requirements.txt`.
-3. Install dependencies from the manifest.
-4. Record Python and dependency versions.
-5. Run compilation and pytest collection.
-6. Run the full baseline test suite.
-7. Map real collected tests to US-01–09.
-8. Create Issues for dependency, collection or regression failures.
-9. Audit the backend PR when the implementation branch is available.
-10. Update Requirements Traceability, Definition of Done and Project Board using actual results only.
-
-## 17. Current conclusion
-
-The Task 3 evidence baseline is not yet verified.
-
-Confirmed facts at this stage:
-
-- `server.py` exists in the repository baseline and in `origin/main`;
-- the coordinator working tree showed a local deletion of `server.py`;
-- no project dependency manifest was found;
-- `pip check` found no conflicts among currently installed packages;
-- Flask is missing from the current Python environment;
-- `requests` and `pytest` are directly used by current project files;
-- the planned final backend branch is not currently available remotely;
-- compilation, test collection, full tests and coverage have not yet been evidenced.
-
-Therefore, the accurate Task 3 status is:
+The full suite was **not rerun** during this evidence update because the existing result is verifiable in `docs/evidence/task3-pytest-baseline.txt`.
 
 ```text
-Dependency baseline: Blocked / In Progress
-CI baseline: Not executed
-Test discovery: Not executed
-Backend PR: Not confirmed
-Task 3: In Progress
+Python: 3.14.6
+pytest: 9.1.1
+Full result: 5 failed, 1 passed, 15 errors in 3.03s
+Exit code: 1
+Overall result: Failed
 ```
+
+The preserved baseline file had SHA-256 `F911205C15E8DCFCE539382414CA78B3C0204E8ADB88B09428D9A470F5430BA2` before this update. It was not overwritten or deleted.
+
+## Failure classification
+
+### Legacy `test_server.py` fixture incompatibility
+
+All 15 collected `test_server.py` items error during the autouse fixture setup at:
+
+```python
+monkeypatch.setattr(server, "CSV_PATH", csv_path)
+```
+
+The current backend has no `CSV_PATH`. It uses `PRODUCTS_CSV_PATH`, `SPECS_CSV_PATH`, and `DB_PATH`. Because setup fails, none of the 15 legacy test bodies executes.
+
+The fixture must use temporary products and `product_specs` inputs with complete current schemas, matching unique `ProductID` values, and a temporary SQLite database. Restoring an obsolete production alias solely to satisfy the fixture is not an acceptable fix.
+
+**Status: Blocked by fixture setup.**
+
+### `test_mock.py` compatibility failures
+
+The preserved baseline records five failures and one pass in `test_mock.py`. The passing item is `test_mock_missing_csv_error_response`.
+
+| Failure | Current incompatibility |
+|---|---|
+| `test_mock_database_setup_imports_csv_when_table_is_missing` | A products-only dataframe is reused when current setup separately imports `product_specs`; the setup return contract is now a count dictionary. |
+| `test_mock_health_endpoint_without_real_database` | Patching only `setup_database` does not isolate current schema and joined-count queries; the test reaches a missing `product_specs` table. |
+| `test_mock_recommend_endpoint_without_running_real_engine` | The mock does not isolate the current budget-alternative/data-initialization path and reaches real database initialization. |
+| `test_mock_database_query_contains_exclusion_filter` | The mock lacks current per-table schema, `PRAGMA table_info`, and joined-query responses. |
+| `test_mock_leaderboard_uses_controlled_candidate_products` | It expects the obsolete internal behavior that `build_leaderboard()` directly calls `setup_database()`. |
+
+**Status: Failed.**
+
+## US-01 through US-09 evidence mapping
+
+The `test_usNN` prefixes reflect the legacy test numbering. They are listed exactly as collected; where the current story definition differs, the limitation is stated.
+
+| User Story | Actual collected tests or evidence | Current Task 3 status |
+|---|---|---|
+| US-01 | `test_us01_parse_explicit_budget`; `test_us01_parse_no_budget`; `test_us01_parse_budget_with_comma` | Blocked by fixture setup |
+| US-02 | `test_us02_database_setup_imports_rows`; `test_us02_database_setup_does_not_duplicate_rows`; `test_us02_health_endpoint_reports_database` | Blocked by fixture setup |
+| US-03 | `test_us03_process_post_filters`; `test_us03_accept_intent_as_query`; `test_us03_invalid_max_price_falls_back_to_query` | Blocked by fixture setup; the last test name represents an obsolete fallback expectation |
+| US-04 | `test_us04_match_score_is_between_zero_and_one_hundred`; `test_us04_matching_preferences_receive_higher_score`; `test_us04_reasons_describe_matching_preferences` | Blocked by fixture setup |
+| US-05 | `test_us05_candidates_never_exceed_maximum_budget`; `test_us05_leaderboard_contains_at_most_five_sorted_items`; `test_us05_recommendation_api_returns_required_fields` | Blocked by fixture setup; these tests do not evidence the current `/api/compare` acceptance rules |
+| US-06 | No complete test proves parsing and merging text exclusions with explicit `excluded_brands` | Not evidenced |
+| US-07 | No collected test verifies `PurchaseURL` or the product-link behavior | Not evidenced |
+| US-08 | No collected test verifies feedback API validation or persistence; the existing mock/API baseline is incomplete and failed overall | Incomplete / not evidenced |
+| US-09 | No complete test verifies same-category, cheaper, different-ID, specification-complete budget alternatives or the null case | Not evidenced |
+
+## Task 3 completion gates
+
+| Completion gate | Current status | Evidence or blocker |
+|---|---|---|
+| Audited direct-dependency manifest | Candidate | Correct direct contents; clean installation not executed |
+| Installed dependencies are consistent | Passed | `pip check`, exit `0` |
+| Python sources compile | Passed | `compileall`, exit `0` |
+| Legacy and mock tests collect | Passed | 21 tests collected, exit `0` |
+| Full backend suite passes | Failed | `5 failed, 1 passed, 15 errors`, exit `1` |
+| Legacy fixtures are compatible | Blocked | Obsolete `server.CSV_PATH` stops all 15 server test bodies |
+| Mock tests are compatible | Failed | Five mock failures remain |
+| `/api/recommend` complete contract is verified | Not evidenced | Current recommend mock is incompatible and fails |
+| `/api/compare` accepts only 2 or 3 unique valid ProductIDs | Not evidenced | No collected compare acceptance tests |
+| Invalid `max_price` returns HTTP 400 | Not evidenced | Legacy test is blocked and expects obsolete fallback behavior |
+| Text and explicit exclusions are combined | Not evidenced | No complete current-contract regression test |
+| `/api/feedback` returns HTTP 201 and persists | Not evidenced | No collected feedback acceptance test |
+| US-09 budget-alternative rules are fully tested | Not evidenced | Complete rule and null-case tests are missing |
+| Backend Pull Request reviewed and merged | Not confirmed | No actual backend PR evidence was established in this task |
+
+## Current blockers
+
+1. The legacy fixture patches obsolete `server.CSV_PATH`, producing 15 setup errors.
+2. The fixture does not provide separate current-schema products and `product_specs` data or complete temporary SQLite isolation.
+3. Mock setup reuses products-only data for `product_specs` and does not model the current count-dictionary contract.
+4. Health and recommend endpoint mocks do not isolate all current database and initialization calls.
+5. Current schema, `PRAGMA`, joined-query, and integrity-query responses are incomplete in the SQLite mocks.
+6. One mock asserts an obsolete internal `setup_database()` call instead of observable leaderboard behavior.
+7. US-05 compare, US-06 exclusion merging, US-07 product links, US-08 feedback, and US-09 budget-alternative completion gates lack successful acceptance evidence.
+8. A backend Pull Request, non-author review, and merge are not confirmed.
+
+## Compatibility handoff drafts
+
+Markdown drafts were prepared locally only:
+
+- `docs/issue-drafts/task3-legacy-fixture-compatibility.md`
+- `docs/issue-drafts/task3-mock-compatibility.md`
+
+No GitHub Issue was created.
+
+## Conclusion
+
+Dependency consistency, Python compilation, and pytest collection pass in the current environment. The preserved full-suite baseline remains failed, legacy fixture compatibility remains blocked, and mock compatibility remains failed. The backend Pull Request is not confirmed.
+
+**Task 3 remains In Progress.**
