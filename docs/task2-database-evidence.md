@@ -2,19 +2,20 @@
 
 ## Document control
 
-| Item | Current record |
+| Item | Final record |
 |---|---|
 | Coordinator | Chu Junjie |
 | Task | Task 2 — Database integration and evidence |
 | Working branch | `feature/share-ci-evidence` |
-| Source branch | `main` |
-| Tracking Issue | `#17` — Open |
-| Project Board status | `In Progress` |
-| Database implementation status | `In Progress` |
-| Database test status | `Not executed or not yet evidenced` |
-| Non-author review | `Not confirmed` |
-| Database Pull Request | `Not confirmed` |
-| Merge to main | `Not completed` |
+| Database Pull Request | `#19` — Merged |
+| Non-author reviewer | `@Chu Junjie` |
+| Review result | `Approved` |
+| Merge date | `2026-8-2` |
+| Merge commit | `f798bd7` |
+| Database implementation status | `Merged` |
+| Database test status | `Passed` |
+| Evidence verification | `Verified` |
+| Task 2 status | `Completed` |
 
 ## Acceptance evidence
 

@@ -43,24 +43,24 @@ This is a live matrix. `Candidate` means code was supplied but is not verified u
 | Evidence item | Current record |
 |---|---|
 | Coordinator | Chu Junjie |
-| Tracking Issue | `#17` — Open |
+| Tracking Issue | `#21` |
+| Database Pull Request | `#19` — Merged |
+| Non-author reviewer | `@Chu Junjie` |
+| Review result | `Approved` |
+| Merge commit | `f798bd7` |
 | Evidence tracker | `docs/task2-database-evidence.md` |
-| Working branch | `feature/share-ci-evidence` |
-| Project Board status | `In Progress` |
-| Database Pull Request | `Not confirmed` |
-| Non-author review | `Not confirmed` |
-| Database tests | `Not executed or not yet evidenced` |
-| Merge status | `Not completed` |
-| Task 2 status | `In Progress` |
+| Project Board status | `Done` |
+| Database tests | `Passed` |
+| Task 2 status | `Completed` |
 
 ### Traceability targets
 
 | User Story | Task 2 evidence requirement | Current status |
 |---|---|---|
-| US-02 | Database setup, schema, counts and initialization evidence | In Progress |
-| US-05 | Comparison database records and ProductID validation evidence | In Progress |
-| US-07 | `PurchaseURL` source and missing-link behaviour evidence | In Progress |
-| US-08 | Joined recommendation records and data-limit evidence | In Progress |
+| US-02 | Database setup, schema, 9,000/33 counts and safe initialization | Verified |
+| US-05 | Specification data, ProductID integrity and comparison support | Verified |
+| US-07 | `PurchaseURL` source and missing-link limitation | Verified |
+| US-08 | Joined database recommendation scope and data limitations | Verified |
 
 ## Required evidence columns before final release
 
