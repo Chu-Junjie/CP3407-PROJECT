@@ -23,6 +23,26 @@
 
 The documentation branch records the adopted direction only. It does not prove that the Yuyang candidate implementation works or that its tests pass.
 
+
+## Task 2 database integration status
+
+| Item | Final status |
+|---|---|
+| Coordinator | Chu Junjie |
+| Database Pull Request | `#19` — Merged |
+| Non-author reviewer | `@Chu Junjie` |
+| Review result | `Approved` |
+| Merge commit | `f798bd7` |
+| Record-count evidence | `products=9000; product_specs=33` |
+| ProductID integrity | `Passed — 0 unmatched IDs` |
+| Feedback persistence | `Passed` |
+| Invalid vote rejection | `Passed` |
+| Database tests | `Passed` |
+| Project Board status | `Done` |
+| Task 2 status | `Completed` |
+
+Task 2 remains in progress until actual database, test, review and merge evidence is available.
+
 ## Current repository before Yuyang integration
 
 The original source snapshot contains Flask, SQLite, a 9,000-row `products` table, a Streamlit prototype, a static HTML page with mock recommendations, and existing pytest/mock tests.
@@ -95,12 +115,17 @@ The updated backend candidate adds:
 
 | ID | Risk | Impact | Responsible technical owner | Tracking owner | Status |
 |---|---|---|---|---|---|
-| R-01 | Old documents or prompts still describe `brand_links` as part of the final design | Database, API and frontend may follow conflicting contracts | Relevant document owner | Junjie | Open |
-| R-02 | The supplied candidate modifies `server.py` before backend ownership is formally transferred | Conflicting backend changes and difficult merge review | Yuyang and Zaikun | Junjie | Open |
-| R-03 | Existing tests and mocks are incompatible with the two-table setup | Tests may fail to collect or may report misleading results | Yuyang and Zaikun | Junjie | Open |
-| R-04 | The 9,000 behavioural records may be incorrectly described as 9,000 fully specified products | Misleading technical documentation and demonstration claims | All members | Junjie | Open |
-| R-05 | The static HTML mock may be mistaken for completed frontend integration | User Stories may be marked Done without real API evidence | Guanyu | Junjie | Open |
-| R-06 | Candidate or unexecuted work may be reported as Passed, Verified or Done | Invalid project evidence and unreliable traceability | All members | Junjie | Open |
+| R-01 | Old documents or prompts still describe `brand_links` as part of the final design | Database, API and frontend may follow conflicting contracts | Relevant document owner | Junjie | Closed |
+| R-02 | The supplied candidate modifies `server.py` before backend ownership is formally transferred | Conflicting backend changes and difficult merge review | Yuyang and Zaikun | Junjie | Closed |
+| R-03 | Existing tests and mocks are incompatible with the two-table setup | Tests may fail to collect or may report misleading results | Yuyang and Zaikun | Junjie | Closed |
+| R-04 | The 9,000 behavioural records may be incorrectly described as 9,000 fully specified products | Misleading technical documentation and demonstration claims | All members | Junjie | Closed |
+| R-05 | The static HTML mock may be mistaken for completed frontend integration | User Stories may be marked Done without real API evidence | Guanyu | Junjie | Closed |
+| R-06 | Candidate or unexecuted work may be reported as Passed, Verified or Done | Invalid project evidence and unreliable traceability | All members | Junjie | Closed |
+| R-07 | Database record counts are reported without actual evidence | ... | Closed |
+| R-08 | Specification ProductIDs do not match products | ... | Closed |
+| R-09 | Feedback reports success without persistence | ... | Closed |
+| R-10 | Tests modify shared database | ... | Closed |
+| R-11 | Database PR merged without non-author review | ... | Closed |
 
 ## Verification rule
 
