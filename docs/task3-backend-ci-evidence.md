@@ -4,7 +4,7 @@
 
 | Item | Current record |
 |---|---|
-| Evidence date | 2 August 2026 |
+| Evidence dates | 2-3 August 2026 |
 | Coordinator | Chu Junjie |
 | Repository | `C:\JCU\CP3407\CP3407-PROJECT` |
 | Working branch | `feature/share-ci-evidence` |
@@ -27,27 +27,29 @@ No backend or test implementation changes are part of this coordinator evidence 
 
 ## Dependency status
 
-`requirements.txt` has been audited to contain only these confirmed direct dependencies:
+`requirements.txt` was reconciled with `origin/main` in merge commit `d412853`. The final manifest contains these six direct project, test, and deployment dependencies:
 
 ```text
-Flask
-Flask-Cors
-pandas
+Flask>=3.0,<4.0
+Flask-Cors>=4.0,<7.0
+gunicorn>=22,<24
+pandas>=2.0,<3.0
 pytest
 requests
 ```
 
-The previous local manifest was a UTF-16 package-freeze-style list containing unrelated environment packages. It was replaced with the direct dependency list; `pip freeze` was not used.
+The reconciliation preserves the Flask, Flask-Cors, and pandas version ranges and Gunicorn introduced by `origin/main`. It retains pytest and requests for the Task 3 test work. The earlier package-freeze-style manifest remains superseded; `pip freeze` was not used to create this manifest.
 
 | Check | Actual result | Status |
 |---|---|---|
-| Manifest content audit | All five confirmed direct dependencies are present; unrelated packages were removed | Candidate |
-| Installed-environment consistency | `python -m pip check` reported `No broken requirements found.`; exit code `0` | Passed |
-| Clean installation from this manifest | Not executed as part of this evidence-only task | Not evidenced |
+| Manifest reconciliation | All six approved dependencies are present once, with the approved version ranges and no unrelated package | Passed |
+| Installation in the existing environment | `python -m pip install -r requirements.txt` completed with exit code `0` | Passed |
+| Installed-environment consistency | The post-merge `python -m pip check` reported `No broken requirements found.`; exit code `0` | Passed |
+| Clean installation from this manifest | Not executed in a newly created environment | Not evidenced |
 
-The manifest remains a **Candidate** until installation from the manifest is verified in a clean environment. A passing `pip check` validates the currently installed environment, not a fresh installation.
+The manifest remains a **Candidate for clean-environment use** until installation is verified in a newly created environment. The successful install and `pip check` validate the existing Python 3.14.6 environment.
 
-## Current check results
+## Original coordinator check results
 
 The managed terminal did not expose `python` on `PATH`; the first literal `python -m pip check` attempt therefore exited `1` before Python ran. The requested checks were then executed with the existing interpreter at `C:\Users\29034\AppData\Local\Programs\Python\Python314\python.exe`, which reported Python `3.14.6`.
 
@@ -59,9 +61,9 @@ The managed terminal did not expose `python` on `PATH`; the first literal `pytho
 
 Collection success proves discovery only. It does not show that the collected tests pass.
 
-## Preserved full-suite baseline
+## Preserved historical full-suite baseline
 
-The full suite was **not rerun** during this evidence update because the existing result is verifiable in `docs/evidence/task3-pytest-baseline.txt`.
+The full suite was not rerun during the original 2 August evidence update because the existing result was verifiable in `docs/evidence/task3-pytest-baseline.txt`.
 
 ```text
 Python: 3.14.6
@@ -72,6 +74,22 @@ Overall result: Failed
 ```
 
 The preserved baseline file had SHA-256 `F911205C15E8DCFCE539382414CA78B3C0204E8ADB88B09428D9A470F5430BA2` before this update. It was not overwritten or deleted.
+
+## Post-requirements-merge validation
+
+The reconciled manifest was installed and the checks were rerun separately on 3 August 2026. These new artifacts do not overwrite the historical baseline.
+
+| Check | Command | Actual result | Exit code | Status | Evidence |
+|---|---|---|---:|---|---|
+| Manifest installation | `python -m pip install -r requirements.txt` | Installation completed; Gunicorn 23.0.0 and pandas 2.3.3 were installed | `0` | Passed | `docs/evidence/task3-pip-install-after-requirements-merge.txt` |
+| Dependency consistency | `python -m pip check` | `No broken requirements found.` | `0` | Passed | `docs/evidence/task3-pip-check-after-requirements-merge.txt` |
+| Python compilation | `python -m compileall -q .` | No output | `0` | Passed | `docs/evidence/task3-compile-after-requirements-merge.txt` |
+| Pytest collection | `python -m pytest --collect-only -q` | `21 tests collected in 7.13s` | `0` | Passed | `docs/evidence/task3-pytest-collection-after-requirements-merge.txt` |
+| Focused server tests | `python -m pytest test_server.py -v` | `15 errors in 2.89s` | `1` | Blocked | `docs/evidence/task3-test-server-after-requirements-merge.txt` |
+| Focused mock tests | `python -m pytest test_mock.py -v` | `5 failed, 1 passed in 2.60s` | `1` | Failed | `docs/evidence/task3-test-mock-after-requirements-merge.txt` |
+| Full pytest suite | `python -m pytest -q` | `5 failed, 1 passed, 15 errors in 2.98s` | `1` | Failed | `docs/evidence/task3-pytest-baseline-after-requirements-merge.txt` |
+
+The new full-suite baseline has the same failure counts and classifications as the preserved historical baseline. Collection success is still not pass evidence.
 
 ## Failure classification
 
@@ -123,11 +141,11 @@ The `test_usNN` prefixes reflect the legacy test numbering. They are listed exac
 
 | Completion gate | Current status | Evidence or blocker |
 |---|---|---|
-| Audited direct-dependency manifest | Candidate | Correct direct contents; clean installation not executed |
-| Installed dependencies are consistent | Passed | `pip check`, exit `0` |
-| Python sources compile | Passed | `compileall`, exit `0` |
-| Legacy and mock tests collect | Passed | 21 tests collected, exit `0` |
-| Full backend suite passes | Failed | `5 failed, 1 passed, 15 errors`, exit `1` |
+| Audited direct-dependency manifest | Candidate | Six approved dependencies reconciled and installed in the existing environment; clean-environment installation not executed |
+| Installed dependencies are consistent | Passed | Post-merge `pip check`, exit `0` |
+| Python sources compile | Passed | Post-merge `compileall`, exit `0` |
+| Legacy and mock tests collect | Passed | Post-merge collection found 21 tests, exit `0` |
+| Full backend suite passes | Failed | Post-merge result: `5 failed, 1 passed, 15 errors`, exit `1` |
 | Legacy fixtures are compatible | Blocked | Obsolete `server.CSV_PATH` stops all 15 server test bodies |
 | Mock tests are compatible | Failed | Five mock failures remain |
 | `/api/recommend` complete contract is verified | Not evidenced | Current recommend mock is incompatible and fails |
@@ -160,6 +178,6 @@ No GitHub Issue was created.
 
 ## Conclusion
 
-Dependency consistency, Python compilation, and pytest collection pass in the current environment. The preserved full-suite baseline remains failed, legacy fixture compatibility remains blocked, and mock compatibility remains failed. The backend Pull Request is not confirmed.
+The reconciled six-dependency manifest installs successfully in the existing environment. Dependency consistency, Python compilation, and pytest collection pass. The historical baseline remains preserved, and the new post-merge full-suite run remains failed with `5 failed, 1 passed, 15 errors`, exit code `1`. Legacy fixture compatibility remains blocked, mock compatibility remains failed, and the backend Pull Request is not confirmed.
 
 **Task 3 remains In Progress.**

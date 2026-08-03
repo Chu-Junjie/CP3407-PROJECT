@@ -64,7 +64,7 @@ This is a live matrix. `Candidate` means code was supplied but is not verified u
 
 ## Task 3 backend verification evidence
 
-This section records the actual Task 3 collection and failed baseline. It does not replace the earlier implementation-candidate or Task 2 records.
+This section records the original Task 3 evidence and the separate post-requirements-merge validation. It does not replace the earlier implementation-candidate or Task 2 records.
 
 | User Story | Actual Task 3 tests or evidence | Actual result | Task 3 status |
 |---|---|---|---|
@@ -78,7 +78,9 @@ This section records the actual Task 3 collection and failed baseline. It does n
 | US-08 | No collected test verifies feedback validation or persistence; the preserved mock/API baseline is incomplete and failed overall | Feedback completion cannot be claimed | **Incomplete / not evidenced** |
 | US-09 | No complete test covers same-category, cheaper, different-ProductID, specification-complete budget alternatives and the null case | No successful applicable evidence | **Not evidenced** |
 
-Task 3 collection succeeded with 21 tests and exit code `0`. The preserved full run remains **Failed** with `5 failed, 1 passed, 15 errors` and exit code `1`. Collection is not pass evidence.
+The historical full-suite baseline remains preserved as **Failed** with `5 failed, 1 passed, 15 errors` and exit code `1`.
+
+After `requirements.txt` was reconciled with `origin/main`, the final manifest contained six direct project, test, and deployment dependencies. The existing environment installed the manifest successfully, `pip check` and compilation passed, and collection again found 21 tests with exit code `0`. The separate post-merge full run also remained **Failed** with `5 failed, 1 passed, 15 errors` and exit code `1`. No US-01 through US-09 status is promoted by collection or by the unchanged failed baseline.
 
 ## Required evidence columns before final release
 

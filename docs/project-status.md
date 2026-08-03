@@ -1,6 +1,6 @@
 # CP3407 Project Status — Yuyang Unified Baseline
 
-**Evidence date:** 2 August 2026
+**Evidence date:** 3 August 2026
 **Purpose:** Shared factual baseline for the team and AI assistants
 
 ## Task 1 governance status
@@ -48,17 +48,19 @@ Task 2 is recorded as completed by the retained database, review, and merge evid
 | Item | Actual current status |
 |---|---|
 | Coordinator branch | `feature/share-ci-evidence` |
-| Dependency manifest | **Candidate** - audited to `Flask`, `Flask-Cors`, `pandas`, `pytest`, and `requests`; clean installation not executed |
-| Installed dependency consistency | **Passed** - `python -m pip check` reported no broken requirements; exit code `0` |
-| Python compilation | **Passed** - `python -m compileall -q .`; exit code `0` |
-| Test collection | **Passed** - 21 tests collected; exit code `0` |
-| Full test baseline | **Failed** - 5 failed, 1 passed, 15 errors; exit code `1` |
+| Dependency manifest | **Candidate for clean-environment use** - reconciled with `origin/main` to six direct project, test, and deployment dependencies; approved ranges and Gunicorn preserved; pytest and requests retained |
+| Existing-environment installation | **Passed** - `python -m pip install -r requirements.txt`; exit code `0` |
+| Installed dependency consistency | **Passed** - post-merge `python -m pip check` reported no broken requirements; exit code `0` |
+| Python compilation | **Passed** - post-merge `python -m compileall -q .`; exit code `0` |
+| Test collection | **Passed** - post-merge collection found 21 tests; exit code `0` |
+| Historical full test baseline | **Failed, preserved** - 5 failed, 1 passed, 15 errors; exit code `1` |
+| Post-merge full test baseline | **Failed** - 5 failed, 1 passed, 15 errors; exit code `1` |
 | Legacy fixture compatibility | **Blocked** - obsolete `server.CSV_PATH` patch causes all 15 `test_server.py` setup errors |
 | Mock compatibility | **Failed** - 5 failed and 1 passed in `test_mock.py` |
 | Backend Pull Request | **Not confirmed** |
 | Task 3 | **In Progress** |
 
-The successful collection result proves discoverability only. It does not override the failed full-suite result.
+The successful installation, consistency, compilation, and collection results do not override the failed full-suite result. Historical and post-merge baselines are retained as separate evidence.
 
 ## Current repository before Yuyang integration
 
@@ -124,7 +126,7 @@ The updated backend candidate adds:
 3. The old mocks do not fully model the current `setup_database()` count-dictionary contract, two-table imports, schema checks, `PRAGMA` responses, or joined queries.
 4. Health and recommend endpoint mocks do not isolate all current database and initialization paths.
 5. One leaderboard mock asserts an obsolete internal `setup_database()` call.
-6. The full test baseline remains failed: 5 failed, 1 passed, and 15 errors.
+6. The post-merge full test baseline remains failed: 5 failed, 1 passed, and 15 errors; exit code 1.
 7. Current acceptance evidence is missing for comparison, exclusion merging, product links, feedback, and the budget-alternative rules.
 8. The backend Pull Request, review, and merge are not confirmed.
 

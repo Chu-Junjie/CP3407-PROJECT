@@ -57,11 +57,15 @@ Task 2 is only complete when all required evidence above is confirmed.
 
 The following checklist records only evidence that has actually succeeded. It is not a claim that Task 3 is Done.
 
-- [x] `requirements.txt` contains only the five confirmed direct dependencies for this Task 3 baseline.
-- [x] `python -m pip check` completed successfully with exit code `0` in the current Python 3.14.6 environment.
-- [x] `python -m compileall -q .` completed successfully with exit code `0`.
-- [x] `python -m pytest --collect-only -q` collected 21 tests with exit code `0`.
-- [x] The failed full-suite baseline is preserved and accurately records `5 failed, 1 passed, 15 errors` with exit code `1`.
+- [x] `requirements.txt` was reconciled with `origin/main` and contains the six approved direct project, test, and deployment dependencies.
+- [x] The approved version ranges and Gunicorn from `origin/main` were preserved, while pytest and requests were retained for Task 3 test work.
+- [x] `python -m pip install -r requirements.txt` completed successfully with exit code `0` in the existing Python 3.14.6 environment.
+- [x] The post-merge `python -m pip check` completed successfully with exit code `0`.
+- [x] The post-merge `python -m compileall -q .` completed successfully with exit code `0`.
+- [x] The post-merge `python -m pytest --collect-only -q` collected 21 tests with exit code `0`.
+- [x] The historical failed full-suite baseline remains preserved as `5 failed, 1 passed, 15 errors` with exit code `1`.
+- [x] The separate post-merge full-suite result records `5 failed, 1 passed, 15 errors` with exit code `1`.
+- [ ] The reconciled manifest is installed and validated in a newly created clean environment.
 - [ ] The full backend suite passes.
 - [ ] Legacy fixtures are compatible with the current products and `product_specs` database contract.
 - [ ] Mock tests are compatible with the current setup, schema, health, recommend, and leaderboard contracts.
