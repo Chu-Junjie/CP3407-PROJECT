@@ -1038,6 +1038,25 @@ def add_api_response_headers(response):
     return response
 
 
+@app.route("/", methods=["GET"])
+def api_home():
+    """Return basic information about the deployed API service."""
+    return jsonify(
+        {
+            "status": "success",
+            "message": "Smart Digital Product Recommendation API is running.",
+            "api_version": API_VERSION,
+            "endpoints": {
+                "health": "/api/health",
+                "products": "/api/products",
+                "recommend": "/api/recommend",
+                "compare": "/api/compare",
+                "feedback": "/api/feedback",
+            },
+        }
+    )
+
+
 @app.route("/api/health", methods=["GET"])
 def health_check():
     counts = setup_database()
