@@ -1,14 +1,14 @@
 # CP3407---Smart Digital Product Recommendation Platform
 
-> **Teacher-feedback revision (4 August 2026):** this working copy supersedes the earlier Top-5/CSV prototype described later in this historical README. It now uses SQLAlchemy with PostgreSQL support, stores 2,000 recommendation-ready catalogue rows in the bundled SQLite development database, supports registration/login and persistent search history, and exposes every matching result through 20-item pagination. See [Teacher Feedback Change Request](docs/teacher-feedback-change-request.md).
+> **Teacher-feedback revision (5 August 2026):** this working copy supersedes the earlier Top-5/CSV prototype described later in this historical README. It now uses SQLAlchemy with PostgreSQL support, stores 2,000 recommendation-ready public-dataset records in the bundled SQLite database, supports registration/login and persistent search history, and exposes every matching result through 20-item pagination. See [Teacher Feedback Change Request](docs/teacher-feedback-change-request.md).
 
 ## Current runnable version
 
 - `server.py`: Flask API, authentication, recommendation, comparison, feedback and history.
-- `digital_products.db`: local SQLite database containing 9,000 behavioural product rows and 2,000 joined catalogue/specification rows.
+- `digital_products.db`: local SQLite database containing 11,000 product rows, including 2,000 joined real-name catalogue/specification records.
 - `index.html`: static frontend for GitHub Pages; production API base URL points to Render.
 - Production database: set `DATABASE_URL` to a Render PostgreSQL connection string. Without it, the app uses local SQLite.
-- Catalogue disclosure: 33 specification records are the original prototype rows; the remaining rows are deterministic **educational synthetic data**, labelled in `DataSource`. They are not live retail listings or live prices.
+- Catalogue disclosure: the 2,000 active recommendation records come from attributed public datasets. They are historical snapshots, not live retail inventory or live prices. Missing specifications remain `Not specified` rather than being invented.
 - Account center: the avatar in the top-right opens persistent favorites and search history. Users can compare 2–3 favorite products when they belong to the same product category.
 
 ### Run locally
@@ -20,6 +20,20 @@ python3 -m venv .venv
 ```
 
 Serve `index.html` from another terminal with `python3 -m http.server 8000`, then open `http://127.0.0.1:8000`. Run automated checks with `.venv/bin/pytest -q`.
+
+### Catalogue sources and transformations
+
+Retrieved 5 August 2026. Each database row retains its source in `product_specs.DataSource`.
+
+| Active category | Rows | Public source | Licence | Price treatment |
+|---|---:|---|---|---|
+| Laptops | 800 | [Laptop Price dataset](https://www.kaggle.com/datasets/ironwolf437/laptop-price-dataset) | Apache 2.0 | Historical EUR converted at fixed `1 EUR = 1.08 USD` |
+| Smartphones | 833 | [Smartphone Dataset](https://www.kaggle.com/datasets/muzammilbaloch/smartphone-dataset) | Apache 2.0 | Historical INR converted at fixed `1 USD = 83 INR` |
+| Smart Watches | 300 | [Fitness Trackers Products Ecommerce](https://www.kaggle.com/datasets/devsubhash/fitness-trackers-products-ecommerce) | CC BY-SA 4.0 | Historical INR converted at fixed `1 USD = 83 INR` |
+| Headphones | 61 | [Datafiniti Electronics Product Pricing](https://www.kaggle.com/datasets/manishkc06/electronics-product-pricing-dataset) | CC0 | Historical USD; median of recorded merchant prices per product |
+| Tablets | 6 | Same Datafiniti source | CC0 | Historical USD; median of recorded merchant prices per product |
+
+`import_real_catalog.py` reproduces the import, outputs `real_product_catalog.csv` for human inspection, sanitizes users/history/favorites/feedback, and validates table/category counts. The 9,000 older behavioural rows remain for project continuity but do not participate in recommendations unless they have a matching `product_specs` row.
 
 ### Render configuration
 
@@ -51,9 +65,9 @@ In today's tech market, digital products iterate rapidly with complex specificat
 ---
 
 ## 4. Technology Stack
-* **Frontend:** to be confirmed
-* **Backend:** Python 
-* **Database:** to be confirmed
+* **Frontend:** HTML, CSS and JavaScript (GitHub Pages)
+* **Backend:** Python, Flask and SQLAlchemy (Render)
+* **Database:** SQLite for the bundled demonstration; PostgreSQL through `DATABASE_URL` for persistent production use
 * **Design/UI:** Figma (for rapid prototyping and testing based on Lean UX principles)
 * **IDE & Tools:** Git/GitHub, PyCharm
 ---
@@ -66,7 +80,7 @@ This project is collaboratively developed by a team of 4 members. The specific r
 | **Junjie Chu** | Project Manager | Overall project schedule management, task allocation, agile iteration advancement, and writing Practical reports. |
 | **Guanyu Lu** | UI/UX Designer & Frontend Developer | UI/UX interaction design (Figma prototypes), frontend page development, and component interaction implementation. |
 | **Zaikun Zheng**| Backend & Algorithm Engineer | Backend API development, core recommendation algorithm, and matching logic design/implementation. |
-| **Yuyang Zhou** | Database Administrator | Digital product dataset cleaning, database schema design, AWS/local database deployment, and performance tuning. |
+| **Yuyang Zhou** | Database Administrator | Public product dataset cleaning/import, database schema design, SQLite/PostgreSQL integration, data-provenance documentation, and verification. |
 
 ---
 

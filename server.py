@@ -7,7 +7,6 @@ one-time source for the original 9,000 behavioural product rows.
 
 from __future__ import annotations
 
-import csv
 import json
 import os
 import re
@@ -44,8 +43,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 BASE_DIR = Path(__file__).resolve().parent
 SQLITE_SEED_PATH = BASE_DIR / "digital_products.db"
-SPECS_SEED_PATH = BASE_DIR / "product_specs.csv"
-CATALOG_TARGET_COUNT = int(os.getenv("CATALOG_TARGET_COUNT", "2000"))
 DEFAULT_PAGE_SIZE = 20
 MAX_PAGE_SIZE = 100
 TOP_RECOMMENDATION_COUNT = 5
@@ -100,7 +97,7 @@ product_specs_table = Table(
     Column("Weight", String(80), nullable=False),
     Column("UseCase", String(240), nullable=False),
     Column("PurchaseURL", Text, nullable=False),
-    Column("DataSource", String(80), nullable=False, default="educational-prototype"),
+    Column("DataSource", String(80), nullable=False, default="catalogue-record"),
     Column("LastUpdated", DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)),
 )
 
@@ -200,56 +197,26 @@ def _rows_from_bundled_sqlite() -> list[dict[str, Any]]:
         connection.close()
 
 
-def _prototype_specs() -> list[dict[str, Any]]:
-    if not SPECS_SEED_PATH.exists():
+def _spec_rows_from_bundled_sqlite() -> list[dict[str, Any]]:
+    """Load the real catalogue seed, including provenance, for PostgreSQL."""
+    if not SQLITE_SEED_PATH.exists():
         return []
-    with SPECS_SEED_PATH.open("r", encoding="utf-8-sig", newline="") as handle:
-        return [dict(row) for row in csv.DictReader(handle)]
-
-
-def _manufacturer_url(brand: str) -> str:
-    urls = {
-        "apple": "https://www.apple.com/",
-        "samsung": "https://www.samsung.com/",
-        "sony": "https://www.sony.com/",
-        "hp": "https://www.hp.com/",
-    }
-    return urls.get(brand.lower(), "https://www.google.com/search?q=digital+product")
-
-
-def _synthetic_spec(product: dict[str, Any], sequence: int) -> dict[str, Any]:
-    """Create deterministic, honestly-labelled educational catalogue coverage."""
-    product_id = int(product["ProductID"])
-    category = str(product["ProductCategory"])
-    brand = str(product["ProductBrand"])
-    variants = product_id % 5
-    if category == "Laptops":
-        fields = (f"Intel Core i{5 + (variants % 3) * 2}", "Integrated Graphics", f"{8 + variants * 4}GB", f"{256 + variants * 128}GB SSD", f"{13 + variants * 0.7:.1f} inch", f"{7 + variants} hours", f"{1.2 + variants * 0.18:.2f} kg", "study office portable creative")
-    elif category == "Smartphones":
-        fields = (f"Mobile Processor Gen {variants + 1}", "Mobile GPU", f"{4 + variants * 2}GB", f"{64 + variants * 64}GB", f"{5.8 + variants * 0.2:.1f} inch", f"{18 + variants * 2} hours", f"{0.16 + variants * 0.01:.2f} kg", "camera video portable battery")
-    elif category == "Tablets":
-        fields = (f"Tablet Processor Gen {variants + 1}", "Tablet GPU", f"{4 + variants * 2}GB", f"{64 + variants * 64}GB", f"{9 + variants * 0.6:.1f} inch", f"{9 + variants} hours", f"{0.42 + variants * 0.05:.2f} kg", "study creative portable media")
-    elif category == "Headphones":
-        fields = ("Not applicable", "Not applicable", "Not applicable", "Not applicable", "Not applicable", f"{20 + variants * 5} hours", f"{0.20 + variants * 0.02:.2f} kg", "music travel office battery")
-    else:
-        fields = (f"Wearable Processor Gen {variants + 1}", "Wearable GPU", f"{1 + variants}GB", f"{16 + variants * 8}GB", f"{1.4 + variants * 0.1:.1f} inch", f"{18 + variants * 6} hours", f"{0.04 + variants * 0.01:.2f} kg", "fitness travel notifications battery")
-    cpu, gpu, ram, storage, screen, battery, weight, use_case = fields
-    safe_category = category.rstrip("s").replace(" ", "-")
-    return {
-        "ProductID": product_id,
-        "ProductName": f"{brand} {safe_category} EDU-{sequence:04d}",
-        "CPU": cpu,
-        "GPU": gpu,
-        "RAM": ram,
-        "Storage": storage,
-        "ScreenSize": screen,
-        "BatteryLife": battery,
-        "Weight": weight,
-        "UseCase": use_case,
-        "PurchaseURL": _manufacturer_url(brand),
-        "DataSource": "educational-synthetic",
-        "LastUpdated": datetime.now(timezone.utc),
-    }
+    connection = sqlite3.connect(SQLITE_SEED_PATH)
+    connection.row_factory = sqlite3.Row
+    try:
+        exists = connection.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='product_specs'"
+        ).fetchone()
+        if not exists:
+            return []
+        rows = [dict(row) for row in connection.execute("SELECT * FROM product_specs").fetchall()]
+        for row in rows:
+            timestamp = row.get("LastUpdated")
+            if isinstance(timestamp, str):
+                row["LastUpdated"] = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+        return rows
+    finally:
+        connection.close()
 
 
 def setup_database() -> dict[str, int]:
@@ -266,26 +233,11 @@ def setup_database() -> dict[str, int]:
         spec_count = int(connection.scalar(select(func.count()).select_from(product_specs_table)) or 0)
         if spec_count == 0:
             product_ids = set(connection.scalars(select(products_table.c.ProductID)).all())
-            prototypes: list[dict[str, Any]] = []
-            for row in _prototype_specs():
-                product_id = int(row["ProductID"])
-                if product_id not in product_ids:
-                    continue
-                row["ProductID"] = product_id
-                row["DataSource"] = "educational-prototype"
-                row["LastUpdated"] = datetime.now(timezone.utc)
-                prototypes.append(row)
-            if prototypes:
-                connection.execute(insert(product_specs_table), prototypes)
-
-            existing = set(connection.scalars(select(product_specs_table.c.ProductID)).all())
-            needed = max(0, min(CATALOG_TARGET_COUNT, len(product_ids)) - len(existing))
-            candidates = connection.execute(
-                select(products_table).where(products_table.c.ProductID.not_in(existing)).order_by(products_table.c.ProductID).limit(needed)
-            ).mappings().all()
-            generated = [_synthetic_spec(dict(row), index + 1) for index, row in enumerate(candidates)]
-            for start in range(0, len(generated), 500):
-                connection.execute(insert(product_specs_table), generated[start : start + 500])
+            bundled_specs = [row for row in _spec_rows_from_bundled_sqlite() if int(row["ProductID"]) in product_ids]
+            if not bundled_specs:
+                raise RuntimeError("No public catalogue specification seed is available.")
+            for start in range(0, len(bundled_specs), 500):
+                connection.execute(insert(product_specs_table), bundled_specs[start : start + 500])
 
         return {
             "products": int(connection.scalar(select(func.count()).select_from(products_table)) or 0),
@@ -463,7 +415,7 @@ def product_payload(product: dict[str, Any], score: int | None = None, reason: s
         "weight": product["Weight"],
         "use_case": product["UseCase"],
         "purchase_url": product["PurchaseURL"],
-        "data_source": product.get("DataSource", "educational-prototype"),
+        "data_source": product.get("DataSource", "catalogue-record"),
     }
     if score is not None:
         result["match_score"] = score
@@ -543,7 +495,7 @@ def api_home():
 @app.get("/api/health")
 def health():
     counts = setup_database()
-    return jsonify({"status": "success", "api_version": API_VERSION, "database": engine.url.get_backend_name(), "tables": counts, "joined_recommendation_candidates": counts["product_specs"], "notes": "Product catalogue includes explicitly labelled educational prototype and synthetic records; prices are not live retail prices."})
+    return jsonify({"status": "success", "api_version": API_VERSION, "database": engine.url.get_backend_name(), "tables": counts, "joined_recommendation_candidates": counts["product_specs"], "notes": "Catalogue rows retain their public dataset source. Prices are historical snapshots normalized to USD for educational comparison, not live retail prices."})
 
 
 @app.post("/api/auth/register")

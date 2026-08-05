@@ -1580,7 +1580,7 @@
 
                 const meta = document.createElement("p");
                 meta.className = "product-meta";
-                const sourceLabel = product.dataSource === "educational-synthetic" ? " · Demo data" : "";
+                const sourceLabel = /Kaggle|Datafiniti|Flipkart/i.test(product.dataSource) ? " · Public dataset" : "";
                 meta.textContent = `${product.brand} · ${product.category} · ${formatPrice(product.price)}${sourceLabel}`;
 
                 const specText = buildSpecSummary(product);

@@ -1,16 +1,9 @@
-import csv
 import sqlite3
 from pathlib import Path
 
 import pytest
 
 import server
-
-
-SPEC_COLUMNS = [
-    "ProductID", "ProductName", "CPU", "GPU", "RAM", "Storage",
-    "ScreenSize", "BatteryLife", "Weight", "UseCase", "PurchaseURL",
-]
 
 
 @pytest.fixture(autouse=True)
@@ -31,23 +24,22 @@ def isolated_database(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
         for index in range(1, 61)
     ]
     connection.executemany("INSERT INTO products VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", rows)
+    connection.execute(
+        "CREATE TABLE product_specs (ProductID INTEGER PRIMARY KEY, ProductName TEXT, "
+        "CPU TEXT, GPU TEXT, RAM TEXT, Storage TEXT, ScreenSize TEXT, BatteryLife TEXT, "
+        "Weight TEXT, UseCase TEXT, PurchaseURL TEXT, DataSource TEXT, LastUpdated TEXT)"
+    )
+    spec_rows = [
+        (index, f"Public Dataset Product {index}", "Recorded CPU", "Recorded GPU", "8GB", "256GB",
+         "14 inch", "10 hours", "1.4 kg", "study office fitness travel",
+         "https://example.com/dataset", "test-public-dataset", "2026-08-05T00:00:00+00:00")
+        for index in range(1, 41)
+    ]
+    connection.executemany("INSERT INTO product_specs VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", spec_rows)
     connection.commit()
     connection.close()
 
-    specs = tmp_path / "specs.csv"
-    with specs.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=SPEC_COLUMNS)
-        writer.writeheader()
-        writer.writerow({
-            "ProductID": 5, "ProductName": "Prototype Watch", "CPU": "Wearable CPU",
-            "GPU": "Wearable GPU", "RAM": "2GB", "Storage": "32GB",
-            "ScreenSize": "1.5 inch", "BatteryLife": "24 hours", "Weight": "0.05 kg",
-            "UseCase": "fitness travel", "PurchaseURL": "https://example.com/watch",
-        })
-
     monkeypatch.setattr(server, "SQLITE_SEED_PATH", source)
-    monkeypatch.setattr(server, "SPECS_SEED_PATH", specs)
-    monkeypatch.setattr(server, "CATALOG_TARGET_COUNT", 40)
     server.configure_database(f"sqlite:///{tmp_path / 'app.db'}")
     server.app.config.update(TESTING=True)
     yield

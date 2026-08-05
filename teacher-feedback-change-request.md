@@ -8,20 +8,20 @@ Implemented and tested in this local working copy. Team review, merge and produc
 
 | Teacher feedback | Implemented response | Verification |
 |---|---|---|
-| The dataset/database is too small and appears CSV-based | SQLAlchemy database layer; PostgreSQL via `DATABASE_URL`; bundled SQLite for local use; 9,000 product rows and 2,000 joined recommendation-ready specification rows | `/api/health` reports the database backend and table counts |
+| The dataset/database is too small and appears CSV-based | SQLAlchemy database layer; PostgreSQL via `DATABASE_URL`; bundled SQLite for local use; 11,000 product rows and 2,000 joined recommendation-ready public-dataset records | `/api/health` reports the database backend and table counts |
 | No login and searches disappear | Password-hashed accounts, JWT login, private search history and result snapshots, history open/delete UI | Register, login, `/api/auth/me`, `/api/history` integration tests |
 | Only five recommendations are displayed | 20 results per page, up to 100 per API request, with previous/next controls covering all matching candidates; the best five remain separately identified as `top_recommendations` | Pagination tests confirm two pages of 20 in the isolated dataset |
 
 ## Data provenance and limitation
 
-The existing source contained 9,000 behavioural product observations but only 33 joined product specification rows. To create a demonstrable 2,000-row catalogue without inventing claims about external sources, this revision deterministically generates additional educational demonstration specifications from the existing product rows. Every generated row has `DataSource = educational-synthetic`; original specification rows have `DataSource = educational-prototype`.
+The earlier 2,000 synthetic specifications have been replaced. The active catalogue now contains 800 laptops, 833 smartphones, 300 smart watches, 61 headphones and 6 tablets imported from four attributed public datasets. Their licences are Apache 2.0, CC BY-SA 4.0 and CC0; exact links and transformations are recorded in the README and every row stores a `DataSource` value.
 
-These records and prices are not live. For a stronger final submission, replace synthetic catalogue rows with a properly licensed product dataset and record its source, licence, retrieval date and cleaning method. Live updates are possible through a scheduled, licensed vendor/API import, but scraping or claiming real-time prices is outside this implementation.
+These records and prices are historical dataset snapshots, not live inventory. EUR and INR prices are normalized to USD with fixed documented rates, and repeated Datafiniti merchant observations use the median recorded price. Missing technical attributes are stored as `Not specified`; the importer does not fabricate them. `import_real_catalog.py` provides a reproducible import and validation path.
 
 ## Database tables
 
-- `products`: 9,000 original behavioural product observations.
-- `product_specs`: 2,000 recommendation-ready catalogue/specification rows.
+- `products`: 11,000 rows (9,000 historical behavioural observations plus 2,000 imported catalogue products).
+- `product_specs`: 2,000 public-dataset catalogue/specification rows used by recommendations.
 - `users`: account identifiers and password hashes; plaintext passwords are never stored.
 - `favorites`: user-owned saved products used for persistent same-category comparison.
 - `search_history`: user-owned query, parsed filters, match count and timestamp.
@@ -34,9 +34,9 @@ Render must receive `DATABASE_URL` from a managed PostgreSQL database and a rand
 
 ## Evidence produced locally
 
-- Database initialization: 9,000 `products`, 2,000 `product_specs`.
+- Database initialization: 11,000 `products`, 2,000 `product_specs`, and zero submitted user/history/favorite rows.
 - Manual integration flow: registration → recommendation → history list/detail → feedback summary.
 - Automated test command: `.venv/bin/pytest -q`.
-- Automated result on 4 August 2026 after favorites/account-center expansion: `12 passed`.
+- Automated result on 5 August 2026 after real-catalogue import: `12 passed`.
 
 Do not mark this change as reviewed, merged or deployed until those events actually occur.
