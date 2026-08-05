@@ -1,305 +1,186 @@
+import csv
+import sqlite3
 from pathlib import Path
 
-import pandas as pd
 import pytest
 
 import server
 
 
-# ============================================================
-# TEST DATA AND FIXTURES
-# ============================================================
+SPEC_COLUMNS = [
+    "ProductID", "ProductName", "CPU", "GPU", "RAM", "Storage",
+    "ScreenSize", "BatteryLife", "Weight", "UseCase", "PurchaseURL",
+]
+
 
 @pytest.fixture(autouse=True)
 def isolated_database(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-    """Use a temporary CSV and SQLite database for every test."""
-    csv_path = tmp_path / "US-02 Database Setup & Import.csv"
-    db_path = tmp_path / "digital_products.db"
-
-    dataframe = pd.DataFrame(
-        [
-            [1, "Laptops", "Apple", 900, 22, "Female", 8, 5, 1],
-            [2, "Laptops", "HP", 700, 30, "Male", 6, 4, 1],
-            [3, "Laptops", "Samsung", 1100, 26, "Female", 4, 4, 1],
-            [4, "Smartphones", "Apple", 800, 24, "Male", 7, 5, 1],
-            [5, "Smartphones", "Samsung", 600, 35, "Female", 5, 4, 1],
-            [6, "Tablets", "Sony", 500, 28, "Male", 3, 3, 0],
-            [7, "Headphones", "Sony", 250, 19, "Female", 9, 5, 1],
-        ],
-        columns=[
-            "ProductID",
-            "ProductCategory",
-            "ProductBrand",
-            "ProductPrice",
-            "CustomerAge",
-            "CustomerGender",
-            "PurchaseFrequency",
-            "CustomerSatisfaction",
-            "PurchaseIntent",
-        ],
+    source = tmp_path / "source.db"
+    connection = sqlite3.connect(source)
+    connection.execute(
+        "CREATE TABLE products (ProductID INTEGER, ProductCategory TEXT, "
+        "ProductBrand TEXT, ProductPrice REAL, CustomerAge INTEGER, "
+        "CustomerGender TEXT, PurchaseFrequency INTEGER, "
+        "CustomerSatisfaction INTEGER, PurchaseIntent INTEGER)"
     )
-    dataframe.to_csv(csv_path, index=False)
+    categories = ["Laptops", "Smartphones", "Tablets", "Headphones", "Smart Watches"]
+    brands = ["Apple", "Samsung", "HP", "Sony", "Other Brands"]
+    rows = [
+        (index, categories[index % 5], brands[index % 5], 100 + index * 10,
+         20 + index % 30, "Other", index % 10, 1 + index % 5, index % 2)
+        for index in range(1, 61)
+    ]
+    connection.executemany("INSERT INTO products VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", rows)
+    connection.commit()
+    connection.close()
 
-    monkeypatch.setattr(server, "CSV_PATH", csv_path)
-    monkeypatch.setattr(server, "DB_PATH", db_path)
+    specs = tmp_path / "specs.csv"
+    with specs.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=SPEC_COLUMNS)
+        writer.writeheader()
+        writer.writerow({
+            "ProductID": 5, "ProductName": "Prototype Watch", "CPU": "Wearable CPU",
+            "GPU": "Wearable GPU", "RAM": "2GB", "Storage": "32GB",
+            "ScreenSize": "1.5 inch", "BatteryLife": "24 hours", "Weight": "0.05 kg",
+            "UseCase": "fitness travel", "PurchaseURL": "https://example.com/watch",
+        })
 
+    monkeypatch.setattr(server, "SQLITE_SEED_PATH", source)
+    monkeypatch.setattr(server, "SPECS_SEED_PATH", specs)
+    monkeypatch.setattr(server, "CATALOG_TARGET_COUNT", 40)
+    server.configure_database(f"sqlite:///{tmp_path / 'app.db'}")
+    server.app.config.update(TESTING=True)
     yield
+    server.engine.dispose()
 
 
 @pytest.fixture
 def client():
-    """Create a Flask test client."""
-    server.app.config["TESTING"] = True
     with server.app.test_client() as test_client:
         yield test_client
 
 
-@pytest.fixture
-def sample_product():
-    return {
-        "ProductID": 1,
-        "ProductCategory": "Laptops",
-        "ProductBrand": "Apple",
-        "ProductPrice": 900,
-        "CustomerAge": 22,
-        "CustomerGender": "Female",
-        "PurchaseFrequency": 8,
-        "CustomerSatisfaction": 5,
-        "PurchaseIntent": 1,
+def register(client, username="student"):
+    response = client.post("/api/auth/register", json={
+        "username": username,
+        "email": f"{username}@example.com",
+        "password": "Password123!",
+    })
+    assert response.status_code == 201
+    return response.get_json()["token"]
+
+
+def auth(token):
+    return {"Authorization": f"Bearer {token}"}
+
+
+def test_database_setup_creates_real_tables_and_40_catalogue_records():
+    counts = server.setup_database()
+    assert counts == {
+        "products": 60,
+        "product_specs": 40,
+        "users": 0,
+        "favorites": 0,
+        "search_history": 0,
+        "feedback": 0,
     }
+    assert server.setup_database()["product_specs"] == 40
 
 
-# ============================================================
-# US-01: NATURAL-LANGUAGE BUDGET PROCESSING
-# ============================================================
-
-def test_us01_parse_explicit_budget():
-    """TC-01.1: Extract an explicit budget."""
-    result = server.parse_budget_from_text(
-        "I need a gaming laptop under $1200"
-    )
-    assert result == 1200.0
-
-
-def test_us01_parse_no_budget():
-    """TC-01.2: Return None when no budget is provided."""
-    result = server.parse_budget_from_text(
-        "Just give me the best laptop"
-    )
-    assert result is None
-
-
-def test_us01_parse_budget_with_comma():
-    """TC-01.3: Extract a budget containing a comma."""
-    result = server.parse_budget_from_text(
-        "My maximum budget is $1,500"
-    )
-    assert result == 1500.0
-
-
-# ============================================================
-# US-02: DATABASE SETUP AND INTEGRATION
-# ============================================================
-
-def test_us02_database_setup_imports_rows():
-    """TC-02.1: Import product rows into a new database."""
-    row_count = server.setup_database()
-    assert row_count == 7
-
-
-def test_us02_database_setup_does_not_duplicate_rows():
-    """TC-02.2: Re-running setup does not duplicate products."""
-    first_count = server.setup_database()
-    second_count = server.setup_database()
-    assert first_count == 7
-    assert second_count == 7
-
-
-def test_us02_health_endpoint_reports_database(client):
-    """TC-02.3: Health endpoint returns database information."""
+def test_health_reports_database_counts(client):
     response = client.get("/api/health")
-    data = response.get_json()
-
+    body = response.get_json()
     assert response.status_code == 200
-    assert data["status"] == "success"
-    assert data["table"] == server.TABLE_NAME
-    assert data["records"] == 7
+    assert body["database"] == "sqlite"
+    assert body["joined_recommendation_candidates"] == 40
 
 
-# ============================================================
-# US-03: REQUEST FILTER PROCESSING
-# ============================================================
-
-def test_us03_process_post_filters(client):
-    """TC-03.1: Read category, brand, and max_price from POST JSON."""
-    response = client.post(
-        "/api/recommend",
-        json={
-            "query": "Find an Apple laptop",
-            "category": "Laptops",
-            "brand": "Apple",
-            "max_price": 1000,
-        },
-    )
-    filters = response.get_json()["filters"]
-
-    assert filters == {
-        "query": "Find an Apple laptop",
-        "category": "Laptops",
-        "brand": "Apple",
-        "budget": 1000.0,
-    }
+def test_budget_and_category_are_parsed():
+    assert server.parse_budget_from_text("laptop under $1,500") == 1500
+    assert server.infer_category_from_text("portable university laptop") == "Laptops"
 
 
-def test_us03_accept_intent_as_query(client):
-    """TC-03.2: Accept the earlier 'intent' field and parse its budget."""
-    response = client.post(
-        "/api/recommend",
-        json={"intent": "I need a laptop below $850"},
-    )
-    filters = response.get_json()["filters"]
-
-    assert filters["query"] == "I need a laptop below $850"
-    assert filters["budget"] == 850.0
+def test_recommendation_is_paginated_not_limited_to_five(client):
+    response = client.post("/api/recommend", json={"query": "under $1000", "per_page": 20})
+    body = response.get_json()
+    assert response.status_code == 200
+    assert body["count"] == 20
+    assert body["total_candidates"] == 40
+    assert body["total_pages"] == 2
+    assert len(body["top_recommendations"]) == 5
 
 
-def test_us03_invalid_max_price_falls_back_to_query(client):
-    """TC-03.3: Invalid max_price falls back to the natural-language query."""
-    response = client.post(
-        "/api/recommend",
-        json={
-            "query": "My budget is 900",
-            "max_price": "not-a-number",
-        },
-    )
-    filters = response.get_json()["filters"]
-
-    assert filters["budget"] == 900.0
+def test_second_recommendation_page_is_available(client):
+    body = client.post("/api/recommend", json={"query": "under $1000", "page": 2, "per_page": 20}).get_json()
+    assert body["page"] == 2
+    assert len(body["data"]) == 20
 
 
-# ============================================================
-# US-04: MATCH SCORING AND EXPLANATIONS
-# ============================================================
-
-def test_us04_match_score_is_between_zero_and_one_hundred(sample_product):
-    """TC-04.1: A match score always remains in the valid range."""
-    filters = {
-        "query": "",
-        "category": "Laptops",
-        "brand": "Apple",
-        "budget": 1000.0,
-    }
-
-    score, reasons = server.calculate_match_score(sample_product, filters)
-
-    assert 0 <= score <= 100
-    assert isinstance(reasons, list)
+def test_registration_login_and_me(client):
+    token = register(client)
+    assert client.get("/api/auth/me", headers=auth(token)).status_code == 200
+    login = client.post("/api/auth/login", json={"identifier": "student@example.com", "password": "Password123!"})
+    assert login.status_code == 200
+    assert login.get_json()["user"]["username"] == "student"
 
 
-def test_us04_matching_preferences_receive_higher_score(sample_product):
-    """TC-04.2: Matching preferences produce a higher score."""
-    matching_filters = {
-        "query": "",
-        "category": "Laptops",
-        "brand": "Apple",
-        "budget": 1000.0,
-    }
-    non_matching_filters = {
-        "query": "",
-        "category": "Smartphones",
-        "brand": "Samsung",
-        "budget": 1000.0,
-    }
-
-    matching_score, _ = server.calculate_match_score(
-        sample_product, matching_filters
-    )
-    non_matching_score, _ = server.calculate_match_score(
-        sample_product, non_matching_filters
-    )
-
-    assert matching_score > non_matching_score
+def test_search_history_is_private_and_persistent(client):
+    token = register(client)
+    search = client.post("/api/recommend", json={"query": "phone under $700"}, headers=auth(token)).get_json()
+    history_id = search["history_id"]
+    assert history_id
+    assert client.get("/api/history").status_code == 401
+    listing = client.get("/api/history", headers=auth(token)).get_json()
+    assert listing["total"] == 1
+    detail = client.get(f"/api/history/{history_id}", headers=auth(token)).get_json()
+    assert detail["history"]["query_text"] == "phone under $700"
+    assert detail["data"]
 
 
-def test_us04_reasons_describe_matching_preferences(sample_product):
-    """TC-04.3: Reasons explain category, brand, and budget matches."""
-    filters = {
-        "query": "",
-        "category": "Laptops",
-        "brand": "Apple",
-        "budget": 1000.0,
-    }
-
-    _, reasons = server.calculate_match_score(sample_product, filters)
-    combined = " ".join(reasons).lower()
-
-    assert "matches category" in combined
-    assert "matches brand" in combined
-    assert "within budget" in combined
+def test_history_can_be_deleted(client):
+    token = register(client)
+    history_id = client.post("/api/recommend", json={"query": "tablet"}, headers=auth(token)).get_json()["history_id"]
+    assert client.delete(f"/api/history/{history_id}", headers=auth(token)).status_code == 200
+    assert client.get("/api/history", headers=auth(token)).get_json()["total"] == 0
 
 
-# ============================================================
-# US-05: LEADERBOARD AND API OUTPUT
-# ============================================================
-
-def test_us05_candidates_never_exceed_maximum_budget():
-    """TC-05.1: Strict budget filtering removes over-budget products."""
+def test_feedback_is_stored_and_summarised(client):
     server.setup_database()
-    filters = {
-        "query": "",
-        "category": None,
-        "brand": None,
-        "budget": 1000.0,
-    }
-
-    candidates = server.fetch_candidate_products(filters)
-
-    assert candidates
-    assert all(
-        float(product["ProductPrice"]) <= 1000.0
-        for product in candidates
-    )
+    result = client.post("/api/feedback", json={"vote": "up", "query": "laptop"})
+    assert result.status_code == 201
+    summary = client.get("/api/feedback").get_json()["data"]
+    assert summary == {"up": 1, "down": 0, "total": 1}
 
 
-def test_us05_leaderboard_contains_at_most_five_sorted_items():
-    """TC-05.2: Leaderboard returns at most five items sorted by score."""
-    filters = {
-        "query": "",
-        "category": None,
-        "brand": None,
-        "budget": None,
-    }
-
-    leaderboard = server.build_leaderboard(filters, limit=5)
-    scores = [item["match_score"] for item in leaderboard]
-
-    assert len(leaderboard) <= 5
-    assert scores == sorted(scores, reverse=True)
-
-
-def test_us05_recommendation_api_returns_required_fields(client):
-    """TC-05.3: Recommendation JSON contains all required fields."""
-    response = client.post(
-        "/api/recommend",
-        json={"category": "Laptops", "max_price": 1000},
-    )
-    data = response.get_json()
-
+def test_compare_requires_two_or_three_products(client):
+    server.setup_database()
+    assert client.post("/api/compare", json={"product_ids": [1]}).status_code == 400
+    response = client.post("/api/compare", json={"product_ids": [1, 2]})
     assert response.status_code == 200
-    assert data["status"] == "success"
-    assert isinstance(data["data"], list)
+    assert response.get_json()["count"] == 2
 
-    required_fields = {
-        "product_id",
-        "product_name",
-        "name",
-        "category",
-        "brand",
-        "price",
-        "match_score",
-        "reason",
-    }
 
-    for product in data["data"]:
-        assert required_fields.issubset(product.keys())
-        assert product["price"] <= 1000.0
+def test_favorites_are_private_and_persistent(client):
+    token = register(client)
+    headers = auth(token)
+    assert client.post("/api/favorites", json={"product_id": 1}, headers=headers).status_code == 201
+    assert client.post("/api/favorites", json={"product_id": 6}, headers=headers).status_code == 201
+    assert client.get("/api/favorites").status_code == 401
+    listing = client.get("/api/favorites", headers=headers).get_json()
+    assert listing["count"] == 2
+    assert {item["product_id"] for item in listing["data"]} == {1, 6}
+    assert client.delete("/api/favorites/1", headers=headers).status_code == 200
+    assert client.get("/api/favorites", headers=headers).get_json()["count"] == 1
+
+
+def test_favorite_comparison_requires_same_category(client):
+    token = register(client)
+    headers = auth(token)
+    for product_id in (1, 6, 2):
+        assert client.post("/api/favorites", json={"product_id": product_id}, headers=headers).status_code == 201
+    same = client.post("/api/favorites/compare", json={"product_ids": [1, 6]}, headers=headers)
+    assert same.status_code == 200
+    assert same.get_json()["category"] == "Smartphones"
+    mixed = client.post("/api/favorites/compare", json={"product_ids": [1, 2]}, headers=headers)
+    assert mixed.status_code == 400
+    assert "same category" in mixed.get_json()["message"]

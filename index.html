@@ -72,11 +72,37 @@
         .brand {
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: space-between;
+            gap: 16px;
             margin: 0 0 16px 4px;
             color: #344054;
             font-weight: 700;
             font-size: 14px;
+        }
+
+        .brand-identity { display: flex; align-items: center; gap: 10px; }
+        .user-menu-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 11px 6px 6px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: #fff;
+            color: #344054;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .user-avatar {
+            display: grid;
+            place-items: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            text-transform: uppercase;
         }
 
         .brand-mark {
@@ -297,9 +323,97 @@
         }
 
         #leaderboardSection,
-        #compareSection {
+        #compareSection,
+        #historySection {
             display: none;
         }
+
+        .account-panel {
+            margin-bottom: 22px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--surface-soft);
+        }
+
+        .account-row,
+        .auth-fields,
+        .pagination-actions,
+        .history-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .account-row { justify-content: space-between; }
+        .auth-fields { margin-top: 12px; }
+        .auth-fields input {
+            flex: 1 1 170px;
+            min-width: 0;
+            padding: 11px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font: inherit;
+        }
+        .auth-fields button { width: auto; margin: 0; }
+        .preference-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+        .preference-field { display: grid; gap: 7px; }
+        .preference-field label { font-weight: 700; color: #344054; }
+        .preference-field select {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: #fff;
+            color: #1f2937;
+            font: inherit;
+        }
+        .preference-field select:focus {
+            outline: 2px solid rgba(15, 98, 254, 0.2);
+            border-color: var(--primary);
+        }
+        .pagination-actions { justify-content: center; margin-top: 18px; }
+        .pagination-actions button { width: auto; margin: 0; }
+        .history-list { display: grid; gap: 10px; }
+        .history-item {
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #fff;
+        }
+        .history-item p { margin: 4px 0; }
+        .history-actions { margin-top: 9px; }
+        .history-actions button { width: auto; margin: 0; }
+        .account-block {
+            margin-top: 20px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--surface-soft);
+        }
+        .account-block h3 { margin: 0 0 6px; }
+        .favorite-groups { display: grid; gap: 18px; margin-top: 14px; }
+        .favorite-group h4 { margin: 0 0 9px; color: #344054; }
+        .favorite-item {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #fff;
+        }
+        .favorite-item p { margin: 3px 0 0; }
+        .favorite-compare-actions { display: flex; gap: 10px; align-items: center; margin-top: 14px; }
+        .favorite-btn.saved { background: #fff1f3; color: #c01048; border-color: #fecdd6; }
 
         .section-header {
             display: flex;
@@ -524,6 +638,8 @@
             border: 0;
         }
 
+        [hidden] { display: none !important; }
+
         @media (max-width: 760px) {
             body {
                 padding: 18px 10px;
@@ -541,6 +657,8 @@
             .product-card {
                 grid-template-columns: auto auto minmax(0, 1fr);
             }
+
+            .preference-grid { grid-template-columns: 1fr; }
 
             .product-card .match-score {
                 grid-column: 3;
@@ -566,37 +684,106 @@
 <body>
     <div class="app-shell">
         <div class="brand" aria-label="Smart Digital Product Recommendation">
-            <span class="brand-mark" aria-hidden="true">S</span>
-            <span>Smart Digital Product Recommendation</span>
+            <div class="brand-identity">
+                <span class="brand-mark" aria-hidden="true">S</span>
+                <span>Smart Digital Product Recommendation</span>
+            </div>
+            <button id="userMenuBtn" class="user-menu-btn" type="button" hidden aria-label="Open user account">
+                <span id="userAvatar" class="user-avatar" aria-hidden="true">U</span>
+                <span id="userMenuName">Account</span>
+            </button>
         </div>
 
         <main class="panel">
+            <section class="account-panel" aria-labelledby="accountTitle">
+                <div class="account-row">
+                    <div>
+                        <strong id="accountTitle">Account & saved history</strong>
+                        <div id="accountStatus" class="small-note">Search without an account, or log in to save and reopen searches.</div>
+                    </div>
+                    <div class="history-actions">
+                        <button id="historyBtn" class="neutral-btn" type="button" hidden>Search History</button>
+                        <button id="logoutBtn" class="secondary-btn" type="button" hidden>Log out</button>
+                    </div>
+                </div>
+                <div id="authFields" class="auth-fields">
+                    <input id="authUsername" autocomplete="username" placeholder="Username (for registration)">
+                    <input id="authEmail" type="email" autocomplete="email" placeholder="Email">
+                    <input id="authPassword" type="password" autocomplete="current-password" placeholder="Password (8+ characters)">
+                    <button id="loginBtn" class="primary-btn" type="button">Log in</button>
+                    <button id="registerBtn" class="secondary-btn" type="button">Register</button>
+                </div>
+                <div id="authMessage" class="status" role="status" aria-live="polite"></div>
+            </section>
+
             <section id="inputSection" aria-labelledby="inputTitle">
                 <h1 id="inputTitle" class="section-title">Find My Perfect Device</h1>
 
                 <p class="section-description">
-                    Describe what you need in plain English. The page sends your request to the
-                    Flask recommendation API and renders products returned from the SQLite-backed
-                    recommendation service.
+                    Choose your requirements below. The page sends structured filters to the Flask
+                    recommendation API and renders products returned from the database-backed service.
                 </p>
 
                 <form id="recommendationForm" novalidate>
-                    <label class="input-label" for="userInput">Your requirements</label>
-
-                    <textarea
-                        id="userInput"
-                        name="query"
-                        maxlength="1000"
-                        autocomplete="off"
-                        placeholder="e.g., I need a gaming laptop under $1500, no Apple..."
-                        aria-describedby="inputHint characterCount"
-                    ></textarea>
-
-                    <div class="input-meta">
-                        <span id="inputHint">
-                            Include budget, product type, preferred use and excluded brands.
-                        </span>
-                        <span id="characterCount">0 / 1000</span>
+                    <div class="preference-grid">
+                        <div class="preference-field">
+                            <label for="categorySelect">Product type</label>
+                            <select id="categorySelect" name="category">
+                                <option value="Laptops">Laptop</option>
+                                <option value="Smartphones">Smartphone</option>
+                                <option value="Tablets">Tablet</option>
+                                <option value="Headphones">Headphones</option>
+                                <option value="Smart Watches">Smart watch</option>
+                            </select>
+                        </div>
+                        <div class="preference-field">
+                            <label for="budgetSelect">Maximum budget</label>
+                            <select id="budgetSelect" name="max_price">
+                                <option value="500">Under $500</option>
+                                <option value="1000" selected>Under $1,000</option>
+                                <option value="1500">Under $1,500</option>
+                                <option value="2000">Under $2,000</option>
+                                <option value="3000">Under $3,000</option>
+                                <option value="5000">Under $5,000</option>
+                                <option value="">No budget limit</option>
+                            </select>
+                        </div>
+                        <div class="preference-field">
+                            <label for="useCaseSelect">Main use</label>
+                            <select id="useCaseSelect" name="use_case">
+                                <option value="general">Everyday use</option>
+                                <option value="study">Study</option>
+                                <option value="office">Office and business</option>
+                                <option value="gaming">Gaming</option>
+                                <option value="creative">Creative and video editing</option>
+                                <option value="portable">Travel and portability</option>
+                                <option value="camera">Photography and video</option>
+                                <option value="battery">Long battery life</option>
+                                <option value="fitness">Fitness</option>
+                            </select>
+                        </div>
+                        <div class="preference-field">
+                            <label for="preferredBrandSelect">Preferred brand</label>
+                            <select id="preferredBrandSelect" name="brand">
+                                <option value="">Any brand</option>
+                                <option value="Apple">Apple</option>
+                                <option value="Samsung">Samsung</option>
+                                <option value="HP">HP</option>
+                                <option value="Sony">Sony</option>
+                                <option value="Other Brands">Other brands</option>
+                            </select>
+                        </div>
+                        <div class="preference-field">
+                            <label for="excludedBrandSelect">Brand to exclude</label>
+                            <select id="excludedBrandSelect" name="excluded_brand">
+                                <option value="">Do not exclude a brand</option>
+                                <option value="Apple">Apple</option>
+                                <option value="Samsung">Samsung</option>
+                                <option value="HP">HP</option>
+                                <option value="Sony">Sony</option>
+                                <option value="Other Brands">Other brands</option>
+                            </select>
+                        </div>
                     </div>
 
                     <button id="submitBtn" class="primary-btn" type="submit">
@@ -633,6 +820,12 @@
                 <div id="budgetAlternative" class="budget-card"></div>
                 <div id="productList" class="product-list" aria-live="polite"></div>
 
+                <div class="pagination-actions">
+                    <button id="previousPageBtn" class="secondary-btn" type="button">← Previous</button>
+                    <span id="pageStatus" class="small-note"></span>
+                    <button id="nextPageBtn" class="secondary-btn" type="button">Next →</button>
+                </div>
+
                 <div class="utility-actions" aria-label="Recommendation actions">
                     <button id="compareBtn" class="success-btn" type="button">
                         ⚖️ Compare Selected Products
@@ -652,7 +845,7 @@
                 <div class="feedback-panel" aria-labelledby="feedbackTitle">
                     <strong id="feedbackTitle">Was this recommendation helpful?</strong>
                     <p class="small-note">
-                        Your vote is sent to the Flask /api/feedback endpoint and stored in SQLite when available.
+                        Your vote is stored in the application database and linked to this search when possible.
                     </p>
                     <div class="feedback-actions">
                         <button id="helpfulBtn" class="success-btn" type="button">👍 Helpful</button>
@@ -660,6 +853,36 @@
                     </div>
                     <div id="feedbackStatus" class="status success" role="status" aria-live="polite"></div>
                 </div>
+            </section>
+
+            <section id="historySection" aria-labelledby="historyTitle">
+                <div class="section-header">
+                    <div>
+                        <h2 id="historyTitle">My Account</h2>
+                        <p>Manage favorites, compare similar saved products and reopen searches.</p>
+                    </div>
+                    <button id="backFromHistoryBtn" class="secondary-btn" type="button">← Back</button>
+                </div>
+                <div class="account-block">
+                    <h3 id="profileHeading">Profile</h3>
+                    <p id="profileDetails" class="small-note"></p>
+                    <button id="accountLogoutBtn" class="secondary-btn" type="button">Log out</button>
+                </div>
+                <div class="account-block">
+                    <h3>Favorite products</h3>
+                    <p class="small-note">Select 2 or 3 products from the same product type to compare.</p>
+                    <div id="favoriteList" class="favorite-groups"></div>
+                    <div class="favorite-compare-actions">
+                        <button id="compareFavoritesBtn" class="success-btn" type="button" hidden>Compare selected favorites</button>
+                        <span id="favoriteSelectionStatus" class="small-note"></span>
+                    </div>
+                    <div id="favoriteStatus" class="status" role="status" aria-live="polite"></div>
+                </div>
+                <div class="account-block">
+                    <h3>Search history</h3>
+                    <div id="historyList" class="history-list"></div>
+                </div>
+                <div id="historyStatus" class="status" role="status" aria-live="polite"></div>
             </section>
 
             <section id="compareSection" aria-labelledby="compareTitle">
@@ -687,10 +910,10 @@
         "use strict";
 
         const APP_CONFIG = Object.freeze({
-            productionApiBaseUrl: "",
+            productionApiBaseUrl: "https://cp3407-api.onrender.com",
             localApiBaseUrl: "http://127.0.0.1:5000",
             requestTimeoutMs: 15000,
-            maximumRecommendations: 5,
+            pageSize: 20,
             maximumCompareItems: 3
         });
 
@@ -698,9 +921,13 @@
         const inputSection = document.getElementById("inputSection");
         const leaderboardSection = document.getElementById("leaderboardSection");
         const compareSection = document.getElementById("compareSection");
+        const historySection = document.getElementById("historySection");
 
-        const userInput = document.getElementById("userInput");
-        const characterCount = document.getElementById("characterCount");
+        const categorySelect = document.getElementById("categorySelect");
+        const budgetSelect = document.getElementById("budgetSelect");
+        const useCaseSelect = document.getElementById("useCaseSelect");
+        const preferredBrandSelect = document.getElementById("preferredBrandSelect");
+        const excludedBrandSelect = document.getElementById("excludedBrandSelect");
         const submitBtn = document.getElementById("submitBtn");
         const compareBtn = document.getElementById("compareBtn");
         const shareBtn = document.getElementById("shareBtn");
@@ -708,6 +935,31 @@
         const backToLeaderboardBtn = document.getElementById("backToLeaderboardBtn");
         const helpfulBtn = document.getElementById("helpfulBtn");
         const notHelpfulBtn = document.getElementById("notHelpfulBtn");
+        const previousPageBtn = document.getElementById("previousPageBtn");
+        const nextPageBtn = document.getElementById("nextPageBtn");
+        const pageStatus = document.getElementById("pageStatus");
+        const historyBtn = document.getElementById("historyBtn");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const loginBtn = document.getElementById("loginBtn");
+        const registerBtn = document.getElementById("registerBtn");
+        const backFromHistoryBtn = document.getElementById("backFromHistoryBtn");
+        const userMenuBtn = document.getElementById("userMenuBtn");
+        const userAvatar = document.getElementById("userAvatar");
+        const userMenuName = document.getElementById("userMenuName");
+        const accountLogoutBtn = document.getElementById("accountLogoutBtn");
+        const profileDetails = document.getElementById("profileDetails");
+        const favoriteList = document.getElementById("favoriteList");
+        const favoriteStatus = document.getElementById("favoriteStatus");
+        const favoriteSelectionStatus = document.getElementById("favoriteSelectionStatus");
+        const compareFavoritesBtn = document.getElementById("compareFavoritesBtn");
+        const authFields = document.getElementById("authFields");
+        const authUsername = document.getElementById("authUsername");
+        const authEmail = document.getElementById("authEmail");
+        const authPassword = document.getElementById("authPassword");
+        const accountStatus = document.getElementById("accountStatus");
+        const authMessage = document.getElementById("authMessage");
+        const historyList = document.getElementById("historyList");
+        const historyStatus = document.getElementById("historyStatus");
 
         const loader = document.getElementById("loader");
         const errorBox = document.getElementById("errorBox");
@@ -726,6 +978,15 @@
         let currentRecommendations = [];
         let currentBudgetAlternative = null;
         let selectedForCompare = [];
+        let currentPage = 1;
+        let currentTotalPages = 1;
+        let currentHistoryId = null;
+        let currentRequest = {};
+        let authToken = localStorage.getItem("cp3407_token") || "";
+        let currentUser = JSON.parse(localStorage.getItem("cp3407_user") || "null");
+        let favoriteIds = new Set();
+        let favoriteCompareSelected = [];
+        let comparisonReturnSection = "leaderboard";
 
         function isLocalDevelopment() {
             return (
@@ -760,6 +1021,7 @@
                     headers: {
                         "Accept": "application/json",
                         ...(options.body ? { "Content-Type": "application/json" } : {}),
+                        ...(authToken ? { "Authorization": `Bearer ${authToken}` } : {}),
                         ...(options.headers || {})
                     },
                     signal: controller.signal
@@ -792,10 +1054,15 @@
             }
         }
 
-        async function fetchRecommendations(query) {
+        async function fetchRecommendations(requestData, page = 1, saveHistory = true) {
             const payload = await requestJson("/api/recommend", {
                 method: "POST",
-                body: JSON.stringify({ query })
+                body: JSON.stringify({
+                    ...requestData,
+                    page,
+                    per_page: APP_CONFIG.pageSize,
+                    save_history: saveHistory
+                })
             });
 
             const data =
@@ -808,7 +1075,11 @@
                 data,
                 filters: payload?.filters ?? {},
                 message: payload?.message ?? "Recommendations retrieved.",
-                budgetAlternative: payload?.budget_alternative ?? payload?.budgetAlternative ?? null
+                budgetAlternative: payload?.budget_alternative ?? payload?.budgetAlternative ?? null,
+                page: payload?.page ?? page,
+                totalPages: payload?.total_pages ?? 1,
+                totalCandidates: payload?.total_candidates ?? data.length,
+                historyId: payload?.history_id ?? null
             };
         }
 
@@ -829,11 +1100,287 @@
                     vote,
                     query: currentQuery,
                     filters: currentFilters,
+                    history_id: currentHistoryId,
                     top_product_id: topProduct?.id ? Number(topProduct.id) : null,
                     recommendation_ids: currentRecommendations.map(product => Number(product.id))
                 })
             });
             return payload;
+        }
+
+        function updateAccountUi() {
+            const loggedIn = Boolean(authToken && currentUser);
+            document.querySelector(".account-panel").hidden = loggedIn;
+            authFields.hidden = loggedIn;
+            historyBtn.hidden = !loggedIn;
+            logoutBtn.hidden = !loggedIn;
+            userMenuBtn.hidden = !loggedIn;
+            if (loggedIn) {
+                userAvatar.textContent = currentUser.username.slice(0, 1);
+                userMenuName.textContent = currentUser.username;
+                profileDetails.textContent = `${currentUser.username} · ${currentUser.email}`;
+            }
+            accountStatus.textContent = loggedIn
+                ? `Signed in as ${currentUser.username}. New searches are saved automatically.`
+                : "Search without an account, or log in to save and reopen searches.";
+        }
+
+        function saveSession(payload) {
+            authToken = payload.token;
+            currentUser = payload.user;
+            localStorage.setItem("cp3407_token", authToken);
+            localStorage.setItem("cp3407_user", JSON.stringify(currentUser));
+            authPassword.value = "";
+            updateAccountUi();
+            refreshFavoriteIds();
+            authMessage.className = "status success";
+            showStatus(authMessage, `Welcome, ${currentUser.username}.`);
+        }
+
+        async function authenticate(mode) {
+            authMessage.style.display = "none";
+            loginBtn.disabled = true;
+            registerBtn.disabled = true;
+            try {
+                const body = mode === "register"
+                    ? { username: authUsername.value.trim(), email: authEmail.value.trim(), password: authPassword.value }
+                    : { identifier: authEmail.value.trim() || authUsername.value.trim(), password: authPassword.value };
+                const payload = await requestJson(`/api/auth/${mode}`, {
+                    method: "POST",
+                    body: JSON.stringify(body)
+                });
+                saveSession(payload);
+            } catch (error) {
+                authMessage.className = "status error";
+                showStatus(authMessage, error instanceof Error ? error.message : "Account request failed.");
+            } finally {
+                loginBtn.disabled = false;
+                registerBtn.disabled = false;
+            }
+        }
+
+        async function refreshFavoriteIds() {
+            if (!authToken) {
+                favoriteIds = new Set();
+                return [];
+            }
+            try {
+                const payload = await requestJson("/api/favorites");
+                favoriteIds = new Set(payload.data.map(item => String(item.product_id ?? item.id)));
+                return payload.data;
+            } catch (error) {
+                if (String(error?.message || "").toLowerCase().includes("login")) {
+                    favoriteIds = new Set();
+                }
+                return [];
+            }
+        }
+
+        async function toggleFavorite(product, button) {
+            if (!authToken) {
+                authMessage.className = "status error";
+                showStatus(authMessage, "Please register or log in before saving favorites.");
+                document.querySelector(".account-panel").hidden = false;
+                document.querySelector(".account-panel").scrollIntoView({ behavior: "smooth" });
+                return;
+            }
+            const id = String(product.id);
+            button.disabled = true;
+            try {
+                if (favoriteIds.has(id)) {
+                    await requestJson(`/api/favorites/${id}`, { method: "DELETE" });
+                    favoriteIds.delete(id);
+                } else {
+                    await requestJson("/api/favorites", {
+                        method: "POST",
+                        body: JSON.stringify({ product_id: Number(id) })
+                    });
+                    favoriteIds.add(id);
+                }
+                updateFavoriteButton(button, id);
+            } catch (error) {
+                showStatus(compareStatus, error instanceof Error ? error.message : "Favorite could not be updated.");
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        function updateFavoriteButton(button, id) {
+            const saved = favoriteIds.has(String(id));
+            button.textContent = saved ? "♥ Saved" : "♡ Save favorite";
+            button.classList.toggle("saved", saved);
+            button.setAttribute("aria-pressed", String(saved));
+        }
+
+        async function loadFavorites() {
+            favoriteList.replaceChildren();
+            favoriteCompareSelected = [];
+            compareFavoritesBtn.hidden = true;
+            favoriteSelectionStatus.textContent = "";
+            const data = await refreshFavoriteIds();
+            if (!data.length) {
+                favoriteStatus.className = "status empty";
+                showStatus(favoriteStatus, "You have no favorite products yet. Save products from recommendation results.");
+                return;
+            }
+            favoriteStatus.style.display = "none";
+            const groups = new Map();
+            data.map(normalizeProduct).forEach(product => {
+                if (!groups.has(product.category)) groups.set(product.category, []);
+                groups.get(product.category).push(product);
+            });
+            groups.forEach((products, category) => {
+                const group = document.createElement("section");
+                group.className = "favorite-group";
+                const heading = document.createElement("h4");
+                heading.textContent = `${category} (${products.length})`;
+                group.appendChild(heading);
+                products.forEach(product => {
+                    const item = document.createElement("article");
+                    item.className = "favorite-item";
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.value = product.id;
+                    checkbox.dataset.category = category;
+                    checkbox.setAttribute("aria-label", `Select favorite ${product.name}`);
+                    checkbox.addEventListener("change", () => handleFavoriteCompareSelection(checkbox));
+                    const info = document.createElement("div");
+                    const name = document.createElement("strong");
+                    name.textContent = product.name;
+                    const meta = document.createElement("p");
+                    meta.className = "small-note";
+                    meta.textContent = `${product.brand} · ${formatPrice(product.price)} · ${buildSpecSummary(product) || "Specifications unavailable"}`;
+                    info.append(name, meta);
+                    const remove = document.createElement("button");
+                    remove.type = "button";
+                    remove.className = "danger-btn";
+                    remove.textContent = "Remove";
+                    remove.addEventListener("click", async () => {
+                        await requestJson(`/api/favorites/${product.id}`, { method: "DELETE" });
+                        favoriteIds.delete(String(product.id));
+                        await loadFavorites();
+                    });
+                    item.append(checkbox, info, remove);
+                    group.appendChild(item);
+                });
+                favoriteList.appendChild(group);
+            });
+        }
+
+        function handleFavoriteCompareSelection(checkbox) {
+            const id = checkbox.value;
+            const category = checkbox.dataset.category;
+            if (checkbox.checked) {
+                const selectedCategory = favoriteCompareSelected[0]?.category;
+                if ((selectedCategory && selectedCategory !== category) || favoriteCompareSelected.length >= APP_CONFIG.maximumCompareItems) {
+                    checkbox.checked = false;
+                    favoriteSelectionStatus.textContent = selectedCategory && selectedCategory !== category
+                        ? `Choose products only from ${selectedCategory}.`
+                        : "You can compare up to 3 products.";
+                    return;
+                }
+                favoriteCompareSelected.push({ id, category });
+            } else {
+                favoriteCompareSelected = favoriteCompareSelected.filter(item => item.id !== id);
+            }
+            compareFavoritesBtn.hidden = favoriteCompareSelected.length < 2;
+            favoriteSelectionStatus.textContent = favoriteCompareSelected.length
+                ? `${favoriteCompareSelected.length} ${category} selected.`
+                : "";
+        }
+
+        async function loadHistory() {
+            inputSection.style.display = "none";
+            leaderboardSection.style.display = "none";
+            compareSection.style.display = "none";
+            historySection.style.display = "block";
+            historyList.replaceChildren();
+            await loadFavorites();
+            historyStatus.className = "status loading";
+            showStatus(historyStatus, "Loading saved searches...");
+            try {
+                const payload = await requestJson("/api/history?per_page=50");
+                historyStatus.style.display = "none";
+                if (!payload.data.length) {
+                    historyStatus.className = "status empty";
+                    showStatus(historyStatus, "No saved searches yet.");
+                    return;
+                }
+                payload.data.forEach(record => {
+                    const item = document.createElement("article");
+                    item.className = "history-item";
+                    const title = document.createElement("strong");
+                    title.textContent = record.query_text;
+                    const details = document.createElement("p");
+                    details.className = "small-note";
+                    details.textContent = `${record.total_candidates} matches · ${new Date(record.created_at).toLocaleString()}`;
+                    const actions = document.createElement("div");
+                    actions.className = "history-actions";
+                    const open = document.createElement("button");
+                    open.className = "primary-btn";
+                    open.type = "button";
+                    open.textContent = "Open saved results";
+                    open.addEventListener("click", () => openHistory(record.history_id));
+                    const remove = document.createElement("button");
+                    remove.className = "danger-btn";
+                    remove.type = "button";
+                    remove.textContent = "Delete";
+                    remove.addEventListener("click", () => deleteHistory(record.history_id));
+                    actions.append(open, remove);
+                    item.append(title, details, actions);
+                    historyList.appendChild(item);
+                });
+            } catch (error) {
+                historyStatus.className = "status error";
+                showStatus(historyStatus, error instanceof Error ? error.message : "History could not be loaded.");
+            }
+        }
+
+        async function openHistory(historyId) {
+            const payload = await requestJson(`/api/history/${historyId}`);
+            const record = payload.history;
+            currentQuery = record.query_text;
+            currentFilters = record.filters || {};
+            currentRequest = {
+                query: currentQuery,
+                category: currentFilters.category || null,
+                brand: currentFilters.brand || null,
+                max_price: currentFilters.max_price ?? currentFilters.budget ?? null,
+                excluded_brands: currentFilters.excluded_brands ?? currentFilters.exclusions ?? []
+            };
+            currentRecommendations = payload.data.map(normalizeProduct);
+            currentHistoryId = historyId;
+            currentPage = 1;
+            currentTotalPages = 1;
+            restoreSelections(currentRequest);
+            renderLeaderboard(currentRecommendations);
+            renderQuerySummary(currentQuery, currentFilters, `Saved result snapshot · ${record.total_candidates} original matches.`);
+            renderBudgetAlternative(null);
+            pageStatus.textContent = "Saved result snapshot";
+            previousPageBtn.hidden = true;
+            nextPageBtn.hidden = true;
+            historySection.style.display = "none";
+            leaderboardSection.style.display = "block";
+        }
+
+        async function deleteHistory(historyId) {
+            await requestJson(`/api/history/${historyId}`, { method: "DELETE" });
+            await loadHistory();
+        }
+
+        async function loadRecommendationPage(page, saveHistory = false) {
+            const result = await fetchRecommendations(currentRequest, page, saveHistory);
+            currentFilters = result.filters;
+            currentRecommendations = result.data.map(normalizeProduct);
+            currentPage = result.page;
+            currentTotalPages = result.totalPages;
+            if (result.historyId) currentHistoryId = result.historyId;
+            renderLeaderboard(currentRecommendations);
+            renderQuerySummary(currentQuery, currentFilters, `${result.message} Showing page ${currentPage} of ${Math.max(1, currentTotalPages)}.`);
+            renderBudgetAlternative(result.budgetAlternative);
+            pageStatus.textContent = `${result.totalCandidates} matches · page ${currentPage} of ${Math.max(1, currentTotalPages)}`;
+            previousPageBtn.hidden = currentPage <= 1;
+            nextPageBtn.hidden = currentPage >= currentTotalPages;
         }
 
         function normalizeProduct(product, index = 0) {
@@ -855,7 +1402,8 @@
                 battery: product?.battery ?? product?.battery_life ?? specs.battery_life ?? specs.battery ?? product?.BatteryLife ?? null,
                 weight: product?.weight ?? product?.weight_kg ?? specs.weight ?? product?.Weight ?? null,
                 useCase: product?.use_case ?? specs.use_case ?? product?.UseCase ?? null,
-                purchaseUrl: product?.purchase_url ?? product?.PurchaseURL ?? product?.url ?? null
+                purchaseUrl: product?.purchase_url ?? product?.PurchaseURL ?? product?.url ?? null,
+                dataSource: product?.data_source ?? product?.DataSource ?? "unknown"
             };
         }
 
@@ -1020,7 +1568,8 @@
 
                 const rank = document.createElement("div");
                 rank.className = "rank";
-                rank.textContent = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `#${index + 1}`;
+                const absoluteRank = (currentPage - 1) * APP_CONFIG.pageSize + index + 1;
+                rank.textContent = absoluteRank === 1 ? "🥇" : absoluteRank === 2 ? "🥈" : absoluteRank === 3 ? "🥉" : `#${absoluteRank}`;
 
                 const info = document.createElement("div");
                 info.className = "product-info";
@@ -1031,7 +1580,8 @@
 
                 const meta = document.createElement("p");
                 meta.className = "product-meta";
-                meta.textContent = `${product.brand} · ${product.category} · ${formatPrice(product.price)}`;
+                const sourceLabel = product.dataSource === "educational-synthetic" ? " · Demo data" : "";
+                meta.textContent = `${product.brand} · ${product.category} · ${formatPrice(product.price)}${sourceLabel}`;
 
                 const specText = buildSpecSummary(product);
                 const specs = document.createElement("p");
@@ -1060,6 +1610,13 @@
                     unavailable.textContent = "Product link unavailable";
                     actions.appendChild(unavailable);
                 }
+
+                const favoriteButton = document.createElement("button");
+                favoriteButton.type = "button";
+                favoriteButton.className = "neutral-btn favorite-btn";
+                updateFavoriteButton(favoriteButton, product.id);
+                favoriteButton.addEventListener("click", () => toggleFavorite(product, favoriteButton));
+                actions.appendChild(favoriteButton);
 
                 info.append(name, meta, specs, reason, actions);
 
@@ -1153,39 +1710,71 @@
             compareTableContainer.replaceChildren(table);
         }
 
+        function buildRequestFromSelections() {
+            const category = categorySelect.value;
+            const budget = budgetSelect.value ? Number(budgetSelect.value) : null;
+            const useCase = useCaseSelect.value;
+            const brand = preferredBrandSelect.value || null;
+            const excluded = excludedBrandSelect.value;
+            if (brand && excluded && brand === excluded) {
+                throw new Error("Preferred brand and excluded brand cannot be the same.");
+            }
+            const categoryPhrase = {
+                "Laptops": "laptop",
+                "Smartphones": "smartphone",
+                "Tablets": "tablet",
+                "Headphones": "pair of headphones",
+                "Smart Watches": "smart watch"
+            }[category] || category.toLowerCase();
+            const article = categoryPhrase === "pair of headphones" ? "a" : /^[aeiou]/i.test(categoryPhrase) ? "an" : "a";
+            const phrases = [`I need ${article} ${categoryPhrase}`];
+            if (useCase !== "general") phrases.push(`for ${useCase}`);
+            if (budget !== null) phrases.push(`under $${budget}`);
+            if (brand) phrases.push(`prefer ${brand}`);
+            if (excluded) phrases.push(`no ${excluded}`);
+            return {
+                query: phrases.join(", "),
+                category,
+                brand,
+                max_price: budget,
+                excluded_brands: excluded ? [excluded] : []
+            };
+        }
+
+        function restoreSelections(filters) {
+            if (filters.category) categorySelect.value = filters.category;
+            const budget = filters.max_price ?? filters.budget;
+            if (budget !== undefined && budget !== null) budgetSelect.value = String(budget);
+            if (filters.brand !== undefined) preferredBrandSelect.value = filters.brand || "";
+            const exclusions = filters.excluded_brands ?? filters.exclusions ?? [];
+            excludedBrandSelect.value = Array.isArray(exclusions) ? (exclusions[0] || "") : "";
+            const query = String(filters.query || "").toLowerCase();
+            const useCases = ["study", "office", "gaming", "creative", "portable", "camera", "battery", "fitness"];
+            useCaseSelect.value = useCases.find(item => query.includes(item)) || "general";
+        }
+
         recommendationForm.addEventListener("submit", async event => {
             event.preventDefault();
-            const query = userInput.value.trim();
             clearStatus();
-
-            if (!query) {
-                showStatus(errorBox, "Please enter your requirements before searching.");
-                userInput.focus();
-                return;
-            }
 
             setLoading(true);
 
             try {
-                const { data, filters, message, budgetAlternative } = await fetchRecommendations(query);
-                const normalized = data.map(normalizeProduct).slice(0, APP_CONFIG.maximumRecommendations);
+                currentRequest = buildRequestFromSelections();
+                currentQuery = currentRequest.query;
+                currentPage = 1;
+                currentHistoryId = null;
+                await loadRecommendationPage(1, true);
 
-                if (normalized.length === 0) {
+                if (currentRecommendations.length === 0) {
                     currentRecommendations = [];
-                    showStatus(emptyBox, message || "No matching products were found.");
+                    showStatus(emptyBox, "No matching products were found.");
                     return;
                 }
 
-                currentQuery = query;
-                currentFilters = filters;
-                currentRecommendations = normalized;
-
-                renderLeaderboard(currentRecommendations);
-                renderQuerySummary(query, filters, message);
-                renderBudgetAlternative(budgetAlternative);
-
                 inputSection.style.display = "none";
                 compareSection.style.display = "none";
+                historySection.style.display = "none";
                 leaderboardSection.style.display = "block";
                 leaderboardSection.scrollIntoView({ behavior: "smooth", block: "start" });
             } catch (error) {
@@ -1215,6 +1804,7 @@
                 const items = rawItems.map(normalizeProduct);
 
                 renderComparison(items);
+                comparisonReturnSection = "leaderboard";
                 leaderboardSection.style.display = "none";
                 compareSection.style.display = "block";
                 compareSection.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1254,6 +1844,63 @@
 
         helpfulBtn.addEventListener("click", () => handleFeedback("up"));
         notHelpfulBtn.addEventListener("click", () => handleFeedback("down"));
+        previousPageBtn.addEventListener("click", async () => {
+            if (currentPage <= 1) return;
+            previousPageBtn.disabled = true;
+            try { await loadRecommendationPage(currentPage - 1); }
+            catch (error) { showStatus(compareStatus, error.message); }
+            finally { previousPageBtn.disabled = false; }
+        });
+        nextPageBtn.addEventListener("click", async () => {
+            if (currentPage >= currentTotalPages) return;
+            nextPageBtn.disabled = true;
+            try { await loadRecommendationPage(currentPage + 1); }
+            catch (error) { showStatus(compareStatus, error.message); }
+            finally { nextPageBtn.disabled = false; }
+        });
+        loginBtn.addEventListener("click", () => authenticate("login"));
+        registerBtn.addEventListener("click", () => authenticate("register"));
+        historyBtn.addEventListener("click", loadHistory);
+        userMenuBtn.addEventListener("click", loadHistory);
+        compareFavoritesBtn.addEventListener("click", async () => {
+            compareFavoritesBtn.disabled = true;
+            favoriteStatus.style.display = "none";
+            try {
+                const payload = await requestJson("/api/favorites/compare", {
+                    method: "POST",
+                    body: JSON.stringify({ product_ids: favoriteCompareSelected.map(item => Number(item.id)) })
+                });
+                renderComparison(payload.data.map(normalizeProduct));
+                comparisonReturnSection = "account";
+                historySection.style.display = "none";
+                compareSection.style.display = "block";
+                compareSection.scrollIntoView({ behavior: "smooth", block: "start" });
+            } catch (error) {
+                favoriteStatus.className = "status error";
+                showStatus(favoriteStatus, error instanceof Error ? error.message : "Favorites could not be compared.");
+            } finally {
+                compareFavoritesBtn.disabled = false;
+            }
+        });
+        backFromHistoryBtn.addEventListener("click", () => {
+            historySection.style.display = "none";
+            if (currentRecommendations.length) leaderboardSection.style.display = "block";
+            else inputSection.style.display = "block";
+        });
+        function logout() {
+            authToken = "";
+            currentUser = null;
+            favoriteIds = new Set();
+            localStorage.removeItem("cp3407_token");
+            localStorage.removeItem("cp3407_user");
+            historySection.style.display = "none";
+            inputSection.style.display = "block";
+            updateAccountUi();
+            authMessage.className = "status success";
+            showStatus(authMessage, "You are logged out.");
+        }
+        logoutBtn.addEventListener("click", logout);
+        accountLogoutBtn.addEventListener("click", logout);
 
         shareBtn.addEventListener("click", async () => {
             const shareUrl = buildShareUrl();
@@ -1271,7 +1918,7 @@
             const url = new URL(window.location.href);
             const params = new URLSearchParams();
 
-            params.set("query", currentQuery || userInput.value.trim());
+            params.set("query", currentQuery || buildRequestFromSelections().query);
             params.set("auto", "1");
 
             if (currentFilters?.category) params.set("category", currentFilters.category);
@@ -1306,22 +1953,16 @@
             if (!copied) throw new Error("Clipboard copy failed.");
         }
 
-        userInput.addEventListener("input", updateCharacterCount);
-
-        userInput.addEventListener("keydown", event => {
-            if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
-                recommendationForm.requestSubmit();
-            }
-        });
-
         backToLeaderboardBtn.addEventListener("click", () => {
             compareSection.style.display = "none";
-            leaderboardSection.style.display = "block";
+            if (comparisonReturnSection === "account") historySection.style.display = "block";
+            else leaderboardSection.style.display = "block";
         });
 
         startOverBtn.addEventListener("click", () => {
             leaderboardSection.style.display = "none";
             compareSection.style.display = "none";
+            historySection.style.display = "none";
             inputSection.style.display = "block";
 
             productList.replaceChildren();
@@ -1335,31 +1976,37 @@
             currentRecommendations = [];
             currentBudgetAlternative = null;
             selectedForCompare = [];
+            currentPage = 1;
+            currentTotalPages = 1;
+            currentHistoryId = null;
+            currentRequest = {};
 
             compareBtn.style.display = "none";
             clearStatus();
-            userInput.focus();
+            categorySelect.focus();
         });
-
-        function updateCharacterCount() {
-            characterCount.textContent = `${userInput.value.length} / ${userInput.maxLength}`;
-        }
 
         function restoreSharedQuery() {
             const params = new URLSearchParams(window.location.search);
             const query = params.get("query") || params.get("q") || "";
 
             if (!query) return;
-
-            userInput.value = query;
-            updateCharacterCount();
+            const shared = {
+                query,
+                category: params.get("category") || undefined,
+                brand: params.get("brand") || undefined,
+                max_price: params.get("max_price") || undefined,
+                excluded_brands: (params.get("excluded_brands") || "").split(",").filter(Boolean)
+            };
+            restoreSelections(shared);
 
             if (params.get("auto") === "1") {
                 window.setTimeout(() => recommendationForm.requestSubmit(), 250);
             }
         }
 
-        updateCharacterCount();
+        updateAccountUi();
+        refreshFavoriteIds();
         restoreSharedQuery();
     </script>
 </body>

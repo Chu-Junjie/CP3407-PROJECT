@@ -1,5 +1,30 @@
 # CP3407---Smart Digital Product Recommendation Platform
 
+> **Teacher-feedback revision (4 August 2026):** this working copy supersedes the earlier Top-5/CSV prototype described later in this historical README. It now uses SQLAlchemy with PostgreSQL support, stores 2,000 recommendation-ready catalogue rows in the bundled SQLite development database, supports registration/login and persistent search history, and exposes every matching result through 20-item pagination. See [Teacher Feedback Change Request](docs/teacher-feedback-change-request.md).
+
+## Current runnable version
+
+- `server.py`: Flask API, authentication, recommendation, comparison, feedback and history.
+- `digital_products.db`: local SQLite database containing 9,000 behavioural product rows and 2,000 joined catalogue/specification rows.
+- `index.html`: static frontend for GitHub Pages; production API base URL points to Render.
+- Production database: set `DATABASE_URL` to a Render PostgreSQL connection string. Without it, the app uses local SQLite.
+- Catalogue disclosure: 33 specification records are the original prototype rows; the remaining rows are deterministic **educational synthetic data**, labelled in `DataSource`. They are not live retail listings or live prices.
+- Account center: the avatar in the top-right opens persistent favorites and search history. Users can compare 2–3 favorite products when they belong to the same product category.
+
+### Run locally
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python server.py
+```
+
+Serve `index.html` from another terminal with `python3 -m http.server 8000`, then open `http://127.0.0.1:8000`. Run automated checks with `.venv/bin/pytest -q`.
+
+### Render configuration
+
+Use build command `pip install -r requirements.txt` and start command `gunicorn server:app`. Add a Render PostgreSQL database and set `DATABASE_URL` and a random 32+ character `JWT_SECRET_KEY` on the web service. A free ephemeral web-service filesystem must not be relied on for user accounts or history; PostgreSQL provides persistence across deploys/restarts.
+
 Welcome to the Smart Digital Product Recommendation Platform repository. This project aims to help users find the most suitable digital products (e.g., laptops, smartphones, peripherals) that fit their budget and needs through intelligent and personalized assessment algorithms, simplifying the decision-making process in a tech market filled with overwhelming information.
 
 🌟 **Live Demo:** [Click here to experience our Iteration 1 Platform](https://chu-junjie.github.io/CP3407-PROJECT/)
@@ -20,8 +45,9 @@ In today's tech market, digital products iterate rapidly with complex specificat
 
 ## 3. Features
 * **Smart Assessment:** Provide a quick, intuitive, personalized questionnaire (e.g., budget range, primary scenarios like 3D modeling/gaming/office work, portability or battery life preferences).
-* **Personalized Recommendations:** Display the top 3 recommended digital products based on matching scores, along with reasons for the recommendation.
+* **Personalized Recommendations:** Rank matching products, highlight the top five, and let users browse every match through pagination with explanations and scores.
 * **Product Comparison:** Allow users to compare multiple recommended products side-by-side, clearly displaying core specs like CPU, GPU, RAM, and price in a table format.
+* **Accounts and History:** Register or log in to preserve searches and reopen result snapshots later.
 ---
 
 ## 4. Technology Stack
@@ -241,7 +267,9 @@ In Iteration 2, we adopted **Test-Driven Development (TDD)** as our primary engi
 2. **Integration Testing:** We test the Flask API endpoints combined with the SQLite database to ensure the system correctly fetches, filters, and returns JSON payloads.
 3. **Acceptance Testing:** We map our tests directly to the Acceptance Criteria of our User Stories to guarantee business value delivery.
 
-### 📋 Test Cases (15 Cases across 5 User Stories)
+### 📋 Historical test-plan examples
+
+The table below documents the earlier iteration plan. The current executable suite is `test_server.py` (10 tests) and additionally covers account authentication, private/persistent history, deletion, feedback, comparison and multi-page results.
 Below are 15 carefully designed test cases covering both completed (US-01, 02, 03) and upcoming (US-04, 06) user stories, following the exact standard from the textbook.
 
 | User Story | Test Case ID | Test Description | Expected Result |
@@ -252,7 +280,7 @@ Below are 15 carefully designed test cases covering both completed (US-01, 02, 0
 | **US-02: DB Setup** | TC-02.1 | Initialize empty database on startup | System automatically reads CSV and creates the SQLite table. |
 | | TC-02.2 | Check `/api/health` endpoint | Returns HTTP 200 with the exact row count of the database. |
 | | TC-02.3 | Prevent duplicate imports | Running setup twice does not duplicate records in the database. |
-| **US-03: Leaderboard**| TC-03.1 | Request recommendations | API returns exactly 5 (or fewer) product items in a JSON array. |
+| **US-03: Leaderboard**| TC-03.1 | Request recommendations | API returns a page of results and metadata needed to browse every matching item. |
 | | TC-03.2 | Verify sorting order | The returned JSON array is strictly sorted by `match_score` descending. |
 | | TC-03.3 | Verify budget constraint | All 5 returned products have a price lower than or equal to the user's budget. |
 | **US-04: Explanation**| TC-04.1 | Verify reason payload | The JSON response object contains a `reason` string field. |

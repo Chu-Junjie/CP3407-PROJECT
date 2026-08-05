@@ -1,0 +1,34 @@
+ProductID,ProductName,CPU,GPU,RAM,Storage,ScreenSize,BatteryLife,Weight,UseCase,PurchaseURL
+5885,Apple MacBook Air M3,Apple M3,Integrated Apple GPU,16GB,512GB SSD,13.6 inch,18 hours,1.24 kg,study office portable,https://www.apple.com/macbook-air/
+5937,Apple MacBook Pro 14,Apple M3 Pro,Integrated Apple GPU,18GB,512GB SSD,14.2 inch,18 hours,1.55 kg,programming creative video editing,https://www.apple.com/macbook-pro/
+5960,Apple MacBook Air M2,Apple M2,Integrated Apple GPU,8GB,256GB SSD,13.6 inch,18 hours,1.24 kg,study office portable,https://www.apple.com/macbook-air/
+5912,Samsung Galaxy Book4 Pro,Intel Core Ultra 7,Intel Arc Graphics,16GB,512GB SSD,14 inch,16 hours,1.23 kg,office study portable,https://www.samsung.com/
+5921,Samsung Galaxy Book4 Ultra,Intel Core Ultra 9,NVIDIA RTX 4070,32GB,1TB SSD,16 inch,12 hours,1.86 kg,gaming creative 3d modelling,https://www.samsung.com/
+5924,Samsung Galaxy Book4,Intel Core 7,Intel Iris Xe,16GB,512GB SSD,15.6 inch,13 hours,1.55 kg,office study,https://www.samsung.com/
+5883,HP Pavilion 14,AMD Ryzen 5,Integrated Radeon,16GB,512GB SSD,14 inch,9 hours,1.41 kg,study office budget,https://www.hp.com/
+5896,HP Envy x360,AMD Ryzen 7,Integrated Radeon,16GB,1TB SSD,15.6 inch,11 hours,1.77 kg,office creative touchscreen,https://www.hp.com/
+5899,HP Omen 16,Intel Core i7,NVIDIA RTX 4060,16GB,1TB SSD,16.1 inch,6 hours,2.35 kg,gaming performance,https://www.hp.com/
+5985,Sony Vaio SX14,Intel Core i5,Intel Iris Xe,16GB,512GB SSD,14 inch,13 hours,1.12 kg,business portable,https://vaio.com/
+5990,Sony Vaio F16,Intel Core i7,Intel Iris Xe,16GB,1TB SSD,16 inch,10 hours,1.65 kg,office large screen,https://vaio.com/
+5993,Sony Vaio Z,Intel Core i7,Intel Iris Xe,32GB,1TB SSD,14 inch,14 hours,1.06 kg,premium business portable,https://vaio.com/
+5877,Samsung Galaxy S24,Snapdragon 8 Gen 3,Adreno 750,8GB,256GB,6.2 inch,22 hours,0.17 kg,camera battery portable,https://www.samsung.com/
+5879,Samsung Galaxy A55,Exynos 1480,Xclipse 530,8GB,128GB,6.6 inch,24 hours,0.21 kg,budget battery,https://www.samsung.com/
+5880,Samsung Galaxy Z Fold6,Snapdragon 8 Gen 3,Adreno 750,12GB,512GB,7.6 inch,18 hours,0.24 kg,productivity large screen premium,https://www.samsung.com/
+5891,Apple iPhone 15,Apple A16 Bionic,Apple GPU,6GB,128GB,6.1 inch,20 hours,0.17 kg,camera portable,https://www.apple.com/iphone/
+5901,Apple iPhone 15 Pro,Apple A17 Pro,Apple GPU,8GB,256GB,6.1 inch,23 hours,0.19 kg,camera gaming premium,https://www.apple.com/iphone/
+5907,Apple iPhone 14,Apple A15 Bionic,Apple GPU,6GB,128GB,6.1 inch,20 hours,0.17 kg,value camera,https://www.apple.com/iphone/
+5952,Sony Xperia 1 VI,Snapdragon 8 Gen 3,Adreno 750,12GB,256GB,6.5 inch,22 hours,0.19 kg,camera media premium,https://www.sony.com/
+5988,Sony Xperia 5 V,Snapdragon 8 Gen 2,Adreno 740,8GB,128GB,6.1 inch,21 hours,0.18 kg,camera compact,https://www.sony.com/
+6007,Sony Xperia 10 VI,Snapdragon 6 Gen 1,Adreno 710,8GB,128GB,6.1 inch,25 hours,0.16 kg,battery value,https://www.sony.com/
+5892,Apple iPad Air M2,Apple M2,Integrated Apple GPU,8GB,256GB,11 inch,10 hours,0.46 kg,study creative tablet,https://www.apple.com/ipad-air/
+5933,Apple iPad Pro M4,Apple M4,Integrated Apple GPU,16GB,1TB,13 inch,10 hours,0.58 kg,creative premium tablet,https://www.apple.com/ipad-pro/
+5941,Apple iPad 10th Gen,Apple A14 Bionic,Apple GPU,4GB,64GB,10.9 inch,10 hours,0.48 kg,study budget tablet,https://www.apple.com/ipad/
+5876,Samsung Galaxy Tab S9,Snapdragon 8 Gen 2,Adreno 740,8GB,256GB,11 inch,15 hours,0.50 kg,study media tablet,https://www.samsung.com/
+5886,Samsung Galaxy Tab S9 Ultra,Snapdragon 8 Gen 2,Adreno 740,12GB,512GB,14.6 inch,14 hours,0.73 kg,creative large screen tablet,https://www.samsung.com/
+5890,Samsung Galaxy Tab A9+,Snapdragon 695,Adreno 619,8GB,128GB,11 inch,12 hours,0.49 kg,budget media tablet,https://www.samsung.com/
+5887,Sony WH-1000XM5,Audio Processor V1,Not applicable,0GB,0GB,Not applicable,30 hours,0.25 kg,headphones travel noise cancelling,https://www.sony.com/
+5963,Sony WH-1000XM4,QN1 Processor,Not applicable,0GB,0GB,Not applicable,30 hours,0.25 kg,headphones travel value,https://www.sony.com/
+5994,Sony LinkBuds S,Audio Processor V1,Not applicable,0GB,0GB,Not applicable,20 hours,0.05 kg,headphones portable,https://www.sony.com/
+5875,Samsung Galaxy Watch6,Exynos W930,Mali-G68,2GB,16GB,1.5 inch,40 hours,0.03 kg,fitness smart watch,https://www.samsung.com/
+5893,Samsung Galaxy Watch Ultra,Exynos W1000,Mali-G68,2GB,32GB,1.5 inch,60 hours,0.06 kg,fitness premium outdoor,https://www.samsung.com/
+5913,Samsung Galaxy Watch FE,Exynos W920,Mali-G68,1.5GB,16GB,1.2 inch,40 hours,0.03 kg,budget fitness smart watch,https://www.samsung.com/
