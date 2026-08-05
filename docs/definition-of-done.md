@@ -60,19 +60,23 @@ The following checklist records only evidence that has actually succeeded. It is
 - [x] `requirements.txt` was reconciled with `origin/main` and contains the six approved direct project, test, and deployment dependencies.
 - [x] The approved version ranges and Gunicorn from `origin/main` were preserved, while pytest and requests were retained for Task 3 test work.
 - [x] `python -m pip install -r requirements.txt` completed successfully with exit code `0` in the existing Python 3.14.6 environment.
-- [x] The post-merge `python -m pip check` completed successfully with exit code `0`.
-- [x] The post-merge `python -m compileall -q .` completed successfully with exit code `0`.
-- [x] The post-merge `python -m pytest --collect-only -q` collected 21 tests with exit code `0`.
-- [x] The historical failed full-suite baseline remains preserved as `5 failed, 1 passed, 15 errors` with exit code `1`.
-- [x] The separate post-merge full-suite result records `5 failed, 1 passed, 15 errors` with exit code `1`.
+- [x] The post-`fbd733c` `python -m pip check` completed successfully with exit code `0`.
+- [x] The post-`fbd733c` `python -m compileall -q .` completed successfully with exit code `0`.
+- [x] The post-`fbd733c` `python -m pytest --collect-only -q` collected 21 tests with exit code `0`.
+- [x] The historical failed full-suite baseline remains preserved as `5 failed, 1 passed, 15 errors` in `3.03s` with exit code `1`.
+- [x] The dependency-reconciliation full-suite result remains separately recorded as `5 failed, 1 passed, 15 errors` in `2.98s` with exit code `1`.
+- [x] The post-`fbd733c` full-suite result is separately recorded as `4 failed, 2 passed, 15 errors` in `3.30s` with exit code `1`.
+- [x] Merge commit `e907354` records that `server.py`, `index.html`, and `product_specs.csv` were inherited from main commit `fbd733c`, not manually edited by the coordinator.
+- [x] The test-generated `digital_products.db` modification was recorded as evidence, restored to committed blob `cbb53aa8c096a974fa02fe010d422f630bb14c92`, and excluded from the coordinator commit.
 - [ ] The reconciled manifest is installed and validated in a newly created clean environment.
 - [ ] The full backend suite passes.
 - [ ] Legacy fixtures are compatible with the current products and `product_specs` database contract.
 - [ ] Mock tests are compatible with the current setup, schema, health, recommend, and leaderboard contracts.
+- [ ] Tests provide complete database-state isolation and leave tracked SQLite data unchanged.
 - [ ] All API completion gates are verified with successful evidence.
 - [ ] The backend Pull Request is reviewed and merged.
 
-Task 3 remains **In Progress**. Successful compilation and collection do not satisfy the unchecked compatibility, API, full-suite, review, or merge gates.
+Task 3 remains **In Progress**. The additional passing recommend mock does not complete a user story. Successful compilation and collection do not satisfy the unchecked compatibility, database-isolation, API, full-suite, review, or merge gates.
 
 ## 2. User Story Definition of Done
 

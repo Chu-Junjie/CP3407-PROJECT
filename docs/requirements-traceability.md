@@ -64,7 +64,7 @@ This is a live matrix. `Candidate` means code was supplied but is not verified u
 
 ## Task 3 backend verification evidence
 
-This section records the original Task 3 evidence and the separate post-requirements-merge validation. It does not replace the earlier implementation-candidate or Task 2 records.
+This section records the original Task 3 evidence, the separate post-requirements-reconciliation validation, and the later validation after synchronizing main commit `fbd733c`. It does not replace the earlier implementation-candidate or Task 2 records.
 
 | User Story | Actual Task 3 tests or evidence | Actual result | Task 3 status |
 |---|---|---|---|
@@ -78,9 +78,19 @@ This section records the original Task 3 evidence and the separate post-requirem
 | US-08 | No collected test verifies feedback validation or persistence; the preserved mock/API baseline is incomplete and failed overall | Feedback completion cannot be claimed | **Incomplete / not evidenced** |
 | US-09 | No complete test covers same-category, cheaper, different-ProductID, specification-complete budget alternatives and the null case | No successful applicable evidence | **Not evidenced** |
 
-The historical full-suite baseline remains preserved as **Failed** with `5 failed, 1 passed, 15 errors` and exit code `1`.
+The three current Task 3 full-suite records remain distinct:
 
-After `requirements.txt` was reconciled with `origin/main`, the final manifest contained six direct project, test, and deployment dependencies. The existing environment installed the manifest successfully, `pip check` and compilation passed, and collection again found 21 tests with exit code `0`. The separate post-merge full run also remained **Failed** with `5 failed, 1 passed, 15 errors` and exit code `1`. No US-01 through US-09 status is promoted by collection or by the unchanged failed baseline.
+| Evidence stage | Full-suite result | Duration | Exit code | Conclusion |
+|---|---|---:|---:|---|
+| Historical baseline | `5 failed, 1 passed, 15 errors` | `3.03s` | `1` | **Failed; preserved** |
+| After dependency-manifest reconciliation | `5 failed, 1 passed, 15 errors` | `2.98s` | `1` | **Failed** |
+| After synchronizing main commit `fbd733c` | `4 failed, 2 passed, 15 errors` | `3.30s` | `1` | **Failed** |
+
+After `requirements.txt` was reconciled with `origin/main`, the final manifest contained six direct project, test, and deployment dependencies. The existing environment installed the manifest successfully, `pip check` and compilation passed, and collection found 21 tests with exit code `0`. The restricted-shell launch attempts remain recorded separately from the later real Python executions in that evidence stage.
+
+Main commit `fbd733c` was later synchronized through merge commit `e907354`. The resulting `server.py`, `index.html`, and `product_specs.csv` changes were inherited from main and were not manually authored by the Task 3 coordinator. The post-synchronization checks again recorded successful installation, dependency consistency, compilation, and collection of 21 tests. `test_server.py` still produced 15 fixture-setup errors. `test_mock.py` improved from `5 failed, 1 passed` to `4 failed, 2 passed` because `test_mock_recommend_endpoint_without_running_real_engine` now passes, but the full suite still fails.
+
+The tests modified tracked `digital_products.db` as a side effect. That change was recorded in `docs/evidence/task3-database-side-effect-after-main-fbd733c.txt`, and the database was restored to its committed 401408-byte blob `cbb53aa8c096a974fa02fe010d422f630bb14c92`. The generated database was not retained or committed. Complete database-state isolation is therefore **Failed**, and no US-01 through US-09 status is promoted by the additional mock pass, collection success, or any failed full-suite baseline.
 
 ## Required evidence columns before final release
 

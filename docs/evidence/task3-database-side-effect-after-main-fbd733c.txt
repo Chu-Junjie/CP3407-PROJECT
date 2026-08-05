@@ -1,0 +1,42 @@
+Task 3 database side-effect evidence after synchronizing main fbd733c
+
+Repository path: C:/JCU/CP3407/CP3407-PROJECT
+Branch: feature/share-ci-evidence
+Merge commit: e907354df7b475f051cb3f638c5bad069c454d6a
+Recorded at: 2026-08-05 11:36:52 +08:00
+Affected file: digital_products.db
+
+Observation
+The tracked digital_products.db file changed after running the Task 3 validation and test commands. The file was not intentionally or manually edited. This change is treated as a test-generated side effect and must not be committed.
+
+Command evidence
+
+Command: git status --short -- digital_products.db
+Output:
+ M digital_products.db
+
+Command: git rev-parse HEAD:digital_products.db
+Output:
+cbb53aa8c096a974fa02fe010d422f630bb14c92
+
+Command: git hash-object digital_products.db
+Output:
+a31e988ebff3aee96e4dd2acccac6523cb7f8ccd
+
+Command: git cat-file -s HEAD:digital_products.db
+Output:
+401408
+
+Command: (Get-Item .\digital_products.db).Length
+Output:
+901120
+
+Recorded comparison
+- Committed database size: 401408 bytes
+- Working database size: 901120 bytes
+- Committed blob hash: cbb53aa8c096a974fa02fe010d422f630bb14c92
+- Working-file blob hash: a31e988ebff3aee96e4dd2acccac6523cb7f8ccd
+- Git status entry:  M digital_products.db
+
+Decision
+The test-generated database modification must not be retained or committed. After this evidence was recorded and checked, digital_products.db was approved for restoration from the committed state at HEAD. Tests must not be rerun after restoration because they may modify the database again.
