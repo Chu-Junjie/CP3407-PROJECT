@@ -1,0 +1,7 @@
+Command: python -m compileall -q .
+Interpreter: C:\Users\29034\AppData\Local\Programs\Python\Python314\python.exe
+Python: 3.14.6
+
+Output: (no output)
+
+Exit code: 0
