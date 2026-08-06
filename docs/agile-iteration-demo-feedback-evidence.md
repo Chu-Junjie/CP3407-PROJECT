@@ -28,7 +28,7 @@ No date, effort, meeting, demonstration, user response or feedback result is inv
 
 Historical estimates and completion statements are retained only as historical records. They do not prove the current V3 release status.
 
-## 4. Current V3 release-preparation phases
+## 4. Current release-preparation phases
 
 | Phase | Main result | Evidence | Status |
 |---|---|---|---|
@@ -43,7 +43,7 @@ Historical estimates and completion statements are retained only as historical r
 | Release controls | Status, traceability, meeting action plan and checklist | Issue #59 / PR #60 | Prepared for named reviews |
 | Reconciliation | Controlled V3-to-`main` plan | Issue #43 / PR #44 | Planned; not started |
 
-## 5. Meeting decisions recorded for V3
+## 5. Meeting decisions recorded for the release
 
 - `feature/product-database` remains the implementation baseline.
 - @ZhengZaikun reviews backend/API/test/CI records.
