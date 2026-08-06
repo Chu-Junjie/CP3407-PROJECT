@@ -1,4 +1,4 @@
-# V3 Release Meeting Record and Action Plan
+# Release Meeting Record and Action Plan
 
 **Project:** Smart Digital Product Recommendation Platform  
 **Authoritative implementation branch:** `feature/product-database`  
@@ -61,7 +61,7 @@ Review these Pull Requests:
 - [ ] Each approved PR is mergeable against the latest V3 base.
 - [ ] No runtime result is inferred from a meeting decision or documentation approval.
 
-## 5. Phase B — Merge approved records into V3
+## 5. Phase B — Merge approved records into the release branch
 
 Recommended order:
 
