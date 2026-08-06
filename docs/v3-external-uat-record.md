@@ -1,4 +1,4 @@
-# V3 External User Acceptance Test Record
+# External User Acceptance Test Record
 
 **Project:** Smart Digital Product Recommendation Platform  
 **Authoritative baseline:** `feature/product-database`  
