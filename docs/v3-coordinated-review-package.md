@@ -2,169 +2,204 @@
 
 **Tracking Issue:** #49  
 **Coordinator:** Chu Junjie  
-**Review request status:** Deferred  
+**Review status:** Deferred  
 **Target base branch:** `feature/product-database`
 
 ## 1. Purpose
 
-This document defines the closeout path for the current V3 Draft Pull Requests. Technical review is deferred, but repository-supported questions are resolved now so the project does not remain blocked on information already present in source control.
+Coordinate the V3 Draft Pull Requests and define the remaining closeout sequence. Repository-supported decisions have been completed without waiting for verbal confirmation; actual GitHub approvals, runtime verification and final integration remain separate gates.
 
-No GitHub approval is inferred from silence. Every PR remains Draft until actual review resumes.
+No approval is inferred from silence. Every Pull Request remains independent.
 
-## 2. Repository-derived decisions
+## 2. Repository-derived decisions completed
 
-### 2.1 Automated-test scope
-
-**Canonical V3 release suite:**
+### Canonical V3 testing
 
 ```bash
 python -m pytest -q test_server.py
 ```
 
-`test_mock.py` is historical Practical 8, Task 7 evidence. It targets removed V2 Pandas/raw-SQLite interfaces and is retained as a non-release compatibility audit rather than a V3 release gate.
+Workflow run `31096706920` succeeded:
 
-PR #35 now separates:
+- Ubuntu 24.04.4;
+- Python 3.11.15;
+- pytest 9.1.1;
+- 12 tests collected;
+- 12 passed in 1.23s;
+- tracked-file integrity passed.
 
-- a required V3 release-suite job;
-- a visible, non-blocking historical mock audit.
+`test_mock.py` remains a visible non-release Practical 8 compatibility audit. Its six V2 failures do not belong to the canonical release gate. Issue #34 is completed.
 
-### 2.2 US-09 Budget Alternatives
+### US-09
 
-**Decision:** Option C — Deferred from the current V3 release  
-**Future milestone:** Unscheduled
+US-09 Budget Alternatives is Deferred from the current V3 release and retained in the backlog as `Unscheduled`.
 
-The API contract, backend response and V3 tests do not implement a cheaper-alternative object. The frontend contains optional display scaffolding only. Current release material must state that budget filtering exists but separate cheaper-alternative selection does not.
+The release supports maximum-budget filtering but does not promise a separately selected cheaper equivalent alternative.
 
-### 2.3 Database and importer position
+### Database and importer
 
-Repository inspection confirms:
+Repository inspection confirms the schema, PostgreSQL/SQLite selection, catalogue quotas, source/licence metadata, currency rules and built-in validation. Runtime database counts, deployed PostgreSQL identity, persistence and recovery remain open.
 
-- SQLAlchemy SQLite/PostgreSQL selection;
-- seven application tables;
-- a deterministic 2,000-row catalogue target;
-- a total implementation target of 11,000 products and 2,000 specifications;
-- documented dataset sources, licences and fixed currency conversion rules;
-- built-in catalogue validation.
+The catalogue importer must not run directly against a live production database containing private user data.
 
-Runtime counts, PostgreSQL identity, persistence, backup and deployed isolation remain open.
+## 3. Package inventory
 
-The catalogue importer is a build-artifact tool. It deletes private rows from the generated output copy and must not run directly against a live production database containing user data.
-
-## 3. Draft package inventory
-
-| PR | Purpose | Current treatment |
+| PR | Purpose | Current closeout status |
 |---|---|---|
-| #35 | CI workflow | Canonical V3 suite defined; new workflow run required. |
-| #44 | Safe `main`/V3 reconciliation | Prepared; no reconciliation branch created. |
-| #46 | Release evidence index | Updated with repository-derived decisions. |
-| #47 | US-09 scope record | Option C — Deferred. |
-| #48 | Database/PostgreSQL verification | Static findings complete; runtime evidence pending. |
-| #50 | This closeout package | Updated; actual review deferred. |
-| #52 | V3 design and architecture | Prepared. |
-| #54 | Agile delivery and retrospective record | Prepared. |
-| #58 | Development toolchain and dependencies | Prepared. |
+| #35 | CI workflow | Canonical job successful; Draft review deferred |
+| #44 | Safe branch reconciliation plan | Prepared; no reconciliation branch created |
+| #46 | Release evidence index | Updated through current decisions |
+| #47 | US-09 decision record | Option C — Deferred |
+| #48 | Database verification record | Repository findings complete; runtime blocked |
+| #50 | This closeout package | Updated; review deferred |
+| #52 | Design and architecture | Prepared |
+| #54 | Agile delivery/evidence record | Prepared |
+| #58 | Development toolchain | Prepared |
+| #60 | Scope, CI and release-gate status alignment | Four coordinator documents updated |
 
-## 4. Current operating rules
+## 4. Review-deferred rules
 
-1. Keep all package PRs Draft while review is deferred.
-2. Do not record an approval that is not present in GitHub.
-3. Do not modify teammate-owned implementation.
-4. Use repository evidence to resolve scope and documentation questions.
-5. Keep runtime verification separate from source inspection.
-6. Do not merge to `main` or create the reconciliation branch without separate approval.
-7. Do not run the catalogue importer against production user data.
+1. Keep all package PRs Draft.
+2. Do not record or imply approval without an actual GitHub review.
+3. Do not send repeated review pings while review is deferred.
+4. Do not merge one PR because another PR was approved.
+5. Do not modify teammate-owned implementation from coordinator branches.
+6. Do not treat source inspection as deployed or acceptance evidence.
+7. Do not create a reconciliation branch or merge to `main` without separate explicit approval.
 
-## 5. Work that can be completed before review resumes
+## 5. Component review scope when review resumes
 
-- [x] Define the canonical V3 test suite.
-- [x] Classify `test_mock.py` as a historical non-release audit.
-- [x] Record US-09 as deferred.
-- [x] Record repository-derived schema, importer, provenance and operational findings.
-- [x] Refresh Release Evidence Index.
-- [ ] Obtain a successful new PR #35 canonical workflow result.
-- [ ] Prepare coordinator-owned status corrections for US-09 and test scope.
-- [ ] Run local catalogue verification against a disposable database copy.
-- [ ] Confirm deployed frontend/API/PostgreSQL identity.
-- [ ] Execute deployed E2E and external acceptance.
+### Guanyu — frontend
 
-## 6. Technical gates that source inspection cannot close
+Review:
 
-### 6.1 PostgreSQL
+- deployed frontend and interface statements;
+- responsive/accessibility wording;
+- US-09 frontend limitation;
+- browser E2E procedure;
+- branch protection for `index.html`.
 
-Still required:
+### Zaikun — backend and tests
 
-- actual Render API commit;
-- active database dialect;
-- schema and catalogue counts;
-- persistence after restart/redeploy;
-- cross-user isolation;
-- backup and restore.
+Review:
 
-### 6.2 Deployed browser behaviour
+- API/auth/recommendation statements;
+- canonical test workflow and historical audit boundary;
+- backend privacy and persistence expectations;
+- US-09 backend/API limitation;
+- branch protection for backend/test files.
 
-Still required:
+### Yuyang — database and catalogue
 
-- GitHub Pages commit;
-- frontend-to-API Network evidence;
-- authentication, pagination, comparison, favorites, history, feedback and share flows;
-- mobile, keyboard, error and empty-state evidence.
+Review:
 
-### 6.3 External acceptance
+- schema, quotas, importer and provenance statements;
+- PostgreSQL and persistence procedure;
+- importer production-data warning;
+- preservation of V3 database/data/importer files during reconciliation.
 
-Still required:
+### Junjie — coordination
+
+Maintain:
+
+- Issue/PR/commit references;
+- evidence status consistency;
+- schedule and release gates;
+- review outcome records;
+- final reconciliation/release sequence.
+
+## 6. Work completed before review
+
+- [x] V3 baseline recorded.
+- [x] Canonical test suite selected.
+- [x] Successful canonical CI retained.
+- [x] Historical mock audit classified.
+- [x] US-09 deferred with limitation wording.
+- [x] Database source-level verification recorded.
+- [x] Release Evidence Index refreshed.
+- [x] Coordinator status documents aligned in PR #60.
+- [ ] Local catalogue command output retained.
+- [ ] Deployed environment identity confirmed.
+- [ ] Release-candidate CI executed.
+- [ ] PostgreSQL persistence/privacy executed.
+- [ ] Browser E2E executed.
+- [ ] External acceptance executed.
+
+## 7. Runtime gates that remain open
+
+### Database and deployment
+
+- actual local and PostgreSQL counts;
+- active PostgreSQL dialect;
+- deployed API commit;
+- restart/redeploy persistence;
+- backup/restore;
+- final secret scan.
+
+### Browser
+
+- GitHub Pages deployed commit;
+- frontend-to-API integration;
+- auth, recommendation, pagination, comparison, favorites, history, feedback and share;
+- mobile, keyboard, focus, error and empty-state evidence.
+
+### Acceptance
 
 - two non-team participant sessions;
-- retained task outcomes, observations and ratings;
-- defect/limitation decisions.
+- task outcomes, observations and ratings;
+- defect and retest decisions.
 
-## 7. Conditional closeout sequence
+## 8. Closeout sequence
 
-### Phase A — Current repository closeout
+### Phase A — Runtime verification
 
-1. Wait for the updated PR #35 workflow run.
-2. Record the canonical CI result.
-3. Update the US-09 decision Issue and coordinator-owned status files.
-4. Update test-scope wording in coordinator-owned documents.
-5. Keep all technical runtime gates visible.
+1. Run catalogue verification against a disposable copy.
+2. Confirm deployed frontend/API/PostgreSQL identity.
+3. Freeze the release candidate.
+4. Rerun canonical CI for that commit.
+5. Execute PostgreSQL persistence and privacy tests.
+6. Execute browser E2E.
+7. Execute external acceptance.
 
-### Phase B — Release-candidate verification
-
-1. Confirm the deployed frontend and API commit identities.
-2. Confirm PostgreSQL is active.
-3. Freeze one release-candidate commit.
-4. Run the canonical V3 suite.
-5. Run local catalogue integrity commands.
-6. Run PostgreSQL persistence and privacy checks.
-7. Execute browser E2E.
-8. Execute external acceptance.
-9. Record defects and retests.
-
-### Phase C — Review and integration
+### Phase B — Review and documentation integration
 
 1. Resume real GitHub review.
-2. Resolve review comments on each independent PR.
-3. Merge independently approved coordinator-owned PRs into `feature/product-database`.
-4. Update README, project status, traceability, execution plan and acceptance checklist from actual evidence.
-5. Request explicit approval to create the Issue #43 reconciliation branch.
-6. Preserve the V3 implementation while integrating useful `main` evidence.
-7. Run final CI and release checks.
-8. Merge to `main` only after all critical gates pass or are formally accepted limitations.
-9. Create a release tag and final package.
+2. Resolve comments on each independent PR.
+3. Merge actually approved coordinator-owned PRs into `feature/product-database`.
+4. Update README and final records from actual evidence.
+5. Close Issues only when their own criteria are satisfied.
 
-## 8. Completion of the coordinator role
+### Phase C — Branch reconciliation and release
 
-Junjie's role is complete only when:
+1. Obtain explicit approval to create the Issue #43 reconciliation branch.
+2. Preserve V3 backend, frontend, database, catalogue and importer work.
+3. Bring across only useful `main` historical evidence.
+4. Resolve overlaps under component ownership.
+5. Rerun canonical CI and runtime checks.
+6. Merge to `main` through a reviewed PR.
+7. Confirm deployed release identity.
+8. Create release tag, changelog and final package.
 
-- the package references are consistent;
-- repository-derived decisions are recorded;
-- real review outcomes are retained;
-- approved coordinator documents are merged;
-- CI, database, deployment, E2E and acceptance results are recorded;
-- release status documents reflect actual evidence;
-- reconciliation is reviewed and completed;
-- the final release is tagged and packaged;
-- no unverified result is represented as passed.
+## 9. Coordinator completion criteria
 
-## 9. Ownership boundary
+The coordinator role is complete when:
 
-This package does not authorize changes to teammate-owned backend, frontend, tests, datasets, databases, importers or deployment configuration. It also does not authorize an approval, merge, deployment or runtime result that has not actually occurred.
+- all references and statuses are consistent;
+- repository-derived decisions are retained;
+- real reviews are recorded;
+- approved coordinator records are merged;
+- runtime, E2E and acceptance evidence is retained;
+- final documents match the release;
+- reconciliation is reviewed and complete;
+- release tag and package are created;
+- no unsupported result is presented as passed.
+
+## 10. Non-authorization statement
+
+This package does not authorize:
+
+- edits to teammate-owned backend, frontend, tests, datasets, databases, importers or deployment configuration;
+- invented review, deployment, persistence, E2E or acceptance results;
+- direct execution of the importer against production user data;
+- automatic batch approval or merge;
+- creation of the reconciliation branch or merge to `main` without separate approval.
