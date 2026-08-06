@@ -1,4 +1,4 @@
-# V3 Definition of Done
+# Definition of Done
 
 **Project:** Smart Digital Product Recommendation Platform  
 **Applies to:** User Stories, defects, data work, documentation, deployment and final release  
@@ -78,7 +78,7 @@ A User Story or change is not Done until:
 - [ ] @ZhengZaikun confirms the current canonical suite and any backend/test result;
 - [ ] @Chu-Junjie links the evidence without changing test implementation.
 
-Canonical V3 release command:
+Canonical release command:
 
 ```bash
 python -m pytest -q test_server.py
