@@ -1,218 +1,270 @@
 # V3 Release Evidence Index
 
 **Project:** Smart Digital Product Recommendation Platform  
-**Coordinator:** Chu Junjie  
-**Recorded:** 6 August 2026, Singapore time (UTC+8)  
-**Authoritative implementation branch:** `feature/product-database`  
-**Implementation baseline inspected:** `7c406515bd4b657372fe519869596825cdf91d56`  
-**Tracking Issue:** #45
+**Authoritative implementation baseline:** `feature/product-database`  
+**Document owner:** Chu Junjie — Project Manager and Release Coordinator  
+**Status:** Prepared for formal review and release-candidate evidence updates
 
 ## 1. Purpose
 
-This index maps current V3 implementation claims, repository-derived decisions, automated evidence, prepared records and remaining release gates.
+This index provides a single traceable entry point for the evidence used to evaluate the V3 release. It separates implementation evidence, repository verification, automated testing, runtime verification, acceptance and final release records.
 
-Source inspection can establish what the code, contracts and tests contain. It cannot prove deployed identity, PostgreSQL persistence, browser behaviour, external acceptance or review approval.
+The index does not replace the detailed source documents. Each item must be read together with its linked Issue, Pull Request, commit and execution record.
 
-## 2. Status vocabulary
+## 2. Evidence status vocabulary
 
 | Status | Meaning |
 |---|---|
-| `Implemented` | Code, data or documentation exists on the authoritative branch. |
-| `Repository verified` | The statement is directly supported by version-controlled source, tests or contracts. |
-| `CI verified` | A named workflow check passed for a named ref and environment. |
-| `Prepared` | A plan, template or procedure exists but has not been executed. |
-| `Deferred` | The item is outside the current release and retained in the backlog. |
-| `Blocked` | Missing runtime evidence or a dependency prevents release completion. |
-| `Not Run` | The required execution has not occurred. |
-| `Unverified` | The target environment or result is not confirmed. |
-| `Done` | All applicable review, test, deployment and acceptance gates passed. |
+| Historical | Retained evidence from an earlier iteration or removed contract. |
+| Implemented | Code, data or documentation exists in the repository. |
+| Repository verified | A claim is supported by inspection of named repository files or commits. |
+| Runtime verified | A named check passed in a named environment for a named commit. |
+| Accepted limitation | A limitation is explicitly documented and approved for the current release. |
+| Deferred | The item is outside the current release scope and retained in the backlog. |
+| Blocked | Execution cannot continue until a dependency or defect is resolved. |
+| Not Run | The required execution has not occurred. |
+| Failed | The check was executed and did not meet the acceptance condition. |
+| Release complete | All applicable release gates have passed and the release artifact exists. |
 
-## 3. Current release position
+## 3. Authoritative baseline
 
-| Area | Current status | Evidence boundary |
-|---|---|---|
-| V3 implementation | Implemented on `feature/product-database` | Not proof that the same commit is deployed |
-| Canonical V3 tests | CI verified for PR #35 ref | Must be rerun for frozen release candidate |
-| Legacy `test_mock.py` | Historical non-release audit | Six expected V2 compatibility failures remain visible |
-| US-09 | Deferred, milestone `Unscheduled` | Not part of current release acceptance |
-| Database/schema/importer | Repository verified | Runtime counts and PostgreSQL persistence remain open |
-| Frontend V3 flows | Implemented | Deployed commit and browser E2E unverified |
-| Coordinator status documents | Prepared in PR #60 | Review/merge deferred |
-| Reconciliation to `main` | Not started | Separate approval required |
+| Item | Value |
+|---|---|
+| Repository | `Chu-Junjie/CP3407-PROJECT` |
+| V3 implementation branch | `feature/product-database` |
+| Recorded baseline commit | `7c406515bd4b657372fe519869596825cdf91d56` |
+| Default branch | `main` |
+| Current relationship | Branches diverged; controlled reconciliation required |
 
-## 4. Draft package inventory
+The V3 branch is the implementation baseline. Completed V3 backend, frontend, database, catalogue and importer work must not be replaced by older `main` versions during reconciliation.
 
-| PR | Purpose | Current state |
-|---|---|---|
-| #35 | Canonical CI and historical audit | Required job successful; Draft review deferred |
-| #44 | Safe `main`/V3 reconciliation | Prepared; no integration branch created |
-| #46 | Release evidence index | Current Draft |
-| #47 | US-09 decision record | Option C — Deferred |
-| #48 | Database verification record | Repository findings complete; runtime blocked |
-| #50 | Coordinated review and closeout package | Prepared; review deferred |
-| #52 | Design and architecture reference | Prepared |
-| #54 | Agile delivery/evidence record | Prepared |
-| #58 | Development toolchain reference | Prepared |
-| #60 | Scope, CI and release-gate status alignment | Four coordinator-owned documents updated |
+## 4. Submission documentation package
 
-No approval is inferred. Each PR remains independently reviewable.
+| Evidence ID | Record | Pull Request | Current status |
+|---|---|---:|---|
+| DOC-01 | Safe `main`/V3 reconciliation plan | #44 | Prepared for review |
+| DOC-02 | V3 release evidence index | #46 | Prepared for review |
+| DOC-03 | US-09 scope decision | #47 | Deferred / Unscheduled |
+| DOC-04 | Database release verification record | #48 | Repository verified; runtime checks open |
+| DOC-05 | Submission and release review package | #50 | Prepared for review |
+| DOC-06 | V3 design and architecture | #52 | Prepared for component review |
+| DOC-07 | Agile iteration, demonstration and feedback evidence | #54 | Prepared for review |
+| DOC-08 | Development toolchain and dependencies | #58 | Prepared for review |
+| DOC-09 | Scope, CI and release-gate alignment | #60 | Prepared for review |
+| CI-01 | V3 GitHub Actions test workflow | #35 | CI verified for recorded PR ref |
 
-## 5. Canonical automated evidence
+## 5. Automated test evidence
 
-### 5.1 Test-scope decision
+### Canonical V3 suite
 
 ```bash
 python -m pytest -q test_server.py
 ```
 
-`test_server.py` is the V3 release suite because it uses isolated temporary databases and exercises the current SQLAlchemy/API contract.
+### Recorded GitHub Actions execution
 
-`test_mock.py` is Practical 8, Task 7 evidence targeting removed V2 Pandas/raw-SQLite interfaces. It remains a non-release compatibility audit and is not silently deleted or modified.
-
-### 5.2 Successful GitHub Actions result
-
-| Field | Evidence |
+| Field | Value |
 |---|---|
 | Workflow | `V3 Test Evidence` |
 | Run | `31096706920` |
 | Workflow source commit | `4e698826dbeac719b56f1ff5cea060109d0bdd60` |
 | Tested PR merge ref | `8ecdb5fea8829a85521825b864a9bfe6e630a4ff` |
-| Environment | Ubuntu 24.04.4, Python 3.11.15, pytest 9.1.1 |
-| Required collection | 12 |
-| Required result | 12 passed in 1.23s |
-| Required-job exit | 0 |
+| Runner | Ubuntu 24.04.4 |
+| Python | 3.11.15 |
+| pytest | 9.1.1 |
+| Result | 12 collected, 12 passed in 1.23 seconds |
 | Tracked-file integrity | Passed |
-| Overall workflow | Success |
-| Legacy audit | 6 collected, 6 expected V2 failures, non-blocking |
+| Overall conclusion | Success |
 
-Issue #34 is completed. The release-candidate CI gate remains open until the same canonical suite passes for the frozen release commit.
+Status: **Runtime verified for the recorded PR ref.**
 
-## 6. US-09 scope
+The canonical suite must be rerun for the final frozen release candidate.
 
-**Decision:** Deferred from the current V3 release  
-**Backlog milestone:** Unscheduled
+### Historical compatibility audit
+
+`test_mock.py` is retained as Practical 8 evidence for removed V2 Pandas and raw-SQLite interfaces. It is executed in a visible non-release audit job.
+
+Recorded audit result:
+
+```text
+6 tests collected
+6 tests failed
+```
+
+Status: **Historical compatibility evidence.** These failures are not classified as V3 release regressions and the historical file remains unchanged.
+
+## 6. Scope evidence
+
+### US-09 Budget Alternatives
+
+Decision: **Deferred from the current V3 release**  
+Backlog milestone: **Unscheduled**
 
 Repository basis:
 
-- no budget-alternative field in `api-contract.md`;
-- no alternative object in `/api/recommend`;
-- no cheaper-alternative acceptance test in `test_server.py`;
-- optional frontend rendering scaffolding remains hidden without backend data.
+- the current API contract does not define a budget-alternative response field;
+- `/api/recommend` does not return a separately selected alternative product;
+- the canonical automated suite has no US-09 acceptance case;
+- frontend display scaffolding is not treated as end-to-end implementation evidence.
 
-Release limitation:
+Current-release behaviour: budget filtering is supported; a separately selected cheaper equivalent alternative is not promised.
 
-> The current release filters recommendations by a user's maximum budget. It does not separately identify a cheaper alternative that preserves equivalent specifications.
-
-Tracked by Issue #40 and PR #47. Coordinator status corrections are prepared in PR #60.
+Status: **Deferred / accepted release limitation pending formal review.**
 
 ## 7. Database and catalogue evidence
 
-Repository inspection confirms:
+### Repository-verified implementation
 
-- SQLAlchemy PostgreSQL selection through `DATABASE_URL` with SQLite fallback;
-- seven application tables;
-- importer quotas of 800 laptops, 833 smartphones, 300 smart watches, 61 headphones and 6 tablets;
-- imported IDs beginning at `10,000,001`;
-- target counts of 11,000 products and 2,000 specifications;
-- source/licence metadata and fixed currency rules;
-- built-in `verify_database()` validation;
-- historical-price rather than live-price semantics.
+- SQLAlchemy selects PostgreSQL through `DATABASE_URL` and otherwise uses SQLite.
+- Seven application tables are defined: products, product specifications, users, favorites, search history, saved results and feedback.
+- The importer defines 2,000 recommendation-ready public catalogue records:
+  - 800 laptops;
+  - 833 smartphones;
+  - 300 smart watches;
+  - 61 headphones;
+  - 6 tablets.
+- Imported product IDs begin at `10,000,001`.
+- The implementation target is 11,000 total products and 2,000 product specifications.
+- Public source, licence and fixed currency-conversion rules are retained.
+- The importer verifies catalogue counts, category quotas and absence of private rows in its generated output.
 
-Operational restriction:
+Status: **Repository verified.**
 
-> The importer builds a clean catalogue artifact and must not run directly against a live production database containing private user data.
+### Operational restriction
 
-Still required:
+The importer is a catalogue-build tool. It must run against a disposable input/output database and must not run directly against a live database containing user accounts, favorites, history or feedback.
 
-- actual local count/join/duplicate/orphan output;
-- deployed PostgreSQL dialect and commit;
-- PostgreSQL schema/catalogue initialization;
-- restart/redeploy persistence;
-- cross-user deployed isolation;
-- backup/restore and secret scan.
+### Runtime database gates
 
-Tracked by Issue #41 and PR #48.
-
-## 8. Deployed frontend, API and E2E
-
-Candidate URLs exist in repository configuration, but deployed commits and database engine are unverified.
-
-Required for one frozen candidate:
-
-- GitHub Pages commit;
-- Render API commit;
-- active PostgreSQL dialect;
-- frontend-to-API Network evidence;
-- auth, recommendation, pagination, compare, favorites, history, feedback and share scenarios;
-- mobile, keyboard, focus, error and empty-state observations.
-
-Status: `Not Run` / `Unverified`. Tracked by Issue #42.
-
-## 9. External acceptance
-
-The UAT procedure is prepared. No retained participant execution exists.
-
-Required:
-
-- two non-team participant sessions;
-- identical task script;
-- independent/prompted completion results;
-- observations and ratings;
-- defect or accepted-limitation decisions.
-
-Status: `Not Run`.
-
-## 10. Coordinator status alignment
-
-Issue #59 / PR #60 update only:
-
-- `docs/project-status.md`;
-- `docs/requirements-traceability.md`;
-- `docs/v3-execution-plan.md`;
-- `docs/final-acceptance-and-release-checklist.md`.
-
-The documents now consistently record:
-
-- successful canonical CI for the PR #35 ref;
-- historical audit classification;
-- US-09 deferral;
-- database source-level findings versus runtime gates;
-- review, deployment, E2E, UAT and reconciliation as open.
-
-README remains outside PR #60 and will be handled during final shared release consolidation.
-
-## 11. Conditional closeout sequence
-
-1. Run local catalogue verification against a disposable copy.
-2. Confirm deployed frontend, API and PostgreSQL identity.
-3. Freeze a release candidate.
-4. Rerun canonical CI for the frozen commit.
-5. Execute PostgreSQL persistence and privacy checks.
-6. Execute browser E2E.
-7. Execute external acceptance.
-8. Resume actual review and merge approved Draft PRs into the V3 baseline.
-9. Update README and final documentation from actual evidence.
-10. Obtain explicit approval for the Issue #43 reconciliation branch.
-11. Preserve V3 implementation while integrating useful `main` evidence.
-12. Rerun final checks, merge to `main`, tag and package.
-
-## 12. Current blockers
-
-| Blocker | Next evidence |
+| Check | Status |
 |---|---|
-| Actual local catalogue counts | Importer/query output from a disposable copy |
-| PostgreSQL identity/persistence | Deployed environment and restart results |
-| Frontend/API deployed identity | Hosting commit confirmation |
-| Browser E2E | Stable identified release environment |
-| External acceptance | Two participant records |
-| Actual review | Deferred GitHub review period |
-| `main` reconciliation | Separate explicit approval |
+| Actual release database counts | Not Run |
+| Join and orphan verification | Not Run |
+| Deployed database dialect | Unverified |
+| PostgreSQL initialization | Not Run |
+| Persistence after restart/redeploy | Not Run |
+| Cross-user deployed isolation | Not Run |
+| Backup and restore | Not Run |
+| Final secret review | Not Run |
 
-## 13. Evidence restrictions
+## 8. Design and architecture evidence
 
-This index does not authorize:
+The design record covers:
 
-- modification of teammate-owned backend, frontend, tests, datasets, databases, importers or deployment settings;
-- recording approval or runtime success that does not exist;
-- running the importer against production user data;
-- creating a reconciliation branch or merging to `main` without separate approval.
+- system context and logical architecture;
+- GitHub Pages frontend and Render API deployment model;
+- Flask, SQLAlchemy and catalogue importer responsibilities;
+- API and authentication boundaries;
+- recommendation and pagination flow;
+- database entities and relationships;
+- account privacy, favorites and history boundaries;
+- desktop/mobile information architecture;
+- accessibility considerations;
+- design alternatives and known limitations.
+
+Status: **Prepared for component-owner review.** Runtime deployment and persistence claims remain outside source-derived design evidence.
+
+## 9. Agile and project-management evidence
+
+The Agile evidence record includes:
+
+- planned and delivered scope by iteration or reconstructed evidence phase;
+- task ownership and dependencies;
+- delivery evidence through Issues, Pull Requests and commits;
+- blockers, scope changes and corrective actions;
+- demonstration and feedback status;
+- retrospective improvements;
+- a reusable iteration close-out template.
+
+Historical dates, effort, demonstrations or client feedback that are not supported by retained evidence remain explicitly identified as unavailable or not run.
+
+Status: **Prepared for review.**
+
+## 10. Toolchain and dependency evidence
+
+The toolchain record documents:
+
+- Git and GitHub workflow;
+- Python environment and runtime dependencies;
+- Flask, Flask-Cors, Gunicorn, PyJWT, SQLAlchemy and psycopg;
+- SQLite, PostgreSQL and catalogue-import tooling;
+- pytest and GitHub Actions;
+- GitHub Pages and Render deployment roles;
+- environment variables and secret-handling rules;
+- dependency-governance procedures.
+
+Status: **Prepared for review.** Commands are procedures and do not imply successful execution unless linked evidence exists.
+
+## 11. Deployment and acceptance evidence
+
+| Evidence area | Required record | Current status |
+|---|---|---|
+| GitHub Pages frontend commit | URL, commit SHA, date | Unverified |
+| Render API commit | URL, commit SHA, date | Unverified |
+| Production database | PostgreSQL identity without secrets | Unverified |
+| API health | Response and timestamp | Not Run for final candidate |
+| Desktop E2E | Scenario records and Network evidence | Not Run |
+| Mobile E2E | Scenario records and screenshots | Not Run |
+| Authentication and privacy | Two-account evidence | Not Run |
+| Favorites/history persistence | Before/after restart evidence | Not Run |
+| Feedback persistence | Before/after restart evidence | Not Run |
+| Share restoration | Isolated-session evidence | Not Run |
+| External acceptance | Two non-team participants | Not Run |
+
+Prepared templates are retained in:
+
+- `docs/v3-e2e-acceptance-evidence.md`;
+- `docs/v3-external-uat-record.md`.
+
+A prepared template is not an executed result.
+
+## 12. Review and merge evidence
+
+Formal review must be recorded in GitHub by the relevant technical owners:
+
+- Zaikun: backend, API, algorithm, automated tests and runtime dependencies;
+- Yuyang: database, catalogue, importer, provenance and PostgreSQL;
+- Guanyu: frontend, responsive behaviour, accessibility and browser flows;
+- Junjie: project status, traceability, evidence integrity and release coordination.
+
+| Gate | Status |
+|---|---|
+| Component-owner review | Pending formal GitHub record |
+| Documentation PR merge to V3 | Pending |
+| Release-candidate freeze | Pending |
+| Final CI rerun | Pending |
+| Runtime verification | Pending |
+| Acceptance | Pending |
+| Reconciliation approval | Pending |
+| Merge to `main` | Pending |
+| Release tag | Pending |
+| Final package/checksum | Pending |
+
+## 13. Release sequence
+
+1. complete formal component review;
+2. merge approved documentation and CI records into `feature/product-database`;
+3. freeze the V3 release-candidate commit;
+4. execute database, deployment, persistence, privacy, E2E and acceptance checks;
+5. update the evidence index from actual results;
+6. create a controlled reconciliation branch;
+7. preserve the V3 implementation and selectively integrate useful `main` evidence;
+8. rerun the canonical suite and release smoke test;
+9. update README and final status records;
+10. merge the approved reconciliation Pull Request to `main`;
+11. create the release tag and final submission package.
+
+## 14. Evidence integrity controls
+
+- Do not mark a source-derived target as an observed runtime result.
+- Do not report approval without a GitHub review record.
+- Do not report deployment identity without a commit or service record.
+- Do not report persistence without restart or redeploy evidence.
+- Do not retain passwords, JWTs, connection strings or personal data.
+- Do not modify teammate-owned implementation through documentation closeout work.
+
+## 15. Current release position
+
+The repository has a defined V3 baseline, current scope decision, passing canonical CI evidence for a recorded PR ref and a complete submission-document structure.
+
+The project is **not yet release complete** because final runtime verification, formal reviews, release-candidate testing, reconciliation, `main` integration and release packaging remain outstanding.
