@@ -1,260 +1,470 @@
-# V3 Execution Plan
+# V3 Release Execution Plan
 
 **Project:** Smart Digital Product Recommendation Platform  
-**Coordinator:** Chu Junjie  
-**Updated:** 6 August 2026, Singapore time (UTC+8)  
 **Authoritative implementation branch:** `feature/product-database`  
-**Inspected baseline:** `7c406515bd4b657372fe519869596825cdf91d56`
+**Plan owner:** Chu Junjie — Project Manager and Release Coordinator  
+**Document state:** Prepared for formal review and execution
 
 ## 1. Objective
 
-Move the implemented V3 platform through evidence consolidation, runtime verification, review, safe branch reconciliation and final release without modifying teammate-owned implementation from coordinator branches.
+This plan defines the remaining work required to move the V3 implementation from repository-ready status to a reviewed, verified and packaged release on `main`.
 
-## 2. Current scope
+The plan preserves technical ownership, requires evidence for each release gate and prevents older branch content from replacing the V3 implementation during integration.
 
-Included in the V3 release candidate:
+## 2. Operating principles
 
-- Flask and SQLAlchemy API;
-- SQLite local seed/demo support;
-- PostgreSQL support through `DATABASE_URL`;
-- 11,000 target products and 2,000 recommendation-ready specifications;
-- accounts, password hashes and JWT authentication;
-- favorites, private search history, result snapshots and feedback;
-- budget/category/brand filtering, ranking, pagination and separate Top 5;
-- comparison of two or three products;
-- frontend account, recommendation, compare, history, favorite, feedback and share flows.
+- Formal review must occur before documentation and workflow PRs are merged.
+- Runtime claims require actual execution for a named commit and environment.
+- Technical defects are fixed by the relevant component owner.
+- The release coordinator manages scope, evidence, retesting and Go/No-Go decisions.
+- The V3 branch is the implementation baseline for reconciliation.
+- US-09 Budget Alternatives is deferred and is not a current release gate.
+- The catalogue importer must never run directly against production user data.
+- Credentials, tokens and connection strings must not be retained in evidence.
 
-Deferred:
+## 3. Roles and responsibilities
 
-- **US-09 Budget Alternatives** — backlog milestone `Unscheduled`.
-
-Release limitation:
-
-> The current release filters recommendations by maximum budget but does not separately identify a cheaper alternative that preserves equivalent specifications.
-
-## 3. Engineering rules
-
-1. `feature/product-database` remains the V3 technical baseline until reviewed integration completes.
-2. V2 implementation and tests are historical evidence and must not silently replace V3 files.
-3. Repository evidence may resolve source-level questions but cannot replace runtime verification.
-4. Every member retains ownership of their technical component.
-5. Coordinator branches modify only governance, evidence, CI configuration and release records.
-6. Review approval, deployment identity and acceptance results are never inferred.
-7. No catalogue importer execution is permitted against a live production database containing private user data.
-8. No reconciliation branch or merge to `main` occurs without separate explicit approval.
-
-## 4. Team responsibilities
-
-| Member | Primary responsibility | Current closeout dependency |
+| Role | Owner | Responsibilities |
 |---|---|---|
-| Chu Junjie | Scope, schedule, evidence, CI coordination, acceptance and release | Maintain consistent records and execute release process |
-| Yuyang Zhou | Catalogue, schema, importer, SQLite/PostgreSQL and provenance | Runtime counts, PostgreSQL, persistence and recovery evidence |
-| Zaikun Zheng | Backend, authentication, recommendation, API and tests | Remaining negative/boundary coverage and deployed API support |
-| Guanyu Lu | Frontend, responsive UI and browser E2E | Deployment identity and end-to-end evidence |
+| Project and release coordination | Chu Junjie | Schedule, traceability, evidence review, defect assignment, acceptance, reconciliation and release decision |
+| Backend, API and automated tests | Zaikun Zheng | Flask API, authentication, recommendation logic, test scope, backend defects and CI interpretation |
+| Database, catalogue and persistence | Yuyang Zhou | Schema, importer, catalogue integrity, PostgreSQL, persistence, backup and database defects |
+| Frontend, responsive interface and browser verification | Guanyu Lu | Interface, GitHub Pages, desktop/mobile flows, accessibility and frontend defects |
+| External acceptance participants | Two non-team users | Complete assigned tasks and provide independent observations |
 
-## 5. Stage overview
+## 4. Workstream overview
 
-| Stage | Status | Exit gate |
+| Workstream | Current status | Completion condition |
 |---|---|---|
-| V3-0 Scope and test decisions | **Completed from repository evidence** | US-09 deferred; canonical suite defined and CI successful |
-| V3-1 Coordinator documentation alignment | In Progress | Status, traceability, plan and checklist agree |
-| V3-2 Local catalogue verification | Not Run | Actual counts, joins, duplicates and importer output retained |
-| V3-3 Deployed environment identification | Unverified | Frontend/API commits and PostgreSQL dialect confirmed |
-| V3-4 Release-candidate automated verification | Pending | Canonical suite passes for frozen release commit |
-| V3-5 PostgreSQL persistence/privacy | Not Run | Restart persistence and cross-user isolation pass |
-| V3-6 Browser E2E | Not Run | Required desktop/mobile flows pass |
-| V3-7 External acceptance | Not Run | Two non-team participant records complete |
-| V3-8 Review and documentation merge | Deferred | Actual review comments resolved and approved PRs merged |
-| V3-9 Reconciliation and final release | Not started | Reviewed integration, final checks, tag and package complete |
+| WS-1 Documentation and scope review | Prepared | Formal approvals and approved PRs merged into V3 |
+| WS-2 Canonical CI | Verified for recorded PR ref | Passed again for frozen release candidate |
+| WS-3 Catalogue integrity | Repository verified | Disposable build and integrity checks pass |
+| WS-4 PostgreSQL deployment | Unverified | Deployed API commit, dialect and counts confirmed |
+| WS-5 Persistence and privacy | Not Run | Restart/redeploy and cross-user checks pass |
+| WS-6 Browser E2E | Not Run | Critical desktop/mobile scenarios completed |
+| WS-7 External acceptance | Not Run | Two non-team participants complete required tasks |
+| WS-8 Reconciliation to `main` | Not started | Approved reconciliation PR merged |
+| WS-9 Release packaging | Not started | Tag, archive, checksum and final record created |
 
-## 6. Completed scope and CI decisions
+## 5. Phase 1 — Formal package review
 
-### 6.1 Canonical test suite
+### Scope
+
+Review the following Pull Requests:
+
+- #35 — CI workflow and canonical test scope;
+- #44 — V3/`main` reconciliation plan;
+- #46 — release evidence index;
+- #47 — US-09 decision;
+- #48 — database release verification;
+- #50 — submission and release review package;
+- #52 — design and architecture;
+- #54 — Agile iteration and feedback evidence;
+- #58 — development toolchain and dependencies;
+- #60 — project status, traceability and release-gate alignment.
+
+### Review assignments
+
+#### Zaikun
+
+Confirm:
+
+- API and authentication descriptions;
+- recommendation and pagination behaviour;
+- canonical V3 test scope;
+- historical mock-test classification;
+- backend dependencies and Render service wording;
+- US-09 backend/API impact.
+
+#### Yuyang
+
+Confirm:
+
+- schema and relationships;
+- catalogue quotas and provenance;
+- importer safety boundary;
+- SQLite/PostgreSQL roles;
+- database verification and recovery requirements.
+
+#### Guanyu
+
+Confirm:
+
+- frontend flows and interface descriptions;
+- desktop/mobile behaviour;
+- accessibility considerations;
+- GitHub Pages and browser-E2E requirements;
+- US-09 interface limitation.
+
+### Completion criteria
+
+- [ ] Formal GitHub reviews are recorded.
+- [ ] Requested changes are resolved by the correct owner.
+- [ ] Each approved PR is mergeable against the latest V3 base.
+- [ ] No runtime result is inferred from review approval.
+
+## 6. Phase 2 — Merge approved records into V3
+
+Recommended sequence:
+
+1. PR #35 — CI workflow;
+2. PR #47 — US-09 scope;
+3. PR #48 — database verification;
+4. PR #52 — architecture;
+5. PR #54 — Agile evidence;
+6. PR #58 — toolchain;
+7. PR #44 — reconciliation plan;
+8. PR #60 — status and traceability;
+9. PR #46 — evidence index;
+10. PR #50 — final review package.
+
+Before each merge:
+
+- confirm the PR head has not changed unexpectedly;
+- confirm review approval applies to the current head;
+- inspect changed files;
+- confirm the PR does not modify teammate-owned implementation outside its approved scope;
+- use a clear squash-merge title where appropriate.
+
+### Completion criteria
+
+- [ ] All approved package PRs are merged into `feature/product-database`.
+- [ ] The branch is clean and contains the complete submission record set.
+- [ ] Merged PR numbers and commit SHAs are retained.
+
+## 7. Phase 3 — Freeze the V3 release candidate
+
+Record:
+
+| Field | Value |
+|---|---|
+| Release-candidate branch | Pending |
+| Release-candidate SHA | Pending |
+| Freeze date/timezone | Pending |
+| Included PRs | Pending |
+| Known limitations | Pending |
+| Review approvals | Pending |
+
+Freeze rules:
+
+- no feature changes after freeze;
+- only release-blocking defect fixes may enter;
+- every fix requires owner review and retesting;
+- a changed candidate receives a new SHA and affected checks are rerun.
+
+## 8. Phase 4 — Canonical CI verification
+
+Run:
 
 ```bash
+python -m pytest --collect-only -q test_server.py
 python -m pytest -q test_server.py
-```
-
-Successful GitHub Actions evidence:
-
-- run `31096706920`;
-- source commit `4e698826dbeac719b56f1ff5cea060109d0bdd60`;
-- tested merge ref `8ecdb5fea8829a85521825b864a9bfe6e630a4ff`;
-- Ubuntu 24.04.4;
-- Python 3.11.15;
-- 12 collected, 12 passed in 1.23s;
-- tracked-file integrity passed;
-- overall workflow conclusion `success`.
-
-`test_mock.py` remains a visible non-release Practical 8 compatibility audit. Its six V2 contract failures do not belong to the V3 release gate.
-
-### 6.2 US-09
-
-US-09 is deferred because the current API contract, backend response and automated tests do not implement an alternative-selection feature. Existing optional frontend rendering remains untouched and is not presented as end-to-end evidence.
-
-## 7. V3-1 — Coordinator documentation alignment
-
-**Lead:** Junjie
-
-- [x] Update project status with current CI and US-09 decision.
-- [x] Update requirements traceability.
-- [x] Update execution plan.
-- [x] Update final acceptance checklist structure.
-- [ ] Open Draft PR and retain review-deferred status.
-- [ ] Update README only during final shared release consolidation.
-
-Exit gate: coordinator documents agree without claiming unexecuted deployment or acceptance.
-
-## 8. V3-2 — Local catalogue verification
-
-**Technical ownership:** Yuyang  
-**Coordinator:** retains commands/results
-
-Run against a disposable output copy:
-
-```bash
-python import_real_catalog.py \
-  --source digital_products.db \
-  --output digital_products_real.db \
-  --csv-output real_product_catalog.csv
+git diff --exit-code
 ```
 
 Required evidence:
 
-- [ ] exact branch and commit;
-- [ ] Python/dependency environment;
-- [ ] importer exit code and output;
-- [ ] 11,000 products;
-- [ ] 2,000 specifications;
-- [ ] category distribution 800/833/300/61/6;
-- [ ] zero duplicate product/spec IDs;
-- [ ] zero orphan specifications;
-- [ ] 2,000 recommendation-ready joins;
-- [ ] tracked files unchanged unless the output change is intentional and reviewed.
+- workflow run ID;
+- candidate SHA or tested merge ref;
+- runner and Python version;
+- pytest version;
+- collected/passed/failed counts;
+- execution time and exit result;
+- tracked-file integrity result.
 
-Exit gate: expected repository targets are confirmed by actual output.
+Expected release result:
 
-## 9. V3-3 — Deployed environment identification
+```text
+12 tests collected
+12 tests passed
+tracked-file integrity passed
+```
 
-Required before browser acceptance:
+The historical `test_mock.py` audit remains visible and non-blocking.
 
-- [ ] GitHub Pages source branch/folder confirmed;
-- [ ] deployed frontend commit recorded;
-- [ ] Render API deployed commit recorded;
-- [ ] API health endpoint recorded;
-- [ ] active database dialect confirmed safely;
-- [ ] `DATABASE_URL` presence confirmed without exposing its value;
-- [ ] CORS production origin confirmed.
+### Completion criteria
 
-Exit gate: all E2E evidence can be tied to one known frontend/API/database environment.
+- [ ] Canonical suite passes for the frozen candidate.
+- [ ] Tracked-file integrity passes.
+- [ ] Evidence is linked from the release index and checklist.
 
-## 10. V3-4 — Frozen release-candidate CI
+## 9. Phase 5 — Catalogue and local database verification
 
-After a release candidate is selected:
+Use a disposable database copy.
 
-- [ ] record branch and commit SHA;
-- [ ] run `python -m pytest -q test_server.py` in GitHub Actions;
-- [ ] retain environment and collection output;
-- [ ] require zero blocking failures;
-- [ ] require tracked-file integrity success;
-- [ ] record any warning or accepted limitation;
-- [ ] link the workflow run in the final checklist.
+Required checks:
 
-Exit gate: canonical V3 suite passes for the actual release candidate.
+- products: 11,000;
+- product specifications: 2,000;
+- joined recommendation candidates: 2,000;
+- category distribution: 800/833/300/61/6;
+- duplicate product IDs: 0;
+- duplicate specification IDs: 0;
+- orphan specifications: 0;
+- source metadata present;
+- private tables empty in the generated catalogue artifact;
+- repeated generation behaviour documented.
 
-## 11. V3-5 — PostgreSQL persistence and privacy
+Record:
 
-Using non-sensitive demonstration data:
+- tester;
+- candidate SHA;
+- Python version;
+- commands;
+- source and output paths;
+- timestamp;
+- complete non-sensitive output;
+- status and defect Issue if required.
 
-- [ ] confirm all seven tables exist;
-- [ ] confirm catalogue counts and joined candidates;
-- [ ] register one test account;
-- [ ] create one favorite, history entry and feedback record;
-- [ ] restart/redeploy through the approved process;
-- [ ] confirm all data remains;
-- [ ] verify a second user cannot read/delete the first user's history;
-- [ ] verify a second user cannot access the first user's favorites;
-- [ ] retain backup/recovery and rollback procedure;
-- [ ] retain final secret-scan result.
+### Completion criteria
 
-Exit gate: production persistence and privacy have actual evidence.
+- [ ] All required counts and integrity checks pass.
+- [ ] No tracked source database is unintentionally modified.
+- [ ] Yuyang approves the result.
 
-## 12. V3-6 — Browser E2E
+## 10. Phase 6 — Deployment identity and PostgreSQL
 
-Required deployed flows:
+Confirm:
 
-- [ ] frontend load and API health;
-- [ ] registration/login/logout;
-- [ ] recommendation success, empty and error states;
-- [ ] Top 5 and pagination boundaries;
-- [ ] general comparison;
-- [ ] favorite save/list/remove/compare;
-- [ ] history list/open/delete;
-- [ ] feedback;
-- [ ] share/restore in an isolated session;
-- [ ] mobile layout;
-- [ ] keyboard and focus path;
-- [ ] browser console/network review;
-- [ ] no US-09 alternative-selection claim.
+- GitHub Pages frontend URL and deployed source/commit;
+- Render API URL and deployed commit;
+- build and start commands;
+- presence of `DATABASE_URL` and `JWT_SECRET_KEY` without exposing values;
+- `/api/health` response;
+- database dialect reports PostgreSQL;
+- expected tables and catalogue counts exist.
 
-Exit gate: all critical browser flows pass against the identified release environment.
+### Completion criteria
 
-## 13. V3-7 — External acceptance
+- [ ] Frontend and API identities are recorded.
+- [ ] PostgreSQL is confirmed for the deployed API.
+- [ ] No credential is retained in evidence.
+- [ ] Deployment is tied to the candidate or approved release commit.
 
-**Lead:** Junjie
+## 11. Phase 7 — Persistence and privacy
 
-- [ ] recruit two non-team participants;
-- [ ] use the same task script;
-- [ ] record device/browser and date;
-- [ ] record independent and prompted completion;
-- [ ] retain observations and ratings;
-- [ ] create Issues for blocking defects;
-- [ ] retest fixes or record accepted limitations.
+Using non-sensitive demonstration accounts:
 
-Exit gate: two genuine acceptance records exist and blocking findings are resolved or accepted.
+1. register Account A;
+2. save a favorite;
+3. create a history entry and result snapshot;
+4. submit feedback;
+5. record the data before restart/redeploy;
+6. restart or redeploy the service;
+7. log in again and confirm data persists;
+8. register Account B;
+9. confirm Account B cannot access Account A history or favorites;
+10. record results without tokens or passwords.
 
-## 14. V3-8 — Review and document integration
+### Completion criteria
 
-Review remains deferred; no approval is inferred.
+- [ ] Account persists.
+- [ ] Favorites persist.
+- [ ] History and snapshot persist.
+- [ ] Feedback persists.
+- [ ] Cross-user access is rejected.
+- [ ] Yuyang and Zaikun approve relevant technical results.
 
-When review resumes:
+## 12. Phase 8 — Browser E2E
 
-1. review PRs #35, #44, #46, #47, #48, #50, #52, #54, #58 and the Issue #59 PR;
-2. resolve component-specific comments;
-3. keep every PR independent;
-4. merge only actually approved work into `feature/product-database`;
-5. update Issue states from real merge/evidence results;
-6. prepare final README consolidation.
+Required deployed scenarios:
 
-Exit gate: current release documentation is reviewed and merged into the V3 branch.
+### Foundation
 
-## 15. V3-9 — Reconciliation and release
+- frontend loads without blocking console errors;
+- requests reach the intended Render API;
+- loading, empty and error states are observed;
+- source/price limitation wording is accurate.
 
-After separate explicit approval:
+### Authentication
 
-- [ ] create a reconciliation branch from the approved V3 baseline;
-- [ ] preserve Yuyang's V3 data/database/importer implementation;
-- [ ] preserve current V3 backend and frontend decisions;
-- [ ] bring across only useful `main` historical evidence;
-- [ ] resolve overlapping files under component ownership;
-- [ ] rerun canonical CI and required runtime checks;
-- [ ] merge to `main` through a reviewed PR;
-- [ ] update changelog and final README;
-- [ ] create release tag;
-- [ ] create and inspect final ZIP/package;
-- [ ] record final limitations and release sign-off.
+- register;
+- login;
+- current-user identity;
+- protected-route rejection when unauthenticated;
+- logout.
 
-Exit gate: `main`, deployed environment, documentation and release package refer to the same verified release.
+### Recommendation
 
-## 16. Immediate next priorities
+- valid request;
+- category and budget compliance;
+- separate Top 5;
+- next/previous pagination;
+- stable query across pages;
+- invalid input and no-result behaviour.
 
-1. Open the Issue #59 Draft PR.
-2. Run local catalogue verification against a disposable copy.
-3. Confirm deployed frontend, API and PostgreSQL identity.
-4. Freeze a release candidate.
-5. Execute persistence, E2E and external acceptance.
-6. Resume real review and proceed to controlled integration.
+### Compare, favorites and history
 
-## 17. Evidence integrity
+- compare two and three products;
+- reject invalid comparison;
+- add/remove favorite;
+- compare same-category favorites;
+- create, restore and delete history.
 
-A checked item must have an actual source, command, workflow, deployment observation, review or participant record. Repository implementation is not converted into runtime or acceptance evidence without execution.
+### Feedback and sharing
+
+- submit positive or negative feedback;
+- generate a share state;
+- open it in an isolated session;
+- confirm private account data is not exposed.
+
+### Responsive and accessibility
+
+- complete critical flow on desktop;
+- complete critical flow on mobile viewport/device;
+- keyboard navigation;
+- visible focus;
+- labels and readable errors;
+- basic zoom/reflow observation.
+
+### Completion criteria
+
+- [ ] Every critical scenario has a status and evidence ID.
+- [ ] Failed/blocked cases link to owner-assigned Issues.
+- [ ] Critical defects are fixed and retested.
+- [ ] Guanyu confirms frontend results; Zaikun/Yuyang confirm related API/data results.
+
+## 13. Phase 9 — External acceptance
+
+Use two non-team participants.
+
+Required participant tasks:
+
+1. register and log in;
+2. find a product within a selected budget;
+3. browse another result page;
+4. compare two products;
+5. save a favorite;
+6. reopen search history;
+7. submit feedback;
+8. share and reopen the recommendation state.
+
+Record:
+
+- participant ID, not unnecessary personal data;
+- date, device and browser;
+- independent completion result;
+- prompts required;
+- observations and feedback;
+- defects created;
+- retest outcome.
+
+### Completion criteria
+
+- [ ] Two non-team participants complete the agreed scope.
+- [ ] Blocking usability defects are resolved or explicitly accepted.
+- [ ] Results are retained in `docs/v3-external-uat-record.md`.
+
+## 14. Phase 10 — Release decision
+
+Complete the release decision record:
+
+| Gate | Result |
+|---|---|
+| Formal reviews | Pending |
+| Canonical CI | Pending final candidate |
+| Catalogue integrity | Pending |
+| PostgreSQL identity/counts | Pending |
+| Persistence/privacy | Pending |
+| Desktop/mobile E2E | Pending |
+| External acceptance | Pending |
+| Critical defects | Pending |
+| Accepted limitations | Pending |
+| Release decision | Pending |
+
+Decision values:
+
+- **Go:** all mandatory gates pass and remaining limitations are accepted;
+- **Conditional Go:** only explicitly accepted non-critical limitations remain;
+- **No-Go:** a mandatory gate fails or evidence is incomplete.
+
+The release coordinator records the decision, while technical owners confirm results in their areas.
+
+## 15. Phase 11 — Controlled reconciliation to `main`
+
+After a Go/Conditional Go decision:
+
+1. create `release/v3-main-reconciliation` from the verified V3 candidate;
+2. refresh the comparison with `main`;
+3. classify every `main`-only file;
+4. retain useful historical evidence;
+5. preserve V3 technical implementation;
+6. send technical conflicts to the relevant owner;
+7. update README and final project records;
+8. rerun affected tests and smoke checks;
+9. open the final PR to `main`;
+10. require formal approval and successful checks before merge.
+
+### Completion criteria
+
+- [ ] Reconciliation inventory is complete.
+- [ ] Owner-controlled conflicts are resolved.
+- [ ] V3 implementation is preserved.
+- [ ] Final PR is approved and passes required checks.
+- [ ] Merge to `main` is completed.
+
+## 16. Phase 12 — Tag and package
+
+After merge to `main`:
+
+- record final `main` SHA;
+- create the release tag;
+- confirm deployed version where applicable;
+- export the final project archive;
+- exclude local secrets, virtual environments and temporary test data;
+- retain a checksum;
+- retain database backup/recovery information;
+- close completed release Issues;
+- keep deferred and accepted-limitation items traceable.
+
+### Completion criteria
+
+- [ ] Release tag exists.
+- [ ] Final archive exists.
+- [ ] Checksum is recorded.
+- [ ] Final status and evidence index are current.
+- [ ] Release record identifies remaining limitations.
+
+## 17. Defect workflow
+
+For each failed or blocked check:
+
+1. create a separate Issue;
+2. include candidate SHA, environment, steps, expected and observed result;
+3. assign the correct owner;
+4. apply severity and release-blocking classification;
+5. fix on an owner-controlled branch;
+6. review and merge the fix;
+7. rerun the failed scenario and affected regression checks;
+8. update the evidence record.
+
+## 18. Evidence naming
+
+Recommended evidence IDs:
+
+- `CI-###` — automated tests;
+- `DB-###` — database/catalogue checks;
+- `DEP-###` — deployment identity;
+- `PERS-###` — persistence;
+- `PRIV-###` — privacy;
+- `E2E-###` — browser scenarios;
+- `UAT-###` — external acceptance;
+- `REL-###` — release/reconciliation/package.
+
+## 19. Current execution state
+
+| Phase | Status |
+|---|---|
+| Formal package review | Ready to begin |
+| Merge approved records | Pending review |
+| Release-candidate freeze | Pending |
+| Final CI | Pending |
+| Catalogue verification | Pending |
+| Deployment/PostgreSQL | Pending |
+| Persistence/privacy | Pending |
+| Browser E2E | Pending |
+| External acceptance | Pending |
+| Reconciliation | Pending |
+| Release packaging | Pending |
+
+This plan is ready for formal review. Execution results must be added only after the corresponding activity is completed.
