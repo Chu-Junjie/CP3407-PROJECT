@@ -1,4 +1,4 @@
-# V3 Database Release Verification Record
+# Database Release Verification Record
 
 **Project:** Smart Digital Product Recommendation Platform  
 **Authoritative baseline:** `feature/product-database`  
