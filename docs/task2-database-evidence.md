@@ -1,4 +1,4 @@
-# Task 2 Database Evidence Tracker
+# Database Evidence Tracker
 
 ## Document control
 
