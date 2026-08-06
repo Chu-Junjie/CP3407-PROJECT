@@ -32,7 +32,7 @@ This checklist is maintained from repository evidence and the team meeting notes
 - [ ] @ZhengZaikun, @tiantian09091 and @Guanyu-Lu approve PR #50 for the project closeout review record.
 - [ ] @Chu-Junjie confirms every Approval applies to the current PR head.
 
-## 4. Approved record merges into V3
+## 4. Approved record merges into the release branch
 
 - [ ] @Chu-Junjie merges approved PRs in the recorded sequence.
 - [ ] @Chu-Junjie records every merged PR number and commit SHA.
