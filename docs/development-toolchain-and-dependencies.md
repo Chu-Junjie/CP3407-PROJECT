@@ -1,569 +1,436 @@
 # Development Toolchain and Dependency Governance
 
 **Project:** Smart Digital Product Recommendation Platform  
-**Document owner:** Chu Junjie — project coordination and consolidated technical writing  
-**Authoritative implementation branch:** `feature/product-database`  
-**Recorded implementation baseline:** `7c406515bd4b657372fe519869596825cdf91d56`  
-**Tracking:** Issue #55  
-**Status:** Draft — technical-owner review pending
+**Authoritative implementation baseline:** `feature/product-database`  
+**Record owner:** Chu Junjie — Project Manager and Release Coordinator  
+**Status:** Prepared for formal component review
 
 ## 1. Purpose
 
-This document defines the project's development toolchain, runtime dependencies, collaboration workflow, test environment, data tooling and deployment responsibilities.
+This document records the tools, libraries, environments and governance controls used to develop, test, review, deploy and release the project. It explains each tool's role and the controls required to keep local, CI and production environments consistent.
 
-It records what each tool is used for, why it was selected, which evidence currently exists, and which decisions remain open. It does not claim that an installation, deployment, database environment or test suite is successful unless a named result has been retained.
+Commands in this document are operating procedures. They do not imply successful execution unless linked evidence is retained for a named commit and environment.
 
 ## 2. Toolchain overview
 
-```mermaid
-flowchart LR
-    Developer[Developer workstation]
-    Git[Git]
-    GitHub[GitHub repository]
-    Issues[Issues and Pull Requests]
-    Actions[GitHub Actions]
-    Pages[GitHub Pages]
-    Render[Render Web Service]
-    Flask[Flask API]
-    SQLA[SQLAlchemy]
-    SQLite[(SQLite)]
-    Postgres[(PostgreSQL)]
-    Importer[Catalogue importer]
+| Area | Tool or service | Project use |
+|---|---|---|
+| Version control | Git | Branching, commits, comparison and release history |
+| Collaboration | GitHub Issues and Pull Requests | Task assignment, review, decisions and evidence links |
+| Automation | GitHub Actions | Canonical test execution and tracked-file integrity checks |
+| Runtime language | Python 3.11 | Backend, importer, tests and database verification |
+| Backend framework | Flask | REST API and request handling |
+| Cross-origin support | Flask-Cors | Browser-to-API access control |
+| Production server | Gunicorn | Render production process |
+| Authentication | PyJWT and Werkzeug password hashing | Token issue/validation and password security |
+| Data access | SQLAlchemy | SQLite/PostgreSQL schema and queries |
+| PostgreSQL driver | psycopg | SQLAlchemy PostgreSQL connectivity |
+| Local database | SQLite | Bundled demonstration and disposable verification |
+| Production database | PostgreSQL | Persistent catalogue and user-owned records |
+| Testing | pytest | Canonical V3 API tests |
+| Frontend | HTML, CSS and JavaScript | Responsive single-page user interface |
+| Static hosting | GitHub Pages | Frontend deployment |
+| API hosting | Render | Flask/Gunicorn service deployment |
+| Design records | Mermaid and external modelling/prototype tools | Architecture, ERD, sequence and interface design |
 
-    Developer --> Git
-    Git --> GitHub
-    GitHub --> Issues
-    GitHub --> Actions
-    GitHub --> Pages
-    GitHub --> Render
-    Render --> Flask
-    Flask --> SQLA
-    SQLA --> SQLite
-    SQLA --> Postgres
-    Importer --> SQLite
-    Importer --> Postgres
-```
+## 3. Version-control workflow
 
-## 3. Collaboration and source-control tools
+### Branch roles
 
-### 3.1 Git
+- `main`: final integrated release branch;
+- `feature/product-database`: authoritative V3 implementation baseline during release preparation;
+- `feature/*` and `fix/*`: owner-controlled technical work;
+- `docs/*`: documentation, governance and evidence records;
+- `ci/*`: CI workflow and test-evidence changes;
+- `release/*`: controlled release-candidate or reconciliation work.
 
-Git provides local version history, branch isolation, commit-level traceability and controlled integration.
+### Commit expectations
 
-Project rules:
+Commits should:
 
-- no direct implementation changes to another owner's component;
-- one clearly scoped branch per work item;
-- meaningful commit messages using prefixes such as `docs:`, `test:`, `ci:`, `fix:` and `feature:`;
-- no force update of shared branches without an explicit team decision;
-- release integration must preserve a named source commit and review record.
+- describe one logical change;
+- use meaningful prefixes such as `feat`, `fix`, `test`, `docs`, `ci` or `refactor`;
+- avoid mixing unrelated technical and documentation changes;
+- identify generated or binary artifacts explicitly;
+- preserve teammate ownership boundaries.
 
-### 3.2 GitHub Issues
+### Pull Request expectations
 
-Issues are used to record:
+Each Pull Request should include:
 
 - purpose and scope;
-- ownership;
-- acceptance or completion conditions;
-- evidence boundaries;
-- blockers and dependencies;
-- links to related Pull Requests and verification records.
+- changed files;
+- linked Issue or decision;
+- test/evidence summary;
+- ownership boundary;
+- known limitations;
+- required reviewers;
+- merge condition.
 
-An Issue is a coordination record. Creating an Issue does not prove that the work has been implemented or verified.
+Technical changes require review by the relevant component owner. Documentation approval confirms technical wording but does not replace runtime verification.
 
-### 3.3 GitHub branches and Pull Requests
+## 4. Python environment
 
-The expected workflow is:
-
-1. create an Issue;
-2. create a branch from the approved baseline;
-3. make only the scoped changes;
-4. run applicable checks;
-5. open a Draft Pull Request;
-6. obtain owner-specific review;
-7. resolve review comments;
-8. merge only after the relevant gates pass.
-
-Draft Pull Requests are used to expose incomplete work without representing it as ready to merge.
-
-### 3.4 Review ownership
-
-| Area | Primary technical owner | Coordinator responsibility |
-|---|---|---|
-| Frontend and interface | Guanyu | Track evidence and review gates |
-| Backend, API, recommendation and tests | Zaikun | Track CI, blockers and release status |
-| Database, catalogue, importer and provenance | Yuyang | Track verification and persistence evidence |
-| Governance, release records and cross-component coordination | Junjie | Author and maintain coordination documents |
-
-## 4. Runtime platform
-
-### 4.1 Python
-
-The backend is implemented in Python. GitHub Actions PR #35 uses Python 3.11 for reproducible CI execution.
-
-The final supported local-development version must be confirmed by the backend owner and documented consistently in local setup, CI and deployment records.
-
-Recommended version check:
+Recommended local setup:
 
 ```bash
-python --version
-```
-
-This command records the interpreter identity; it does not validate the application.
-
-### 4.2 Current runtime dependency manifest
-
-The current `requirements.txt` contains:
-
-```text
-Flask>=3.0,<4.0
-Flask-Cors>=4.0,<7.0
-gunicorn>=22,<24
-PyJWT>=2.8,<3.0
-SQLAlchemy>=2.0,<3.0
-psycopg[binary]>=3.1,<4.0
-```
-
-| Dependency | Responsibility | Reason for selection | Owner confirmation |
-|---|---|---|---|
-| Flask | REST API, routing and JSON responses | Lightweight HTTP application framework | Zaikun |
-| Flask-Cors | Browser-origin access policy | Supports separated frontend and API hosting | Zaikun and Guanyu |
-| Gunicorn | Production WSGI process | Suitable for hosted Flask execution | Zaikun |
-| PyJWT | JWT issue and validation | Stateless API authentication | Zaikun |
-| SQLAlchemy | Database schema and queries | Shared SQLite and PostgreSQL data-access layer | Zaikun and Yuyang |
-| psycopg | PostgreSQL driver | Connects SQLAlchemy to PostgreSQL | Yuyang and Zaikun |
-
-Dependency ranges are bounded by major versions to reduce unplanned breaking changes while allowing compatible updates.
-
-### 4.3 Dependency installation
-
-Typical installation command:
-
-```bash
-python -m pip install -r requirements.txt
-```
-
-Recommended environment checks:
-
-```bash
-python -m pip --version
-python -m pip check
-```
-
-A command appearing in this document is an operating procedure, not a claim that it passed in every environment.
-
-## 5. Backend and API tools
-
-### 5.1 Flask
-
-Flask provides:
-
-- application routing;
-- request parsing;
-- JSON responses;
-- error handling;
-- registration, login and profile endpoints;
-- recommendation, comparison, favorites, history and feedback endpoints.
-
-The API contract must be reviewed together with `server.py`, `api-contract.md` and the current tests.
-
-### 5.2 Flask-Cors
-
-The frontend and backend are hosted separately. Flask-Cors restricts browser calls to configured GitHub Pages and local-development origins.
-
-Required verification:
-
-- intended production origin is present;
-- unintended origins are rejected where expected;
-- required methods and headers work;
-- no authentication secret is exposed through CORS configuration.
-
-### 5.3 Gunicorn
-
-Gunicorn is the production process declared for hosted Flask execution. The exact Render start command and deployed process configuration remain part of deployment verification.
-
-### 5.4 PyJWT and password hashing
-
-JWTs carry authenticated user identity between the browser and API. Passwords are hashed using Werkzeug security helpers before storage.
-
-Operational controls:
-
-- `JWT_SECRET_KEY` must be provided through secure environment configuration;
-- production secrets must not use the local fallback value;
-- tokens, passwords and connection strings must not appear in screenshots or retained logs;
-- logout and token-expiry behaviour require deployed browser verification.
-
-## 6. Database and data tools
-
-### 6.1 SQLAlchemy Core
-
-SQLAlchemy defines tables and executes database operations for both SQLite and PostgreSQL.
-
-Benefits:
-
-- shared schema definitions;
-- explicit transactions;
-- portable query construction;
-- reduced database-specific duplication;
-- test-time database substitution through configuration.
-
-Portability does not prove that both engines behave identically. PostgreSQL-specific verification remains required.
-
-### 6.2 SQLite
-
-SQLite is used for bundled local demonstration and seed data.
-
-Appropriate uses:
-
-- local startup without a separate database service;
-- bundled catalogue demonstration;
-- isolated test databases where fixtures configure a temporary URL.
-
-Known control requirement:
-
-- tests must not modify the tracked `digital_products.db` file;
-- test-generated databases should be temporary and isolated;
-- local SQLite results must not be presented as PostgreSQL persistence evidence.
-
-### 6.3 PostgreSQL and psycopg
-
-When `DATABASE_URL` is configured, the API converts supported PostgreSQL URLs for the psycopg SQLAlchemy driver.
-
-Required release evidence includes:
-
-- deployed engine identity;
-- schema creation;
-- product and specification counts;
-- importer result;
-- account, favorites, history and feedback persistence;
-- behaviour after restart or redeployment;
-- backup and recovery approach.
-
-This work is tracked under Issue #41 and PR #48.
-
-### 6.4 Catalogue importer
-
-`import_real_catalog.py` is responsible for preparing recommendation-ready catalogue records and provenance fields.
-
-Verification should record:
-
-- input files and source metadata;
-- exact command and commit;
-- first-run counts;
-- second-run counts;
-- duplicate and orphan checks;
-- rollback or restoration procedure;
-- historical-price and currency limitations.
-
-The importer and dataset remain Yuyang-owned components.
-
-## 7. Frontend tools
-
-### 7.1 HTML, CSS and JavaScript
-
-The frontend is a static single-page interface implemented in `index.html`.
-
-Responsibilities include:
-
-- preference input;
-- registration and login;
-- recommendation requests;
-- Top 5 and paginated result rendering;
-- comparison;
-- favorites and history;
-- feedback and share state;
-- loading, empty and error states;
-- responsive layout and accessibility attributes.
-
-No separate frontend package manager or compilation pipeline is currently recorded on the V3 baseline. Guanyu should confirm whether any additional local tooling was used and should be retained in this document.
-
-### 7.2 Browser developer tools
-
-Browser developer tools are appropriate for:
-
-- Console error inspection;
-- Network request and response verification;
-- responsive viewport checks;
-- storage and token inspection without retaining secrets;
-- accessibility inspection;
-- cache and deployment-identity checks.
-
-Executed browser evidence must record browser version, device or viewport, commit, environment and observed result.
-
-## 8. Testing tools
-
-### 8.1 pytest
-
-pytest is used as the Python test runner. It is not currently listed in the runtime `requirements.txt`; PR #35 installs it separately inside CI.
-
-Current evidence boundary:
-
-- the V3 `test_server.py` subset passed 12 tests in the recorded CI run;
-- the complete repository suite collected 18 tests and failed 6 legacy `test_mock.py` tests;
-- the canonical final suite and dependency strategy remain pending Zaikun's decision under Issue #34.
-
-Commands used by the CI design:
-
-```bash
-python -m pytest --collect-only -q test_server.py
-python -m pytest -q test_server.py
-python -m pytest --collect-only -q
-python -m pytest -q
-```
-
-The full-suite command must not be documented as a green release check until an actual successful run exists.
-
-### 8.2 Test isolation
-
-Expected controls:
-
-- temporary database for tests;
-- no tracked-file mutation;
-- deterministic seed data;
-- isolated user data;
-- negative authentication and privacy tests;
-- explicit cleanup after execution.
-
-### 8.3 Test dependency decision
-
-The backend/test owner must select one supported strategy:
-
-1. add test tools to a separate development requirements file;
-2. retain documented CI-only installation;
-3. use another explicit and reviewed dependency mechanism.
-
-Local and CI instructions should use the same approved strategy.
-
-## 9. Continuous integration
-
-### 9.1 GitHub Actions
-
-PR #35 proposes `.github/workflows/tests.yml` with two jobs:
-
-- V3 API suite for `test_server.py`;
-- complete repository audit without silently excluding legacy tests.
-
-Workflow controls include:
-
-- Ubuntu runner;
-- Python 3.11;
-- runtime dependency installation;
-- separate pytest installation;
-- environment and commit recording;
-- test collection before execution;
-- tracked-file integrity check;
-- concurrency cancellation for superseded runs.
-
-The workflow remains Draft and must not be merged as a complete green-suite claim while the full audit fails.
-
-## 10. Deployment tools
-
-### 10.1 GitHub Pages
-
-GitHub Pages is the candidate static frontend host.
-
-Required confirmation:
-
-- configured source branch and folder;
-- exact deployed commit;
-- cache or deployment delay;
-- current V3 flows present on the live page;
-- correct Render API target.
-
-These items remain tracked under Issue #42.
-
-### 10.2 Render
-
-Render is the candidate Flask API host.
-
-Required confirmation:
-
-- deployed commit;
-- build and start commands;
-- environment-variable names without secret values;
-- health endpoint;
-- database engine;
-- restart and redeployment behaviour;
-- service limitations and rollback procedure.
-
-### 10.3 Managed PostgreSQL
-
-The production target requires PostgreSQL persistence rather than the bundled SQLite fallback.
-
-A configured `DATABASE_URL` is implementation configuration. It is not evidence that production is using PostgreSQL until the deployed API and safe engine evidence confirm it.
-
-## 11. Architecture and interface-design tools
-
-Version-controlled Mermaid diagrams are used in Markdown for reviewable architecture, sequence and entity-relationship diagrams.
-
-External editable artifact register:
-
-| Artifact | Tool | Owner | Status | Link |
-|---|---|---|---|---|
-| Component/deployment diagram | Pending team selection | Zaikun, Guanyu and Yuyang | Pending | Pending |
-| Database ERD | Pending Yuyang confirmation | Yuyang | Pending | Pending |
-| Desktop/mobile prototype | Pending Guanyu confirmation | Guanyu | Pending | Pending |
-
-No external tool should be listed as used until a real team-owned artifact or retained workflow confirms it.
-
-## 12. Environment variables and secrets
-
-| Variable | Purpose | Allowed evidence |
-|---|---|---|
-| `DATABASE_URL` | Select PostgreSQL production database | Presence, masked engine and safe configuration status |
-| `JWT_SECRET_KEY` | Sign and validate JWTs | Presence and rotation policy; never the value |
-| Platform-provided variables | Hosting configuration | Variable names and non-sensitive behaviour only |
-
-Controls:
-
-- never commit `.env` secrets;
-- never paste complete connection strings into Issues or logs;
-- redact credentials in screenshots;
-- rotate a secret if exposure is suspected;
-- separate local placeholders from production values.
-
-## 13. Repeatable local procedure
-
-The following procedure is a documented workflow and requires execution evidence before it is treated as successful for a release candidate.
-
-```bash
-git checkout feature/product-database
-git pull --ff-only
 python -m venv .venv
 ```
 
-Activate the virtual environment using the operating-system-specific command, then run:
+Windows PowerShell:
 
-```bash
+```powershell
+.\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-python -m pip check
+python -m pip install pytest
 ```
 
-Start the API using the backend-owner-approved command. A common local Flask procedure may be:
+macOS/Linux:
 
 ```bash
-python server.py
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m pip install pytest
 ```
 
-Serve the static frontend using an approved local web server, then verify that its configured local API URL reaches the running Flask service.
+Record the following for release evidence:
 
-The final canonical startup commands require technical-owner confirmation.
+```bash
+python --version
+python -m pip --version
+python -m pip freeze
+```
 
-## 14. Validation checklist
+A clean environment should be used for final release verification.
 
-### Repository
+## 5. Runtime dependencies
 
-- [ ] working tree is clean before execution;
-- [ ] branch and commit are recorded;
-- [ ] no teammate-owned file is changed unexpectedly;
-- [ ] generated files are excluded or restored.
+Current `requirements.txt`:
 
-### Dependencies
-
-- [ ] Python version recorded;
-- [ ] pip version recorded;
-- [ ] runtime requirements installed;
-- [ ] `pip check` result retained;
-- [ ] test-dependency strategy confirmed.
-
-### Application
-
-- [ ] API starts using the intended database engine;
-- [ ] frontend loads from the intended source;
-- [ ] CORS permits intended requests;
-- [ ] secrets are not exposed.
-
-### Testing
-
-- [ ] canonical collection command retained;
-- [ ] canonical suite passes;
-- [ ] tracked-file integrity passes;
-- [ ] database isolation confirmed.
-
-### Deployment
-
-- [ ] frontend commit confirmed;
-- [ ] API commit confirmed;
-- [ ] PostgreSQL engine confirmed;
-- [ ] persistence verified;
-- [ ] rollback method recorded.
-
-## 15. Dependency governance
-
-### Adding a dependency
-
-A new dependency should include:
-
-- a linked Issue explaining the need;
-- comparison with built-in or existing alternatives;
-- version range and compatibility rationale;
-- security and maintenance considerations;
-- installation and test evidence;
-- owner review;
-- updated setup documentation.
-
-### Updating a dependency
-
-Before changing a version range:
-
-- inspect release notes and breaking changes;
-- execute the canonical test suite;
-- verify deployment compatibility where relevant;
-- record the tested commit and environment;
-- avoid unrelated dependency upgrades in the same PR.
-
-### Removing a dependency
-
-Removal requires confirmation that:
-
-- no source or deployment file still imports or invokes it;
-- tests and deployment still pass;
-- documentation and manifests are updated together.
-
-## 16. Known open decisions
-
-| Decision | Owner | Tracking |
+| Dependency | Version range | Responsibility |
 |---|---|---|
-| Final canonical test suite | Zaikun | Issue #34 |
-| `test_mock.py` update, archive or exclusion | Zaikun | Issue #34 |
-| Test dependency location | Zaikun | Issue #34 / PR #35 |
-| Deployed frontend source and commit | Guanyu | Issue #42 |
-| Deployed API commit and start command | Zaikun | Issue #42 |
-| PostgreSQL engine, persistence and backup | Yuyang | Issue #41 / PR #48 |
-| External architecture and interface artifact tools | Technical owners | Issue #51 / PR #52 |
-| Safe integration into `main` | All owners | Issue #43 / PR #44 |
+| Flask | `>=3.0,<4.0` | REST API and application lifecycle |
+| Flask-Cors | `>=4.0,<7.0` | Allowed browser origins and CORS headers |
+| gunicorn | `>=22,<24` | Production WSGI server |
+| PyJWT | `>=2.8,<3.0` | JWT token encoding and decoding |
+| SQLAlchemy | `>=2.0,<3.0` | Schema, SQL generation, transactions and portability |
+| psycopg[binary] | `>=3.1,<4.0` | PostgreSQL driver |
 
-## 17. Review responsibilities
+pytest is installed separately in the current CI workflow. A future dependency-policy change may place development/test tools in a separate manifest, but production dependencies must not be changed without backend/database-owner review.
+
+## 6. Flask application
+
+Flask provides:
+
+- routing and HTTP method handling;
+- JSON request and response support;
+- application error handlers;
+- startup and local development server;
+- integration with authentication and SQLAlchemy services.
+
+Production uses Gunicorn rather than Flask's development server.
+
+Expected start command:
+
+```bash
+gunicorn server:app
+```
+
+## 7. CORS, headers and browser integration
+
+Flask-Cors allows the separately hosted GitHub Pages frontend to call the Render API.
+
+Required controls:
+
+- allow only intended frontend origins where practical;
+- use HTTPS in production;
+- avoid wildcard credentials configurations;
+- return JSON errors consistently;
+- use `Cache-Control: no-store` for API responses containing private or dynamic data;
+- use `X-Content-Type-Options: nosniff`.
+
+Final browser evidence should confirm the frontend calls the intended production API and receives expected CORS headers.
+
+## 8. Authentication tools
+
+PyJWT is used for signed bearer tokens. Werkzeug password functions are used to hash and verify passwords.
+
+Required configuration:
+
+- `JWT_SECRET_KEY` supplied through environment variables;
+- random production secret with sufficient length;
+- no secret committed to Git;
+- no token retained in screenshots, logs or Issues;
+- protected endpoints validate tokens and user ownership;
+- logout clears browser access to private views.
+
+Authentication implementation still requires deployed negative tests and cross-user verification.
+
+## 9. SQLAlchemy and databases
+
+SQLAlchemy provides one data-access layer for SQLite and PostgreSQL.
+
+### SQLite use
+
+- bundled/local demonstration database;
+- automated test databases;
+- disposable catalogue-build and integrity verification;
+- offline review of catalogue data.
+
+SQLite must not be treated as persistent production storage on an ephemeral web-service filesystem.
+
+### PostgreSQL use
+
+- production persistent database;
+- account, favorites, history, result snapshots and feedback storage;
+- managed service connectivity through `DATABASE_URL`.
+
+The deployed API must report PostgreSQL before the production database gate can pass.
+
+### Database environment selection
+
+`DATABASE_URL` is read from the environment. Without it, the application falls back to local SQLite.
+
+Credentials must never be copied into source code or retained evidence.
+
+## 10. Catalogue importer
+
+`import_real_catalog.py` is used to build the public recommendation catalogue and retain provenance information.
+
+The importer:
+
+- downloads or reads defined public datasets;
+- transforms source fields into the project schema;
+- normalizes historical prices using documented fixed rules;
+- keeps missing values as `Not specified`;
+- inserts deterministic imported IDs;
+- writes a human-readable catalogue CSV;
+- validates expected counts and categories;
+- clears private rows from the generated catalogue artifact.
+
+Operational rule: run only against a disposable build copy. Do not run directly against production user data.
+
+## 11. Automated testing
+
+Canonical V3 command:
+
+```bash
+python -m pytest -q test_server.py
+```
+
+The current suite covers:
+
+- database setup and health;
+- filter parsing;
+- recommendation pagination;
+- account registration and login;
+- private history and deletion;
+- feedback;
+- comparison;
+- favorites.
+
+The historical `test_mock.py` file targets removed V2 interfaces and is retained as a non-release compatibility audit.
+
+### Test controls
+
+- use isolated temporary databases;
+- do not modify tracked repository files;
+- record collection count and result;
+- record Python and pytest versions;
+- link results to the tested commit;
+- rerun for the frozen release candidate.
+
+## 12. GitHub Actions
+
+The `V3 Test Evidence` workflow contains:
+
+- a required V3 release-suite job;
+- a visible non-blocking historical mock-audit job;
+- Python 3.11 setup;
+- dependency installation;
+- environment and commit recording;
+- collection and test execution;
+- tracked-file integrity verification.
+
+Recorded successful execution:
+
+- workflow run `31096706920`;
+- 12 collected, 12 passed in 1.23 seconds;
+- tracked-file integrity passed;
+- overall conclusion: success.
+
+This evidence applies to the recorded PR ref. The final candidate requires a fresh run.
+
+## 13. Frontend development
+
+The frontend uses plain HTML, CSS and JavaScript to minimize build complexity and support GitHub Pages.
+
+Implemented interface areas include:
+
+- authentication;
+- structured recommendation filters;
+- loading, error and empty states;
+- Top 5 and pagination;
+- comparison;
+- favorites and account centre;
+- history restoration and deletion;
+- feedback;
+- sharing;
+- responsive layout and accessibility attributes.
+
+Browser developer tools are used for Network, console, responsive and accessibility evidence.
+
+## 14. GitHub Pages
+
+GitHub Pages hosts the static frontend.
+
+Release evidence must record:
+
+- public frontend URL;
+- deployed source branch and commit where available;
+- date/time;
+- successful load without blocking console errors;
+- observed API destination;
+- desktop and mobile behaviour.
+
+A live link without a commit or environment record is not sufficient release evidence.
+
+## 15. Render
+
+Render hosts the Flask/Gunicorn API and managed PostgreSQL environment.
+
+Expected web-service configuration:
+
+```text
+Build command: pip install -r requirements.txt
+Start command: gunicorn server:app
+```
+
+Required environment keys:
+
+```text
+DATABASE_URL
+JWT_SECRET_KEY
+```
+
+Evidence should confirm only the presence and purpose of the keys, never their values.
+
+Release verification should retain:
+
+- deployed commit;
+- successful service state;
+- API health response;
+- database dialect;
+- restart/redeploy persistence;
+- relevant redacted logs.
+
+## 16. Design and modelling tools
+
+Version-controlled Mermaid diagrams support review of:
+
+- system context;
+- logical architecture;
+- deployment architecture;
+- sequence flows;
+- database relationships.
+
+Externally editable UML, ERD and interface-prototype links may be retained when they are accessible, current and confirmed by the relevant owner. Placeholder or inaccessible links must not be presented as completed artifacts.
+
+## 17. Secret and evidence handling
+
+Never commit or retain:
+
+- database passwords or full connection strings;
+- JWT secret values;
+- bearer tokens;
+- real user passwords;
+- personal email addresses used for private testing;
+- provider credentials.
+
+Before release:
+
+- inspect tracked files and Git history for obvious secrets;
+- redact screenshots and logs;
+- use demonstration accounts with non-sensitive data;
+- record only key names and safe metadata.
+
+## 18. Dependency-change governance
+
+A dependency addition or upgrade should include:
+
+1. problem and rationale;
+2. responsible technical owner;
+3. selected version range;
+4. compatibility and security considerations;
+5. local installation result;
+6. automated test result;
+7. production impact;
+8. rollback approach;
+9. reviewed update to dependency documentation.
+
+Dependencies must not be added solely because they are popular or convenient. The project should prefer the smallest supported toolset that meets current requirements.
+
+## 19. Reproducible verification sequence
+
+```bash
+python -m venv .venv
+# activate environment
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m pip install pytest
+python --version
+python -m pip freeze
+python -m pytest --collect-only -q test_server.py
+python -m pytest -q test_server.py
+git diff --exit-code
+```
+
+Database, browser and deployment checks are then executed using the dedicated acceptance and release records.
+
+## 20. Review responsibilities
 
 ### Zaikun
 
-- confirm Python, Flask, Gunicorn, JWT and backend dependency descriptions;
-- confirm pytest, CI and canonical-command wording;
-- confirm Render API operational descriptions;
-- identify unsupported runtime or security claims.
+- Flask, authentication and recommendation dependencies;
+- canonical test scope;
+- GitHub Actions workflow;
+- Gunicorn and Render API wording.
 
 ### Yuyang
 
-- confirm SQLite, PostgreSQL, SQLAlchemy and psycopg descriptions;
-- confirm importer and provenance tooling;
-- confirm backup, persistence and recovery wording;
-- identify unsupported data claims.
+- SQLAlchemy and psycopg;
+- SQLite/PostgreSQL roles;
+- importer and provenance tooling;
+- database verification and recovery controls.
 
 ### Guanyu
 
-- confirm static frontend and browser-tool descriptions;
-- confirm GitHub Pages workflow;
-- confirm interface-design and prototype-tool records;
-- identify unsupported deployment claims.
+- frontend toolchain;
+- GitHub Pages;
+- browser developer tools;
+- responsive and accessibility verification;
+- interface-prototype tooling.
 
 ### Junjie
 
-- maintain one consistent toolchain reference;
-- keep runtime, test and deployment evidence separate;
-- link decisions and verification records;
-- avoid changes to teammate-owned implementation.
+- Git/GitHub process;
+- evidence integrity;
+- release sequencing;
+- cross-document consistency;
+- approval and merge tracking.
 
-## 18. Current conclusion
+## 21. Submission checklist
 
-The project uses a modern, reviewable toolchain built around GitHub, Python, Flask, SQLAlchemy, SQLite/PostgreSQL, static browser technologies and automated CI. The remaining work is not to add unverified tool claims, but to complete owner confirmation, standardise dependency and test procedures, verify the deployed environments and retain repeatable operational evidence.
+- [x] Runtime dependencies documented.
+- [x] Development and deployment tools documented.
+- [x] Canonical test command documented.
+- [x] Database and importer safety boundaries documented.
+- [x] Secret-handling rules documented.
+- [x] Dependency-governance procedure documented.
+- [ ] Formal component reviews recorded.
+- [ ] Final clean-environment execution recorded.
+- [ ] Final deployed environment verified.
+
+This document is ready for formal component review. It should be updated only when the toolchain, dependency policy or retained execution evidence changes.
