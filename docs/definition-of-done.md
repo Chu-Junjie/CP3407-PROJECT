@@ -7,7 +7,7 @@
 
 This Definition of Done prevents a task from being marked complete merely because code was written. It aligns implementation with testing, integration, documentation, version control, deployment, and acceptance evidence.
 
-## Task 1 application note
+## Foundation application note
 
 The Yuyang database / US-05 baseline is currently `Candidate`, not `Done`.
 
@@ -23,7 +23,7 @@ For the Task 1 foundation work to be marked Done:
 
 Copying candidate files into a branch is not sufficient evidence that implementation or tests are complete.
 
-## Task 1 closeout result
+## Governance closeout result
 
 The Task 1 project-foundation work satisfies its governance Definition of Done:
 
@@ -39,7 +39,7 @@ The Task 1 project-foundation work satisfies its governance Definition of Done:
 
 This closeout confirms completion of Task 1 governance work. It does not represent verification of the complete technical implementation.
 
-## Task 2 database integration result
+## Database integration result
 
 - [x] The database Pull Request was reviewed by a non-author.
 - [x] The database Pull Request was merged into `main`.
@@ -53,7 +53,7 @@ This closeout confirms completion of Task 1 governance work. It does not represe
 
 Task 2 is only complete when all required evidence above is confirmed.
 
-## Task 3 backend CI evidence checkpoint
+## Backend CI evidence checkpoint
 
 The following checklist records only evidence that has actually succeeded. It is not a claim that Task 3 is Done.
 
