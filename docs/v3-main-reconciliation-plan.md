@@ -1,4 +1,4 @@
-# V3 to `main` Reconciliation Plan
+# Release-to-`main` Reconciliation Plan
 
 **Project:** Smart Digital Product Recommendation Platform  
 **Authoritative V3 baseline:** `feature/product-database`  
@@ -44,7 +44,7 @@ Do not:
 
 ## 5. File decisions
 
-### Preserve from V3 unless explicitly changed
+### Preserve from the release baseline unless explicitly changed
 
 | Path or area | Confirmation |
 |---|---|
