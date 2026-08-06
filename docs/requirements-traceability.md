@@ -2,7 +2,7 @@
 
 This is a live matrix. `Candidate` means code was supplied but is not verified until merged and tested.
 
-## Task 1 foundation evidence
+## Foundation evidence
 
 | Evidence item | Final record |
 |---|---|
@@ -38,7 +38,7 @@ This is a live matrix. `Candidate` means code was supplied but is not verified u
 | US-09 | Budget alternative | same category, cheaper, different ID, spec-complete | same category, cheaper, different, null case | Zaikun + Guanyu | Planned |
 | US-10 | Share leaderboard | URL encode/restore and rerun recommend | special chars, exclusions, second-browser test | Junjie + Guanyu | Planned |
 
-## Task 2 database evidence
+## Database evidence
 
 | Evidence item | Current record |
 |---|---|
@@ -62,7 +62,7 @@ This is a live matrix. `Candidate` means code was supplied but is not verified u
 | US-07 | `PurchaseURL` source and missing-link limitation | Verified |
 | US-08 | Joined database recommendation scope and data limitations | Verified |
 
-## Task 3 backend verification evidence
+## Backend verification evidence
 
 This section records the original Task 3 evidence, the separate post-requirements-reconciliation validation, and the later validation after synchronizing main commit `fbd733c`. It does not replace the earlier implementation-candidate or Task 2 records.
 
