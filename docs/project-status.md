@@ -1,119 +1,183 @@
-# CP3407 Project Status — Teacher Feedback Revision v3.0
+# V3 Project Status
 
-**Evidence date:** 6 August 2026  
+**Project:** Smart Digital Product Recommendation Platform  
 **Coordinator:** Chu Junjie  
-**Authoritative implementation baseline:** `feature/product-database`  
-**Governance working branch:** `docs/junjie-v3-governance`  
-**Historical integration branch:** `main`
+**Status date:** 6 August 2026, Singapore time (UTC+8)  
+**Authoritative implementation branch:** `feature/product-database`  
+**Inspected implementation baseline:** `7c406515bd4b657372fe519869596825cdf91d56`
 
-## 1. Status boundary
+## 1. Executive status
 
-The team has adopted `feature/product-database` as the latest technical baseline. The earlier 9,000-product / 33-specification Yuyang Unified v2 baseline is retained only as historical evidence.
+The V3 implementation is present on `feature/product-database`. The project is in release verification and integration preparation, not final release.
 
-This governance update does not claim that the v3 baseline has been reviewed, merged into `main`, deployed, or accepted. The implementation branch documentation records local test evidence, but clean-environment, full-repository, CI, production and end-to-end verification still require retained evidence.
+Current position:
 
-The coordinator branch is documentation-only. It does not modify teammate-owned backend, frontend, tests, datasets, database files or deployment configuration.
+- core V3 backend, frontend, account, catalogue and persistence structures are implemented;
+- the canonical V3 automated suite is defined and has passed in GitHub Actions;
+- US-09 Budget Alternatives is deferred from the current release;
+- catalogue, schema and importer design have been verified from repository source;
+- deployed PostgreSQL identity, persistence, browser end-to-end testing and external acceptance remain open;
+- team review is deferred and no approval is inferred;
+- reconciliation with `main` has not started.
 
-## 2. Adopted v3 technical direction
+## 2. Status vocabulary
 
-| Area | Adopted direction | Current evidence status |
+| Status | Meaning |
+|---|---|
+| `Implemented` | Code, data or documentation exists on the authoritative branch. |
+| `Repository verified` | The statement is directly supported by version-controlled source, tests or contracts. |
+| `CI verified` | A named workflow check passed for a named ref and environment. |
+| `Prepared` | A plan, template or procedure exists but has not been executed. |
+| `Deferred` | The item is outside the current release and remains in the backlog. |
+| `Blocked` | A missing runtime result or dependency prevents release completion. |
+| `Not Run` | The required verification has not been executed. |
+| `Unverified` | The target environment or result is not confirmed. |
+| `Done` | All applicable review, test, deployment and acceptance gates have passed. |
+
+## 3. Technical baseline
+
+| Area | Current V3 direction | Status |
 |---|---|---|
-| Backend | Python, Flask and SQLAlchemy | Implemented on `feature/product-database`; final review pending |
-| Local database | Bundled SQLite demonstration database | Implemented; release-state integrity check pending |
-| Production database | PostgreSQL selected through `DATABASE_URL` | Designed and implemented; deployed persistence not yet evidenced |
-| Catalogue | 11,000 `products` rows, including 2,000 joined recommendation-ready public-dataset records | Branch documentation records the counts; independent release verification pending |
-| Specifications | 2,000 `product_specs` rows with `DataSource` | Importer and catalogue evidence exist; provenance review pending |
-| Accounts | Password-hashed registration/login and JWT authentication | Implemented; security and deployment verification pending |
-| Persistence | Favorites, private search history, result snapshots and feedback | Implemented; deployed persistence and privacy acceptance pending |
-| Recommendations | Pagination, default 20 per page, maximum 100, with a separate Top 5 | Implemented; cross-layer acceptance pending |
-| Frontend | HTML/CSS/JavaScript hosted through GitHub Pages and calling Render | Implemented candidate; deployed E2E evidence pending |
+| Backend | Python, Flask and SQLAlchemy | Implemented |
+| Local persistence | Bundled SQLite seed/demo database | Implemented; release-file integrity still required |
+| Production persistence | PostgreSQL selected through `DATABASE_URL` | Implemented in code; deployed runtime unverified |
+| Catalogue | 11,000 target product rows, including 2,000 imported catalogue rows | Repository verified target; runtime count not run |
+| Specifications | 2,000 recommendation-ready `product_specs` rows | Repository verified target; runtime count not run |
+| Accounts | Password hashing and JWT authentication | Implemented; deployed security checks open |
+| Private features | Favorites, history, result snapshots and feedback | Implemented; deployed persistence/privacy checks open |
+| Recommendations | Budget/category filtering, ranking, pagination and separate Top 5 | Implemented; deployed browser verification open |
+| Frontend | Responsive HTML/CSS/JavaScript client | Implemented on V3 branch; deployed identity unverified |
+| Hosting | GitHub Pages frontend and Render API candidate endpoints | Configuration exists; deployed commits unverified |
 
-## 3. Current database tables
+## 4. Database structure
 
-| Table | Purpose | Current status |
+The V3 source defines seven application tables:
+
+| Table | Purpose | Repository status |
 |---|---|---|
-| `products` | Original behavioural observations plus imported catalogue products | Implemented |
-| `product_specs` | Joined product names, technical fields, source and product/dataset URL | Implemented |
+| `products` | Behavioural and imported product records | Implemented |
+| `product_specs` | Recommendation-ready specifications and source metadata | Implemented |
 | `users` | Account identity and password hashes | Implemented |
 | `favorites` | User-owned saved products | Implemented |
-| `search_history` | User-owned query, filters and summary metadata | Implemented |
-| `search_results` | Saved ranked result snapshots linked to history | Implemented |
-| `feedback` | Helpful/not-helpful votes, optionally linked to a user/search | Implemented |
+| `search_history` | User-owned searches and filters | Implemented |
+| `search_results` | Saved ranked result snapshots | Implemented |
+| `feedback` | Helpful/not-helpful records | Implemented |
 
-## 4. Evidence currently present on the authoritative branch
+Actual PostgreSQL table creation, row counts and delete behaviour remain runtime verification items.
 
-- `teacher-feedback-change-request.md` records the teacher-feedback scope revision and states that review, merge and production deployment remain required.
-- `api-contract.md` records accounts, recommendations, pagination, history, comparison, favorites, feedback and database selection.
-- `import_real_catalog.py` provides the reproducible public-catalogue import path.
-- `real_product_catalog.csv` contains the 2,000-row human-inspection catalogue output.
-- `test_server.py` contains isolated tests for database creation, health, pagination, authentication, history, feedback, comparison and favorites.
-- Branch documentation records `.venv/bin/pytest -q` with `12 passed`; this result must be reconfirmed as the complete intended suite in a clean environment or CI before release.
+## 5. Automated test and CI status
 
-## 5. Programme-level stage status
+### Canonical V3 suite
 
-| Stage | Owner | Current status | Completion gap |
-|---|---|---|---|
-| V3 change control and governance | Junjie | In Progress | Team review, PR and merge evidence |
-| Public catalogue and database revision | Yuyang | Implemented | Independent counts, provenance review, PostgreSQL seed/deployment evidence |
-| Backend, authentication and API revision | Zaikun | Implemented | Full relevant tests, review and production verification |
-| Frontend account, history and pagination revision | Guanyu | Implemented | Browser/network evidence, responsive testing and deployed E2E |
-| Complete automated testing and CI | Technical owners + Junjie tracking | In Progress | Clean environment, intended full suite, CI success and database-state check |
-| External acceptance | Junjie | Not Started | Two non-team testers and retained results |
-| Documentation consolidation | All owners; Junjie coordinates | In Progress | Architecture, ERD, test, deployment and user-guide consistency |
-| Final release | Junjie coordinates | Not Started | All release gates, tag, changelog and verified backup |
+```bash
+python -m pytest -q test_server.py
+```
 
-## 6. Current User Story status
+GitHub Actions evidence:
 
-`Implemented` means code exists on the authoritative feature branch. It does not mean the story is reviewed, deployed, accepted or Done.
+| Field | Result |
+|---|---|
+| Workflow | `V3 Test Evidence` |
+| Run | `31096706920` |
+| Workflow source commit | `4e698826dbeac719b56f1ff5cea060109d0bdd60` |
+| Tested PR merge ref | `8ecdb5fea8829a85521825b864a9bfe6e630a4ff` |
+| Runner | Ubuntu 24.04.4 |
+| Python | 3.11.15 |
+| pytest | 9.1.1 |
+| Collection | 12 tests |
+| Result | 12 passed in 1.23s |
+| Tracked-file integrity | Passed |
+| Workflow conclusion | Success |
 
-| Story | Current v3 status | Evidence still required |
+### Historical mock audit
+
+`test_mock.py` is retained as Practical 8, Task 7 evidence and targets removed V2 Pandas/raw-SQLite contracts. It is not part of the V3 release suite.
+
+The non-release audit collected six tests and recorded six expected compatibility failures. The failures remain visible, but do not block the canonical V3 job.
+
+The canonical suite must be rerun for the eventual frozen release candidate.
+
+## 6. User Story status
+
+| Story | Current release status | Remaining release evidence |
 |---|---|---|
-| US-01 Natural-language input | Implemented | Invalid/boundary regression evidence and integrated acceptance |
-| US-02 Database setup/import | Implemented | 11,000/2,000 count evidence in release environment, repeat initialization and PostgreSQL verification |
-| US-03 Recommendations | Implemented | Pagination and Top 5 deployed E2E evidence |
-| US-04 Explanations | Implemented | Reason/score automated evidence and UI acceptance |
-| US-05 Comparison | Implemented | Exact 2–3 ID validation, missing-ID handling and frontend comparison evidence |
-| US-06 Exclusions | Implemented candidate | Text plus explicit exclusion regression evidence |
-| US-07 Product/source links | Implemented candidate | Safe URL handling and limitation wording acceptance |
-| US-08 Feedback | Implemented | Validation, persistence, aggregate response and deployed evidence |
-| US-09 Budget alternatives | Scope confirmation required | Confirm whether it remains required under the teacher-feedback revision and retain acceptance evidence if kept |
-| US-10 Share results | Implemented candidate | Special-character, exclusions and second-browser restoration evidence |
-| V3 Accounts and private history | Implemented | Authentication, authorization, privacy and persistence acceptance |
-| V3 Favorites | Implemented | Ownership, idempotency and same-category comparison acceptance |
+| US-01 Natural-language input | Implemented | Invalid/boundary and deployed request evidence |
+| US-02 Database setup/import | Implemented | Actual counts, local repeatability and PostgreSQL evidence |
+| US-03 Recommendations | Implemented | Deployed pagination and Top 5 evidence |
+| US-04 Explanations | Implemented | Ranking/reason assertions and UI readability evidence |
+| US-05 Comparison | Implemented | Invalid/duplicate/missing-ID and deployed UI evidence |
+| US-06 Excluded brands | Candidate | Combined text/explicit exclusion regression evidence |
+| US-07 Product/source links | Candidate | URL safety, fallback and deployed wording evidence |
+| US-08 Feedback | Implemented | Invalid vote, linkage and deployed persistence evidence |
+| US-09 Budget alternatives | **Deferred** | Backlog item, milestone `Unscheduled` |
+| US-10 Share/restore | Candidate | Special-character and isolated-browser evidence |
+| V3-US-11 Accounts | Implemented | Negative auth, token and deployed security evidence |
+| V3-US-12 Private history | Implemented | Cross-user denial and redeploy persistence evidence |
+| V3-US-13 Favorites | Implemented | Duplicate/unowned/cross-user and deployed evidence |
+| V3-US-14 Pagination | Implemented | Boundary and deployed browser evidence |
+| V3-US-15 Production storage | Candidate | PostgreSQL identity, initialization and persistence evidence |
 
-## 7. Current blockers
+US-09 limitation statement:
 
-1. `feature/product-database` is the adopted baseline but has not yet been reviewed and merged into `main`.
-2. The branch diverges from `main`; integration strategy must preserve the v3 implementation without silently restoring outdated v2 files.
-3. The recorded `12 passed` result must be reconfirmed against the intended full test set. The old `test_mock.py` contract must be updated, archived or explicitly excluded by the responsible test/backend owner.
-4. No successful GitHub Actions workflow is currently retained as release evidence.
-5. PostgreSQL production configuration, schema seeding and persistence across redeploy/restart are not yet evidenced.
-6. Render and GitHub Pages end-to-end smoke tests are not yet retained.
-7. The existing architecture, project-status, traceability and Definition of Done documents contain outdated v2 statements and require coordinated replacement.
-8. Two non-team acceptance tests have not yet been recorded.
-9. No final release tag, changelog or verified ZIP backup exists.
+> The current release filters recommendations by a user's maximum budget. It does not separately identify a cheaper alternative that preserves equivalent specifications.
 
-## 8. Risk register
+## 7. Catalogue and importer findings
 
-| ID | Risk | Impact | Technical owner | Tracking owner | Status |
-|---|---|---|---|---|---|
-| V3-R01 | Old 9,000/33 documents are mistaken for the current baseline | Conflicting implementation and marking evidence | Relevant document owner | Junjie | Open |
-| V3-R02 | The v3 branch is merged without owner review | Teammate work may be overwritten or unverified | All technical owners | Junjie | Open |
-| V3-R03 | Local `12 passed` is reported as complete CI evidence without confirming the intended suite | False completion claim | Zaikun / test owner | Junjie | Open |
-| V3-R04 | PostgreSQL secrets or persistence are configured incorrectly | Login/history data loss or security exposure | Zaikun + Yuyang | Junjie | Open |
-| V3-R05 | Public data is described as live inventory or live pricing | Misleading product claims | Yuyang + documentation owners | Junjie | Open |
-| V3-R06 | Authentication or history endpoints expose another user's records | Privacy and security failure | Zaikun | Junjie | Open |
-| V3-R07 | Frontend works locally but fails against deployed CORS/API configuration | Failed demonstration | Guanyu + Zaikun | Junjie | Open |
-| V3-R08 | Coordinator edits teammate implementation to make evidence appear complete | Ownership conflict and unreliable contribution record | Junjie | Junjie | Controlled — prohibited |
-| V3-R09 | Release occurs without external acceptance and backup validation | Submission defects are discovered too late | All members | Junjie | Open |
+Repository inspection confirms:
 
-## 9. Ownership and modification rule
+- imported IDs begin at `10,000,001`;
+- the importer defines 800 laptops, 833 smartphones, 300 smart watches, 61 headphones and 6 tablets;
+- the target is 11,000 total products and 2,000 specification rows;
+- source and licence metadata are retained;
+- EUR→USD uses `1.08` and INR per USD uses `83.0`;
+- prices are historical dataset snapshots, not live inventory or live retailer prices;
+- built-in validation checks specification count, category quotas and absence of private rows in the generated catalogue artifact.
 
-- Junjie may update governance, planning, traceability, acceptance and release documents.
-- Junjie does not directly modify `server.py`, recommendation logic, authentication implementation, frontend implementation, automated test implementation, datasets, database files or teammate technical explanations.
-- Problems in teammate-owned files are reported to the responsible owner through review notes or a proposed Issue after approval.
-- A status changes to `Verified` or `Done` only when the required evidence exists and is reviewed.
+Operational restriction:
 
-## 10. Verification rule
+> The importer is a catalogue-build tool and must not be executed directly against a live production database containing user data.
 
-The v3 implementation is the adopted direction. A feature is not Done merely because it exists on `feature/product-database`. Done requires applicable automated tests, integrated acceptance, non-author review, merge evidence, deployment verification, documentation and honest limitation statements.
+## 8. Programme stage status
+
+| Stage | Lead | Status | Exit condition |
+|---|---|---|---|
+| Scope and change control | Junjie | Repository decisions complete; review deferred | Actual review and approved merge of coordinator records |
+| Catalogue/database verification | Yuyang; Junjie tracks | Repository verification complete; runtime blocked | Counts, PostgreSQL identity, persistence and recovery evidence |
+| Backend/API verification | Zaikun; Junjie tracks | Canonical CI verified | Release-candidate rerun and remaining negative/boundary coverage |
+| Frontend/deployed E2E | Guanyu; Junjie tracks | Not Run | Confirmed deployed commits and completed browser matrix |
+| External acceptance | Junjie | Not Run | Two non-team participant records and defect decisions |
+| Documentation consolidation | Junjie coordinates | In Progress | Current documents agree with final verified release |
+| Branch reconciliation | All affected owners; Junjie coordinates | Not started | Explicit approval, reviewed integration branch and final checks |
+| Final release | Junjie coordinates | Not started | Release checklist, tag and package complete |
+
+## 9. Open blockers
+
+1. Actual review and merge of Draft PRs are deferred.
+2. Local catalogue verification output has not been retained for the release candidate.
+3. Render API commit and active PostgreSQL dialect are unverified.
+4. PostgreSQL initialization and persistence after restart/redeploy are not tested.
+5. GitHub Pages deployed commit is unverified.
+6. Browser E2E and accessibility checks are not run.
+7. External acceptance is not run.
+8. `main` reconciliation requires separate explicit approval.
+9. Final README, release tag and package do not yet exist.
+
+## 10. Risk register
+
+| ID | Risk | Control | Status |
+|---|---|---|---|
+| V3-R01 | Older V2 evidence is mistaken for current behaviour | V3 baseline and historical test classification are explicit | Controlled |
+| V3-R02 | Historical mock failures are presented as V3 regressions | Separate non-release audit job | Controlled |
+| V3-R03 | Catalogue targets are reported as observed production counts | Repository targets and runtime results are separated | Open |
+| V3-R04 | Importer removes live private data | Prohibit direct execution against production user DB | Controlled by process |
+| V3-R05 | PostgreSQL secrets or user data are exposed | Environment variables, redaction and secret scan | Open |
+| V3-R06 | Deployed auth/history permits cross-user access | Negative deployed tests required | Open |
+| V3-R07 | Frontend and API deployments serve different commits | Deployment identity gate before E2E | Open |
+| V3-R08 | Historical prices are described as live | Limitation wording and source metadata | Controlled; final UI/docs check open |
+| V3-R09 | Release occurs without UAT or backup evidence | Final checklist blocks release | Open |
+
+## 11. Ownership boundary
+
+Junjie may update governance, planning, traceability, acceptance and release documents. This status update does not modify teammate-owned backend, frontend, automated tests, data, importer, database or deployment configuration.
+
+Repository presence is not deployment evidence. No item is marked `Done` until its applicable gates have actual retained evidence.
