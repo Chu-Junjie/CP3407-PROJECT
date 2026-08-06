@@ -2,186 +2,188 @@
 
 **Project:** Smart Digital Product Recommendation Platform  
 **Authoritative implementation baseline:** `feature/product-database`  
-**Record owner:** Chu Junjie — Project Manager and Release Coordinator  
-**Status:** Prepared for formal component review
+**Team meeting and governance record maintained by:** @Chu-Junjie  
+**Status:** Prepared for formal review
 
-This document records the tools, libraries, environments and governance controls used to develop, test, review, deploy and release the project. Commands are operating procedures and do not imply successful execution unless linked evidence exists for a named commit and environment.
+This record documents the development, test, data and deployment tools agreed in the team meeting notes. Commands are procedures and do not imply successful execution unless linked evidence identifies a named commit and environment.
 
-## Toolchain overview
+## 1. Named responsibilities
 
-| Area | Tool or service | Project use |
+- @ZhengZaikun confirms Python runtime, Flask, API dependencies, automated tests, CI and Render API configuration.
+- @tiantian09091 confirms SQLAlchemy, SQLite, PostgreSQL, catalogue-import tools, backup and recovery procedures.
+- @Guanyu-Lu confirms HTML/CSS/JavaScript, GitHub Pages, browser tools, responsive testing and design tools.
+- @Chu-Junjie maintains meeting notes, Git/GitHub workflow, dependency-change records, evidence links and release controls.
+
+## 2. Source control and review
+
+The project uses Git and GitHub for:
+
+- Issues with explicit assignments;
+- branches separated by work area;
+- focused commits;
+- Pull Requests into `feature/product-database` before final reconciliation;
+- formal GitHub Reviews for current PR heads;
+- GitHub Actions evidence;
+- final controlled integration into `main`.
+
+Review routing:
+
+- backend/API/test changes → @ZhengZaikun;
+- database/catalogue/importer changes → @tiantian09091;
+- frontend/GitHub Pages changes → @Guanyu-Lu;
+- meeting/status/traceability/release-record changes → @Chu-Junjie, with technical statements confirmed by the named person above.
+
+## 3. Python and runtime dependencies
+
+Current runtime manifest roles:
+
+| Dependency | Purpose | Confirmation |
 |---|---|---|
-| Version control | Git | Branching, commits, comparison and release history |
-| Collaboration | GitHub Issues and Pull Requests | Task assignment, review, decisions and evidence links |
-| Automation | GitHub Actions | Canonical test execution and tracked-file integrity checks |
-| Runtime language | Python 3.11 | Backend, importer, tests and database verification |
-| Backend framework | Flask | REST API and request handling |
-| Cross-origin support | Flask-Cors | Browser-to-API access control |
-| Production server | Gunicorn | Render production process |
-| Authentication | PyJWT and Werkzeug password hashing | Token issue/validation and password security |
-| Data access | SQLAlchemy | SQLite/PostgreSQL schema and queries |
-| PostgreSQL driver | psycopg | SQLAlchemy PostgreSQL connectivity |
-| Local database | SQLite | Bundled demonstration and disposable verification |
-| Production database | PostgreSQL | Persistent catalogue and user-owned records |
-| Testing | pytest | Canonical V3 API tests |
-| Frontend | HTML, CSS and JavaScript | Responsive single-page user interface |
-| Static hosting | GitHub Pages | Frontend deployment |
-| API hosting | Render | Flask/Gunicorn service deployment |
-| Design records | Mermaid and external modelling/prototype tools | Architecture, ERD, sequence and interface design |
+| Flask | REST API and request handling | @ZhengZaikun |
+| Flask-Cors | Browser/API origin handling | @ZhengZaikun and @Guanyu-Lu |
+| Gunicorn | Render production process | @ZhengZaikun |
+| PyJWT | Token creation and validation | @ZhengZaikun |
+| SQLAlchemy | SQLite/PostgreSQL data access | @ZhengZaikun and @tiantian09091 |
+| psycopg binary package | PostgreSQL driver | @tiantian09091 and @ZhengZaikun |
+| pytest | Automated test execution | @ZhengZaikun |
 
-## Version-control workflow
+The production runtime dependency file must remain consistent with the Render build command. Test dependency installation must be documented consistently for local and CI use.
 
-- `main`: final integrated release branch;
-- `feature/product-database`: authoritative V3 implementation baseline during release preparation;
-- `feature/*` and `fix/*`: owner-controlled technical work;
-- `docs/*`: documentation, governance and evidence records;
-- `ci/*`: CI workflow and test-evidence changes;
-- `release/*`: controlled release-candidate or reconciliation work.
+## 4. Local environment procedure
 
-Commits should contain one logical change, use meaningful prefixes, avoid mixing unrelated technical and documentation work, identify generated/binary artifacts and preserve ownership boundaries.
+Example Windows PowerShell procedure:
 
-Pull Requests should include purpose, scope, changed files, linked Issue, test/evidence summary, known limitations, reviewers and merge conditions.
-
-## Python environment
-
-Recommended setup:
-
-```bash
-python -m venv .venv
+```powershell
+py -3.11 -m venv .venv
+Set-ExecutionPolicy -Scope Process Bypass
+.\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 python -m pip install pytest
+python server.py
 ```
 
-Record:
+Serve the frontend separately:
 
-```bash
-python --version
-python -m pip --version
-python -m pip freeze
+```powershell
+python -m http.server 8000
 ```
 
-A clean environment should be used for final verification.
+These commands are procedures. A successful clean-environment result must record the commit SHA, Python version, commands, exit codes and observed application response.
 
-## Runtime dependencies
+## 5. Automated tests and CI
 
-| Dependency | Version range | Responsibility |
-|---|---|---|
-| Flask | `>=3.0,<4.0` | REST API and application lifecycle |
-| Flask-Cors | `>=4.0,<7.0` | Allowed browser origins and CORS headers |
-| gunicorn | `>=22,<24` | Production WSGI server |
-| PyJWT | `>=2.8,<3.0` | JWT token encoding and decoding |
-| SQLAlchemy | `>=2.0,<3.0` | Schema, SQL generation, transactions and portability |
-| psycopg[binary] | `>=3.1,<4.0` | PostgreSQL driver |
-
-pytest is installed separately in CI. Any dependency-policy change requires backend/database-owner review.
-
-## Backend and deployment tools
-
-Flask provides routing, JSON handling, error handlers and application lifecycle. Production uses:
-
-```bash
-gunicorn server:app
-```
-
-Flask-Cors supports the separately hosted frontend. Production controls include intended origins, HTTPS, consistent JSON errors, `Cache-Control: no-store` and `X-Content-Type-Options: nosniff`.
-
-PyJWT and Werkzeug password hashing support authentication. `JWT_SECRET_KEY` must be environment-configured and never committed or retained in evidence.
-
-## Database tools
-
-SQLAlchemy provides one data-access layer for SQLite and PostgreSQL.
-
-SQLite is used for local demonstration, isolated tests and disposable catalogue verification. PostgreSQL is the persistent production target through `DATABASE_URL`.
-
-The catalogue importer transforms public datasets, retains provenance, normalizes historical prices, keeps missing values as `Not specified`, inserts deterministic IDs and validates counts. It must run only against disposable build copies.
-
-## Automated testing
-
-Canonical command:
+Canonical release command:
 
 ```bash
 python -m pytest -q test_server.py
 ```
 
-The suite covers setup/health, filtering, pagination, authentication, history, feedback, comparison and favorites.
+Recorded workflow evidence:
 
-`test_mock.py` is retained as a non-release historical V2 compatibility audit.
+- run `31096706920`;
+- Ubuntu 24.04.4;
+- Python 3.11.15;
+- pytest 9.1.1;
+- 12 collected and 12 passed;
+- tracked-file integrity passed.
 
-Test controls:
+@ZhengZaikun formally reviews PR #35 and reruns the canonical suite for the frozen release candidate. `test_mock.py` remains a visible historical non-release audit.
 
-- isolated temporary databases;
-- no tracked-file modification;
-- recorded collection/result counts;
-- recorded Python/pytest versions;
-- exact tested commit;
-- rerun for the frozen release candidate.
+## 6. Database and catalogue tools
 
-## GitHub Actions
+| Tool | Purpose | Confirmation |
+|---|---|---|
+| SQLite | Bundled local catalogue and disposable verification | @tiantian09091 |
+| PostgreSQL | Deployed persistence through `DATABASE_URL` | @tiantian09091, with API integration confirmed by @ZhengZaikun |
+| SQLAlchemy | Shared schema/query layer | @tiantian09091 and @ZhengZaikun |
+| `import_real_catalog.py` | Build or refresh a clean catalogue artifact | @tiantian09091 |
+| SQL queries and health output | Counts, joins, duplicates, orphans and engine identity | @tiantian09091 |
 
-The `V3 Test Evidence` workflow contains a required V3 suite and visible non-blocking historical audit. It records environment, commit, collection, result and tracked-file integrity.
+The importer must run against a disposable copy and must not run directly against production user data.
 
-Recorded successful run `31096706920` produced 12/12 passes in 1.23 seconds. This applies to the recorded PR ref; final-candidate verification remains required.
+## 7. Frontend and browser tools
 
-## Frontend and hosting
+| Tool | Purpose | Confirmation |
+|---|---|---|
+| HTML, CSS and JavaScript | Static responsive interface | @Guanyu-Lu |
+| GitHub Pages | Frontend hosting | @Guanyu-Lu |
+| Browser Developer Tools | Console, Network, responsive and accessibility observations | @Guanyu-Lu |
+| Figma or retained design artifacts | Interface design reference where available | @Guanyu-Lu |
 
-The frontend uses HTML, CSS and JavaScript for GitHub Pages. It includes authentication, structured filters, loading/error/empty states, Top 5, pagination, comparison, favorites, history, feedback, sharing, responsive layout and accessibility attributes.
+Browser evidence must record the visible frontend commit, API destination, device/viewport, browser version and observed result. Screenshots do not replace Network evidence for API, authentication, privacy or persistence claims.
 
-GitHub Pages evidence must record the deployed URL, source/commit, date, console state and API destination.
+## 8. Render deployment
 
-Render evidence must record the deployed commit, health state, database dialect and redacted configuration metadata. Expected commands:
+Expected API service configuration:
 
 ```text
 Build command: pip install -r requirements.txt
 Start command: gunicorn server:app
+Environment names: DATABASE_URL, JWT_SECRET_KEY
 ```
 
-Required environment keys:
+- @ZhengZaikun confirms the Render service commit, commands, startup and `/api/health` behaviour.
+- @tiantian09091 confirms the PostgreSQL environment and persistence.
+- @Guanyu-Lu confirms the browser calls the intended Render API.
+- @Chu-Junjie records evidence without secret values.
 
-```text
-DATABASE_URL
-JWT_SECRET_KEY
-```
+## 9. Secret handling
 
-Values must never be retained.
+Do not retain:
 
-## Secret and evidence handling
+- passwords;
+- JWT values;
+- cookies or authorization headers;
+- database connection strings;
+- private participant data;
+- local environment files containing credentials.
 
-Never commit or retain database passwords, full connection strings, JWT secrets, bearer tokens, real passwords or unnecessary personal information.
+- @ZhengZaikun confirms application secrets use environment configuration.
+- @tiantian09091 confirms database credentials and backups are handled outside repository content.
+- @Guanyu-Lu ensures browser screenshots do not expose tokens or private values.
+- @Chu-Junjie checks Issues, PRs, meeting notes and release evidence before final publication.
 
-Before release, inspect tracked files/history, redact screenshots/logs, use non-sensitive demonstration accounts and record only safe metadata.
+## 10. Dependency-change procedure
 
-## Dependency-change governance
+For any new or upgraded dependency:
 
-A dependency change requires:
+1. the named person responsible for the affected area creates an Issue;
+2. record the reason, version/range, compatibility risk and rollback plan;
+3. update the dependency manifest on a separate branch;
+4. install in a clean environment;
+5. run the affected automated tests;
+6. run database or browser checks where applicable;
+7. open a Pull Request and request formal review from the affected named people;
+8. merge only after evidence passes;
+9. @Chu-Junjie updates the meeting and release records.
 
-1. rationale;
-2. technical owner;
-3. version range;
-4. compatibility/security review;
-5. local installation result;
-6. automated test result;
-7. production impact;
-8. rollback approach;
-9. reviewed documentation update.
+## 11. Failure routing
 
-## Review responsibilities
+- Python/Flask/API/authentication/test/CI failure → @ZhengZaikun;
+- SQLAlchemy/catalogue/importer/PostgreSQL/backup failure → @tiantian09091;
+- HTML/CSS/JavaScript/GitHub Pages/browser/accessibility failure → @Guanyu-Lu;
+- meeting/status/evidence/release-record inconsistency → @Chu-Junjie.
 
-- Zaikun: Flask, authentication, recommendation, tests, CI, Gunicorn and Render API wording.
-- Yuyang: SQLAlchemy, psycopg, SQLite/PostgreSQL, importer, provenance and database recovery controls.
-- Guanyu: frontend, GitHub Pages, browser tools, responsive/accessibility verification and prototype tooling.
-- Junjie: Git/GitHub process, evidence integrity, release sequencing and approval tracking.
+## 12. Verification status
 
-## Submission checklist
+| Area | Status |
+|---|---|
+| Dependency roles documented | Prepared |
+| Canonical CI evidence for recorded PR ref | Passed |
+| Final-candidate CI | Pending |
+| Clean-environment installation | Pending final candidate |
+| Disposable catalogue verification | Not Run |
+| Deployed PostgreSQL verification | Unverified |
+| GitHub Pages/Render E2E | Not Run |
+| Final secret-safety record | Not Run |
 
-- [x] Runtime dependencies documented.
-- [x] Development and deployment tools documented.
-- [x] Canonical test command documented.
-- [x] Database/importer safety boundaries documented.
-- [x] Secret-handling rules documented.
-- [x] Dependency-governance procedure documented.
-- [ ] Formal component reviews recorded.
-- [ ] Final clean-environment execution recorded.
-- [ ] Final deployed environment verified.
+## 13. Completion criteria
 
-This document is ready for formal component review.
+- [ ] @ZhengZaikun formally approves backend runtime, tests, CI and Render API sections.
+- [ ] @tiantian09091 formally approves SQLAlchemy, PostgreSQL, importer and recovery sections.
+- [ ] @Guanyu-Lu formally approves frontend, GitHub Pages, browser and design-tool sections.
+- [ ] @Chu-Junjie confirms meeting-note, governance and evidence consistency.
+- [ ] Clean-environment, final CI, deployed PostgreSQL and browser evidence are linked after execution.
+
+Formal approval of this document does not replace execution evidence.
