@@ -1,4 +1,4 @@
-# V3 Requirements Traceability Matrix
+# Requirements Traceability Matrix
 
 **Project:** Smart Digital Product Recommendation Platform  
 **Authoritative implementation branch:** `feature/product-database`  
