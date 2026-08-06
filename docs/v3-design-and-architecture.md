@@ -1,266 +1,157 @@
 # V3 Design and Architecture
 
 **Project:** Smart Digital Product Recommendation Platform  
-**Document owner:** Chu Junjie — project coordination and consolidated technical writing  
-**Authoritative implementation branch:** `feature/product-database`  
-**Recorded implementation baseline:** `7c406515bd4b657372fe519869596825cdf91d56`  
-**Tracking:** Issue #51  
-**Status:** Draft — technical-owner review and external diagram links pending
+**Authoritative implementation baseline:** `feature/product-database`  
+**Record owner:** Chu Junjie — Project Manager and Release Coordinator  
+**Status:** Prepared for formal component review
 
 ## 1. Purpose
 
-This document provides a single technical reference for the current V3 architecture, data model, API boundaries, user-interface structure and major design decisions.
+This document records the current V3 system architecture, database structure, API boundaries, interface design and major engineering decisions. It provides one reviewable technical reference for the implemented release baseline.
 
-The descriptions are derived from the recorded repository baseline. They do not prove that the deployed frontend, deployed API, PostgreSQL persistence, browser end-to-end flows or external acceptance activities have been verified.
+The descriptions are derived from the current repository. Deployment, persistence and acceptance results remain separate runtime evidence.
 
-## 2. Status vocabulary
-
-| Status | Meaning |
-|---|---|
-| Implemented | The structure or behaviour exists in the recorded branch. |
-| Prepared | A design, template or verification method exists but has not been executed or approved. |
-| Verified | A named check passed for a named commit and environment. |
-| Unverified | Repository configuration exists, but the deployed environment or result has not been confirmed. |
-| Not Run | The relevant verification activity has not been executed. |
-| Pending review | The responsible technical owner has not yet confirmed the description. |
-
-## 3. Design artifact register
-
-Version-controlled Mermaid diagrams are included so architecture changes can be reviewed through Git. Externally editable diagrams should be linked after the relevant owner confirms them.
-
-| Artifact | Scope | Owner confirmation | Status | Link |
-|---|---|---|---|---|
-| Component and deployment diagram | Browser, GitHub Pages, Flask API, authentication, importer and database boundaries | Zaikun, Guanyu and Yuyang | Pending | Pending |
-| Database ERD | Tables, keys, relationships, cardinality and delete behaviour | Yuyang | Pending | Pending |
-| Desktop and mobile interface prototype | Input, results, account/history, favorites and comparison views | Guanyu | Pending | Pending |
-
-A placeholder must not be replaced with an unverified or inaccessible link.
-
-## 4. System context
-
-The platform helps a user select a digital product by submitting structured preferences such as product type, maximum budget, main use, preferred brand and excluded brand.
-
-The browser sends JSON requests to a Flask REST API. The API joins behavioural product data with recommendation-ready product specifications, applies deterministic filtering and scoring, then returns paginated results and a separate Top 5.
-
-Users may search anonymously. Registration and login add private favorites, search history, saved result snapshots and account-linked feedback.
+## 2. System context
 
 ```mermaid
 flowchart LR
-    User[User]
-    Browser[Responsive Web Interface]
-    Pages[GitHub Pages Static Hosting]
-    API[Flask REST API on Render]
-    Auth[JWT Authentication and Password Hashing]
-    ORM[SQLAlchemy Data Access]
-    DB[(SQLite Local / PostgreSQL Production)]
-    Importer[Catalogue Importer]
-    PublicData[Public Product Catalogue and Source Metadata]
-
-    User --> Browser
-    Pages --> Browser
-    Browser -->|HTTPS JSON| API
-    API --> Auth
-    API --> ORM
-    ORM --> DB
-    PublicData --> Importer
-    Importer --> DB
+    U[User] -->|Browser| F[GitHub Pages Frontend]
+    F -->|HTTPS JSON API| A[Render Flask API]
+    A --> O[SQLAlchemy ORM]
+    O --> D[(PostgreSQL Production Database)]
+    O -. local fallback .-> S[(SQLite Demonstration Database)]
+    I[Catalogue Importer] --> C[Reviewed Catalogue Artifact]
+    C --> S
+    S -. seed empty environment .-> O
 ```
 
-### 4.1 Project boundary
+## 3. Component responsibilities
 
-Inside the project boundary:
+| Component | Responsibility |
+|---|---|
+| `index.html` | Responsive interface, authentication controls, recommendation filters, pagination, comparison, favorites, history, feedback and sharing |
+| `server.py` | Flask API, request validation, JWT authentication, recommendation logic, persistence and error handling |
+| SQLAlchemy | Database abstraction, schema definition, queries and transactions |
+| PostgreSQL | Persistent production data for catalogue and user-owned records |
+| SQLite | Bundled/local demonstration data and disposable catalogue verification |
+| `import_real_catalog.py` | Public-catalogue construction, transformation, provenance and validation |
+| `test_server.py` | Canonical V3 API and persistence-contract tests |
+| GitHub Actions | Repeatable automated test evidence |
+| GitHub Pages | Static frontend hosting |
+| Render | Flask/Gunicorn service and managed PostgreSQL environment |
 
-- responsive browser interface;
-- request validation and API responses;
-- recommendation filtering, scoring and pagination;
-- registration and authentication;
-- favorites, history, result snapshots and feedback;
-- catalogue import and provenance fields;
-- SQLite local storage and PostgreSQL production support.
-
-Outside the project boundary:
-
-- GitHub Pages service availability;
-- Render service availability and configuration;
-- managed PostgreSQL hosting and backup facilities;
-- continuing availability of external product-source pages;
-- live retail inventory and live prices.
-
-Catalogue prices are historical educational snapshots and are not guaranteed live retail prices. Product links may point to manufacturer or reference pages rather than checkout pages.
-
-## 5. Deployment architecture
+## 4. Logical architecture
 
 ```mermaid
 flowchart TB
-    subgraph Client[Client tier]
-        UI[index.html — HTML, CSS and JavaScript]
-        LocalState[Browser state and authenticated token]
+    subgraph Presentation
+        UI[Responsive Web Interface]
+        STATE[Browser State and Local Session]
     end
 
-    subgraph Hosting[Hosting tier]
-        GH[GitHub Pages]
-        Render[Render Web Service]
+    subgraph Application
+        AUTH[Authentication and Authorization]
+        REC[Recommendation Service]
+        COMP[Comparison Service]
+        FAV[Favorites Service]
+        HIST[History and Snapshot Service]
+        FB[Feedback Service]
     end
 
-    subgraph Application[Application tier]
-        Flask[Flask API]
-        CORS[CORS policy]
-        JWT[JWT validation]
-        Recommend[Recommendation and comparison services]
-        Accounts[Account, favorites, history and feedback services]
+    subgraph Data
+        ORM[SQLAlchemy]
+        DB[(Products, Specifications, Users, Favorites, History, Results, Feedback)]
     end
 
-    subgraph Data[Data tier]
-        SQLA[SQLAlchemy Core]
-        SQLite[(Bundled SQLite demonstration and seed)]
-        PostgreSQL[(PostgreSQL production target)]
-    end
-
-    GH --> UI
-    UI --> LocalState
-    UI -->|REST and JSON| Render
-    Render --> Flask
-    Flask --> CORS
-    Flask --> JWT
-    Flask --> Recommend
-    Flask --> Accounts
-    Recommend --> SQLA
-    Accounts --> SQLA
-    SQLA --> SQLite
-    SQLA --> PostgreSQL
+    UI --> AUTH
+    UI --> REC
+    UI --> COMP
+    UI --> FAV
+    UI --> HIST
+    UI --> FB
+    AUTH --> ORM
+    REC --> ORM
+    COMP --> ORM
+    FAV --> ORM
+    HIST --> ORM
+    FB --> ORM
+    ORM --> DB
+    STATE --> UI
 ```
 
-### 5.1 Deployment evidence boundary
+## 5. API boundaries
 
-Repository configuration identifies a GitHub Pages frontend URL, a Render API base URL, PostgreSQL support through `DATABASE_URL`, and SQLite fallback for local use.
-
-The following remain unverified until Issue #41 and Issue #42 retain executed evidence:
-
-- exact commit served by GitHub Pages;
-- exact commit served by Render;
-- production database engine used by the deployed API;
-- persistence across restart or redeployment;
-- complete browser-to-API behaviour.
-
-## 6. Component responsibilities
-
-| Component | Responsibility | Implementation source | Technical owner |
-|---|---|---|---|
-| Browser interface | Collect preferences; display Top 5, pages, account/history/favorites, compare, feedback and share state | `index.html` | Guanyu |
-| Flask API | Validate requests, expose endpoints, enforce authentication and return JSON contracts | `server.py` | Zaikun |
-| Recommendation service | Filter joined records, calculate scores, sort and paginate results | `server.py` | Zaikun |
-| Account and privacy service | Password hashing, JWT issue/validation and user-scoped private data | `server.py` | Zaikun |
-| Database schema | Products, specifications, users, favorites, history, snapshots and feedback | SQLAlchemy tables in `server.py` | Yuyang confirms data design; Zaikun confirms API usage |
-| Catalogue importer | Import recommendation-ready records and provenance metadata | `import_real_catalog.py` | Yuyang |
-| Local seed data | Supply bundled SQLite products and specifications | `digital_products.db` | Yuyang |
-| Production persistence | Use PostgreSQL when `DATABASE_URL` is configured | Render/PostgreSQL configuration | Yuyang with Zaikun deployment coordination |
-| Governance and release evidence | Traceability, review gates, acceptance and release records | `docs/` | Junjie |
-
-## 7. API design
-
-The API uses JSON request and response bodies and separates public recommendation functions from authenticated private functions.
-
-| Endpoint group | Purpose | Authentication boundary |
+| Area | Endpoint group | Main responsibility |
 |---|---|---|
-| `/api/health` | API, database and table-count summary | Public |
-| `/api/auth/register` | Create a password-hashed account and issue a token | Public submission |
-| `/api/auth/login` | Validate credentials and issue a token | Public submission |
-| `/api/auth/me` | Return authenticated profile | Required |
-| `/api/recommend` | Return filters, Top 5, page results and optional history ID | Search public; history save requires valid token |
-| `/api/products` | Browse and filter products with pagination | Public |
-| `/api/compare` | Compare supported ProductIDs | Public in the current contract |
-| `/api/favorites` | List, add and remove private favorites | Required |
-| `/api/history` | List, restore and delete private history and snapshots | Required |
-| `/api/feedback` | Record recommendation feedback | May be linked to user and history where available |
+| Health | `/`, `/api/health` | Service status, API version, database dialect and counts |
+| Authentication | `/api/auth/register`, `/api/auth/login`, `/api/auth/me` | Account creation, login and current identity |
+| Recommendation | `/api/recommend`, `/api/products` | Filtering, scoring, Top 5 and pagination |
+| Comparison | `/api/compare`, `/api/favorites/compare` | Compare 2–3 valid same-category products |
+| Favorites | `/api/favorites`, `/api/favorites/<id>` | Private saved products |
+| History | `/api/history`, `/api/history/<id>` | Private searches, snapshots and deletion |
+| Feedback | `/api/feedback` | Store helpful/not-helpful responses |
 
-Exact methods and final contracts require Zaikun's review.
+Protected routes require a valid bearer token. User-owned queries include the authenticated user ID so one account cannot retrieve another account's private records through the normal API contract.
 
-### 7.1 Recommendation sequence
+## 6. Recommendation design
 
 ```mermaid
 sequenceDiagram
-    actor User
-    participant UI as Browser UI
+    participant User
+    participant UI as Frontend
     participant API as Flask API
-    participant DB as SQLAlchemy Database
+    participant DB as Database
 
-    User->>UI: Select category, budget, use case and brands
-    UI->>API: POST /api/recommend with filters and page
-    API->>API: Validate and normalise filters
-    API->>DB: Join products with product_specs
-    DB-->>API: Recommendation-ready candidates
-    API->>API: Score and sort candidates
-    API->>API: Build Top 5 and requested page
-    opt Authenticated user and first page
-        API->>DB: Save search_history and result snapshots
-        DB-->>API: history_id
-    end
-    API-->>UI: Top 5, page data, counts and history_id
-    UI-->>User: Results, pagination and actions
+    User->>UI: Select category, budget and preferences
+    UI->>API: POST /api/recommend
+    API->>API: Validate and normalize filters
+    API->>DB: Query joined products/specifications
+    DB-->>API: Eligible catalogue rows
+    API->>API: Filter, score and rank
+    API-->>UI: Top 5, page data, counts and history ID
+    UI-->>User: Render recommendations and pagination
 ```
 
-### 7.2 Ranking design
+The service applies structured filters, builds a ranked candidate list and returns both a separate Top 5 and paginated result data. Explanations and scores are generated from the active matching logic. Historical catalogue prices are presented for educational comparison and are not live retailer inventory.
 
-The current implementation uses deterministic rule-based scoring. Inputs include:
+US-09 Budget Alternatives is deferred. Budget filtering is supported, but the current contract does not provide a separately selected cheaper equivalent alternative.
 
-- category match;
-- preferred brand;
-- budget compliance;
-- use-case terms;
-- customer satisfaction;
-- purchase frequency;
-- purchase intent.
+## 7. Authentication and privacy design
 
-Results are sorted by descending match score and then ascending price. The design is explainable because the API can return a human-readable reason for each result.
+```mermaid
+sequenceDiagram
+    participant User
+    participant UI as Frontend
+    participant API as Flask API
+    participant DB as Database
 
-Known limitations:
+    User->>UI: Register or log in
+    UI->>API: Credentials over HTTPS
+    API->>DB: Validate account/password hash
+    DB-->>API: User record
+    API-->>UI: JWT and non-sensitive user profile
+    UI->>API: Protected request with Bearer token
+    API->>API: Verify token and resolve user ID
+    API->>DB: Query rows owned by user ID
+    DB-->>API: Authorized private data
+    API-->>UI: Favorites or history
+```
 
-- score weights require owner confirmation and acceptance evidence;
-- behavioural fields may not represent current market preference;
-- results do not guarantee suitability;
-- US-09 budget-alternative scope remains pending under Issue #40.
+Security controls include password hashing, JWT verification, authenticated ownership checks, no-store API responses and environment-based secret configuration. Production credentials must not be stored in source code or evidence.
 
 ## 8. Database design
 
 ```mermaid
 erDiagram
-    PRODUCTS ||--o| PRODUCT_SPECS : has
     USERS ||--o{ FAVORITES : owns
-    PRODUCTS ||--o{ FAVORITES : selected_as
-    USERS ||--o{ SEARCH_HISTORY : owns
+    USERS ||--o{ SEARCH_HISTORY : creates
+    USERS ||--o{ FEEDBACK : submits
+    PRODUCTS ||--|| PRODUCT_SPECS : describes
+    PRODUCTS ||--o{ FAVORITES : saved_as
     SEARCH_HISTORY ||--o{ SEARCH_RESULTS : contains
-    PRODUCTS ||--o{ SEARCH_RESULTS : snapshot_of
-    USERS ||--o{ FEEDBACK : may_submit
     SEARCH_HISTORY ||--o{ FEEDBACK : may_reference
-    PRODUCTS ||--o{ FEEDBACK : may_reference_top_product
-
-    PRODUCTS {
-        int ProductID PK
-        string ProductCategory
-        string ProductBrand
-        float ProductPrice
-        int CustomerAge
-        string CustomerGender
-        int PurchaseFrequency
-        int CustomerSatisfaction
-        int PurchaseIntent
-    }
-
-    PRODUCT_SPECS {
-        int ProductID PK,FK
-        string ProductName
-        string CPU
-        string GPU
-        string RAM
-        string Storage
-        string ScreenSize
-        string BatteryLife
-        string Weight
-        string UseCase
-        text PurchaseURL
-        string DataSource
-        datetime LastUpdated
-    }
+    PRODUCTS ||--o{ SEARCH_RESULTS : captured_as
+    PRODUCTS ||--o{ FEEDBACK : may_reference
 
     USERS {
         int user_id PK
@@ -269,221 +160,199 @@ erDiagram
         string password_hash
         datetime created_at
     }
-
+    PRODUCTS {
+        int ProductID PK
+        string ProductName
+        string ProductCategory
+        decimal Price
+        string Brand
+    }
+    PRODUCT_SPECS {
+        int ProductID PK_FK
+        string Processor
+        string Memory
+        string Storage
+        string Display
+        string Battery
+        string DataSource
+        string PurchaseURL
+    }
     FAVORITES {
         int favorite_id PK
         int user_id FK
         int product_id FK
         datetime created_at
     }
-
     SEARCH_HISTORY {
         int history_id PK
         int user_id FK
-        text query_text
+        string query_text
         text filters_json
         int total_candidates
         datetime created_at
     }
-
     SEARCH_RESULTS {
         int result_id PK
         int history_id FK
         int product_id FK
         int rank
-        int match_score
-        text reason
+        decimal match_score
         text snapshot_json
     }
-
     FEEDBACK {
         int feedback_id PK
         int user_id FK
         int history_id FK
         string vote
-        text query_text
-        int top_product_id FK
+        int top_product_id
         datetime created_at
     }
 ```
 
-### 8.1 Relationship rationale
+### Integrity decisions
 
-`products` stores behavioural and commercial attributes. `product_specs` stores display-ready specifications and provenance. Joining by `ProductID` ensures recommendation cards have the required descriptive fields.
+- products and product specifications use ProductID as the join key;
+- favorites enforce one user/product combination;
+- search results are stored as snapshots so a historical search can be reopened consistently;
+- history and favorites are scoped to the authenticated user;
+- catalogue source metadata remains attached to product specifications;
+- PostgreSQL is used for persistent production data while SQLite supports local and bundled demonstration use.
 
-A unique user/product constraint prevents duplicate favorites. `search_history` stores the original query and filters, while `search_results` stores the ranked snapshot and explanation shown at search time.
+## 9. Catalogue design
 
-Feedback can reference a user, search and top product when available. Nullable references allow public feedback without forcing account creation.
+The importer defines a 2,000-record public catalogue:
 
-### 8.2 Delete and privacy behaviour
+| Category | Rows |
+|---|---:|
+| Laptops | 800 |
+| Smartphones | 833 |
+| Smart Watches | 300 |
+| Headphones | 61 |
+| Tablets | 6 |
 
-The intended boundaries are:
+Missing specification values remain `Not specified` rather than being invented. Historical EUR and INR prices are converted using fixed documented rules. The importer must run only on a disposable build copy because its output-generation process clears private application tables.
 
-- deleting a user cascades to favorites and search history;
-- deleting history cascades to saved result snapshots;
-- feedback may remain while nullable references are cleared where configured;
-- favorites and history are queried through authenticated user context;
-- product and specification records are shared catalogue data.
-
-Actual PostgreSQL behaviour and cross-user isolation require executed verification.
-
-### 8.3 Database portability
-
-SQLAlchemy supports SQLite for bundled local use and PostgreSQL for production persistence when `DATABASE_URL` is configured. Portability does not prove production readiness; engine identity, schema creation, catalogue import and restart persistence remain tracked under Issue #41.
-
-## 9. Authentication and privacy
-
-```mermaid
-sequenceDiagram
-    actor User
-    participant UI as Browser UI
-    participant API as Flask API
-    participant DB as Database
-
-    User->>UI: Register or log in
-    UI->>API: Submit credentials over HTTPS
-    API->>DB: Create or find user
-    API->>API: Hash or check password
-    API-->>UI: JWT and profile
-    UI->>API: Authorization: Bearer token
-    API->>API: Validate token and user_id
-    API->>DB: Query current user's private records
-    DB-->>API: Favorites, history and profile
-    API-->>UI: Private account data
-```
-
-Security choices include password hashing, signed JWTs, environment-based secrets, restricted CORS origins and environment-based database credentials.
-
-Remaining checks include secret strength, browser token handling, logout behaviour, cross-user negative tests, HTTPS configuration, backup controls and recovery procedures.
-
-## 10. Interface design
-
-The single-page interface is organised into four primary views:
-
-1. account and preference input;
-2. recommendation results and pagination;
-3. account, favorites and search history;
-4. product comparison.
+## 10. Interface information architecture
 
 ```mermaid
 flowchart LR
-    Input[Input and optional login]
-    Loading[Loading]
-    Results[Recommendation results]
-    Empty[Empty]
-    Error[Error]
-    Compare[Comparison]
-    Account[Account, favorites and history]
-    Restore[Restored historical search]
-    Share[Shared state]
-
-    Input --> Loading
-    Loading --> Results
-    Loading --> Empty
-    Loading --> Error
-    Results --> Compare
-    Results --> Account
-    Account --> Restore
-    Restore --> Results
-    Results --> Share
-    Share --> Results
-    Compare --> Results
+    HOME[Recommendation Form] --> RESULTS[Ranked Results]
+    RESULTS --> PAGE[Pagination]
+    RESULTS --> COMPARE[Product Comparison]
+    RESULTS --> FAVORITE[Save Favorite]
+    RESULTS --> FEEDBACK[Submit Feedback]
+    RESULTS --> SHARE[Share Result State]
+    LOGIN[Register / Login] --> ACCOUNT[Account Centre]
+    ACCOUNT --> FAVORITES[Favorite Products]
+    ACCOUNT --> HISTORY[Search History]
+    HISTORY --> RESTORE[Restore Snapshot]
 ```
 
-### 10.1 Responsive behaviour
+### Main interface areas
 
-The current interface includes a 760px breakpoint. At smaller widths, page and panel padding reduce, headers stack vertically, preference controls move to one column, product cards reflow, and action buttons expand to available width.
+- account and authentication panel;
+- structured recommendation form;
+- loading, error and empty states;
+- Top Recommendations section;
+- pagination controls;
+- comparison and sharing controls;
+- feedback panel;
+- account centre with favorites and history;
+- comparison table.
 
-Responsive CSS is implementation evidence only. Desktop and mobile browser behaviour still requires execution evidence.
+### Responsive and accessibility considerations
 
-### 10.2 Accessibility considerations
+- single-column preference layout at narrow widths;
+- horizontally scrollable comparison table;
+- semantic labels and headings;
+- `aria-live` status messages;
+- keyboard-operable buttons and form controls;
+- visible text for loading, empty and error conditions;
+- responsive desktop/mobile verification required before release.
 
-Implemented considerations include semantic headings, explicit form labels, live status regions, alert roles for blocking errors, screen-reader-only text utilities, visible focus treatment and readable status messages.
+## 11. Deployment architecture
 
-Pending checks include keyboard-only completion, focus order, zoom/reflow, contrast review, screen-reader behaviour and accessible names for dynamic controls.
+```mermaid
+flowchart LR
+    GH[GitHub Repository] --> GP[GitHub Pages]
+    GH --> R[Render Web Service]
+    R --> G[Gunicorn]
+    G --> F[Flask Application]
+    F --> P[(Render PostgreSQL)]
+```
 
-## 11. Major design decisions
+Expected service configuration:
 
-| Decision | Selected approach | Reason | Alternative not selected |
-|---|---|---|---|
-| Client delivery | Static browser UI hosted separately from API | Simple deployment and independent frontend updates | Server-rendered templates |
-| API | Flask REST JSON service | Clear frontend/backend contract and lightweight deployment | Full-stack framework |
-| Data access | SQLAlchemy Core | Shared SQLite/PostgreSQL access and explicit queries | Database-specific SQL throughout |
-| Authentication | Password hashing and JWT | Supports stateless API authentication | Server-side sessions |
-| Recommendation | Deterministic weighted rules | Explainable scores and reasons | Opaque model without sufficient validation data |
-| History | Query plus saved result snapshots | Reopens the original result state | Recalculate every historical search |
-| Pagination | Separate Top 5 and paginated result list | Preserves summary and exploration views | One unbounded result list |
-| Data provenance | `DataSource` and `LastUpdated` fields | Supports traceability and limitation wording | Unlabelled catalogue rows |
+- build command: `pip install -r requirements.txt`;
+- start command: `gunicorn server:app`;
+- `DATABASE_URL`: managed PostgreSQL connection supplied through environment configuration;
+- `JWT_SECRET_KEY`: random secret supplied through environment configuration.
 
-## 12. Non-functional considerations
+The deployment design is implemented in repository configuration and documentation, but the final deployed commit, database dialect and persistence behaviour require runtime evidence.
 
-### Maintainability
+## 12. Key engineering decisions
 
-- component ownership is explicit;
-- API, data, UI and governance changes use separate Issues and branches;
-- database access is centralised through SQLAlchemy;
-- review records distinguish implementation from verification.
+| Decision | Rationale | Limitation/control |
+|---|---|---|
+| Static frontend plus JSON API | Simple deployment and clear separation | Requires correct CORS and API identity |
+| SQLAlchemy | Supports SQLite and PostgreSQL with one data-access layer | Dialect behaviour must be verified |
+| JWT authentication | Stateless API authorization | Token storage and expiry require security review |
+| Search-result snapshots | Restores historical recommendations consistently | Snapshot storage increases database use |
+| Public historical catalogue | Reproducible educational data | Not live price or stock information |
+| Pagination plus separate Top 5 | Supports large result sets and quick decisions | UI and API must retain consistent filters |
+| Deferred US-09 | Avoids ambiguous equivalent-product claims | Documented backlog item |
+
+## 13. Non-functional considerations
 
 ### Reliability
 
-- database setup is repeatable when seed data is available;
-- `pool_pre_ping` is enabled for database connections;
-- release evidence requires named commits and environments;
-- unresolved full-suite failures remain visible.
-
-### Performance
-
-- API page size defaults to 20 and is capped at 100;
-- catalogue insertion is batched;
-- current ranking loads matching joined candidates before scoring, so scale testing remains necessary.
+- repeatable automated tests;
+- database transactions;
+- explicit API errors;
+- tracked-file integrity check;
+- release smoke test and rollback record.
 
 ### Security and privacy
 
-- credentials are hashed;
-- secrets and database URLs are external configuration;
-- private data is associated with authenticated user IDs;
-- evidence must not retain tokens, passwords or connection strings.
+- password hashing;
+- JWT authorization;
+- user-scoped queries;
+- environment-based secrets;
+- no credentials in screenshots or logs;
+- cross-user deployed verification.
 
-## 13. Verification dependencies
+### Performance
 
-| Area | Required evidence | Tracking |
-|---|---|---|
-| Backend and API contract | Canonical test scope and passing CI | Issue #34 / PR #35 |
-| Database and persistence | Counts, integrity, importer repeatability and PostgreSQL persistence | Issue #41 / PR #48 |
-| Deployed integration | Frontend/API identity and browser flows | Issue #42 |
-| US-09 | Final scope and acceptance behaviour | Issue #40 / PR #47 |
-| Branch integration | Owner-approved file-level reconciliation | Issue #43 / PR #44 |
+- server-side filtering and pagination;
+- maximum page-size controls;
+- indexed primary and foreign keys;
+- production PostgreSQL for persistent concurrent access.
 
-## 14. Review responsibilities
+### Maintainability
 
-### Zaikun
+- clear component boundaries;
+- documented API contract;
+- centralized dependency manifest;
+- version-controlled architecture and release records;
+- owner-controlled technical changes.
 
-- confirm endpoint groups, methods and authentication boundaries;
-- confirm recommendation and comparison descriptions;
-- confirm security and testability statements;
-- identify unsupported backend claims.
+## 14. Open verification items
 
-### Yuyang
+- [ ] Formal backend/API review by Zaikun.
+- [ ] Formal schema/catalogue review by Yuyang.
+- [ ] Formal interface/accessibility review by Guanyu.
+- [ ] Final deployed frontend and API commit identities.
+- [ ] PostgreSQL persistence and privacy verification.
+- [ ] Desktop/mobile browser E2E.
+- [ ] External acceptance.
+- [ ] Final release-candidate CI.
 
-- confirm tables, keys, relationships and delete behaviour;
-- confirm catalogue, provenance and importer descriptions;
-- confirm SQLite/PostgreSQL boundaries;
-- identify unsupported persistence claims.
+## 15. Review outcome
 
-### Guanyu
+Reviewers should use one of the following outcomes:
 
-- confirm views, navigation and responsive behaviour;
-- confirm loading, empty, error and accessibility descriptions;
-- provide or confirm prototype links;
-- identify unsupported deployed-UI claims.
+- Approved;
+- Approved with an accepted limitation;
+- Changes requested with specific corrections.
 
-### Junjie
-
-- keep terminology and evidence status consistent;
-- link owner decisions and verification records;
-- avoid changing teammate-owned implementation;
-- update the document only through reviewed commits.
-
-## 15. Current conclusion
-
-The repository contains a coherent V3 browser/API/database design with clear ownership and evidence boundaries. The design remains a reviewed implementation reference rather than a production-verification claim until the open test, database, deployment and acceptance gates are completed.
+This design record is ready for formal component review. Approval confirms that the document accurately describes the reviewed component; it does not replace required runtime verification.
