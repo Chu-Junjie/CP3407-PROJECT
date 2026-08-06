@@ -1,4 +1,4 @@
-# Task 3 Coordinator Command Log
+# Coordinator Command Log
 
 This log records terminal commands executed during the 2 August 2026 Task 3 coordinator evidence update. Patch-tool file edits are not shell commands and are instead represented by the final changed-file inventory.
 
