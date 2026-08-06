@@ -4,169 +4,177 @@
 **Coordinator:** Chu Junjie  
 **Recorded:** 6 August 2026, Singapore time (UTC+8)  
 **Authoritative implementation branch:** `feature/product-database`  
-**Known branch head at preparation time:** `7c406515bd4b657372fe519869596825cdf91d56`  
-**Tracking Issue:** #45
+**Known implementation baseline:** `7c406515bd4b657372fe519869596825cdf91d56`  
+**Tracking Issue:** #45  
+**Current stage:** Documentation package prepared; coordinated review deferred; execution and release gates remain open
 
 ## 1. Purpose
 
-This document provides one review index for the current V3 release evidence. It points to the Issue, Pull Request, commit, test or execution record that supports each project statement.
+This index maps current project statements to their authoritative Issue, Pull Request, commit, test or execution record. It distinguishes implementation, prepared engineering records and executed verification.
 
-It does not replace the detailed evidence records and does not convert prepared work into executed verification.
+The index does not treat a planned or deferred review as an actual approval. It also does not convert a prepared test, database, E2E or acceptance record into a passed result.
 
-## 2. Evidence vocabulary
+## 2. Status vocabulary
 
 | Status | Meaning |
 |---|---|
-| `Prepared` | A reviewed or reviewable template, plan, checklist or audit exists, but the associated technical activity may not have been executed. |
-| `Implemented` | The relevant code, data or document exists on the V3 branch, but applicable verification remains incomplete. |
-| `Verified` | A named check passed for a named commit or Pull Request ref in a named environment, with retained evidence. |
-| `Blocked` | A known unresolved decision, failure or missing dependency prevents completion. |
-| `Not Run` | The required test or acceptance scenario has not been executed. |
-| `Unverified` | A value or environment is inferred from repository configuration or implementation but has not been confirmed in the target environment. |
-| `Done` | Every applicable Definition of Done and release gate has passed. No V3 release item should use this status merely because implementation exists. |
+| `Prepared` | A reviewable plan, template, checklist, design or operating record exists. |
+| `Implemented` | The code, data or document exists on the named branch. |
+| `Verified` | A named check passed for a named commit or PR ref in a named environment. |
+| `Blocked` | A known decision, failure or dependency prevents completion. |
+| `Not Run` | The required execution activity has not occurred. |
+| `Unverified` | Repository configuration or implementation suggests a value, but the target environment has not been confirmed. |
+| `Pending review` | A real GitHub review has not yet been submitted. |
+| `Done` | Every applicable completion and release gate has actual retained evidence. |
 
-## 3. Current baseline
+## 3. Current project baseline
 
-| Item | Recorded state | Evidence boundary |
+| Area | Current state | Evidence boundary |
 |---|---|---|
-| V3 implementation baseline | `feature/product-database` at known head `7c406515bd4b657372fe519869596825cdf91d56` | This is the current working baseline, not evidence that the same commit is deployed. |
-| `main` relationship | Diverged from V3 at the recorded comparison | Issue #43 and Draft PR #44 plan reconciliation. No branch merge is authorized by this index. |
-| V3 product catalogue | `Implemented` | The V3 branch contains the catalogue/importer direction, but release counts, provenance and PostgreSQL persistence require Issue #41 evidence. |
-| V3 API and account functionality | `Implemented` with a verified test subset | The current `test_server.py` subset passed in PR #35 CI evidence; the complete repository suite remains blocked. |
-| V3 frontend flows | `Implemented` on the V3 branch | The deployed frontend identity and browser E2E remain unverified under Issue #42. |
+| V3 implementation | `Implemented` on `feature/product-database` | The known branch baseline is not proof that the same commit is deployed. |
+| `main` relationship | Diverged | Issue #43 / PR #44 plans safe reconciliation; no integration branch exists. |
+| Product catalogue and importer | `Implemented` | Yuyang's V3 work exists; release queries, importer repeatability and PostgreSQL persistence remain pending. |
+| API and account services | `Implemented` | The 12-test V3 API subset passed on the PR #35 CI ref; the complete suite remains blocked. |
+| Frontend V3 flows | `Implemented` on the V3 branch | GitHub Pages identity and deployed E2E remain unverified. |
+| Review package | `Prepared`, `Pending review` | PR #50 coordinates later review and conditional closeout; it records no approval. |
 
-## 4. Governance and preparation evidence
+## 4. Merged governance and preparation evidence
 
-| Area | Source | Status | What the evidence supports | What it does not support |
+| Area | Source | Status | Supports | Does not support |
 |---|---|---|---|---|
-| V3 governance baseline | PR #33, merged as `07f3672a12722b9038c6d1b64a72ab68e696b091` | `Prepared` and merged | Current project status structure, traceability vocabulary, Definition of Done, execution plan and release checklist. | Technical verification, deployment, final acceptance or merge to `main`. |
-| E2E and external UAT design | PR #37, merged as `183d50bb254059cda0709b6d648e1a7910d38167` | `Prepared` and merged | Repeatable E2E and two-participant UAT templates with evidence rules. | Any browser scenario, participant task or persistence check passing. |
-| Release-documentation audit | PR #39, merged as `7c406515bd4b657372fe519869596825cdf91d56` | `Prepared` and merged | Thirteen documented consistency findings and correction order. | Correction of every finding or release readiness. |
-| Branch reconciliation plan | Issue #43 / Draft PR #44 | `Prepared`, pending review | File-level integration principles and owner boundaries. | Selection of teammate-owned conflict resolutions or merge to `main`. |
-| Release evidence index | Issue #45 / this Draft PR | `Prepared`, pending review | One coordinated map of evidence, blockers and reviewer responsibilities. | Changing any existing technical status or closing any blocker. |
+| Governance baseline | PR #33, merge commit `07f3672a12722b9038c6d1b64a72ab68e696b091` | `Prepared` and merged | Status, traceability, Definition of Done, execution and release controls. | Final technical verification or release readiness. |
+| E2E and external acceptance templates | PR #37, merge commit `183d50bb254059cda0709b6d648e1a7910d38167` | `Prepared` and merged | Repeatable execution records and evidence rules. | Any browser or participant task passing. |
+| Release-documentation audit | PR #39, merge commit `7c406515bd4b657372fe519869596825cdf91d56` | `Prepared` and merged | Known consistency findings and correction priorities. | Completion of all corrections. |
 
-## 5. Automated test and CI evidence
+## 5. Current Draft engineering package
 
-| Check | Source | Result | Status | Required next evidence |
+| PR | Engineering record | Current state | Main remaining dependency |
+|---|---|---|---|
+| #35 | CI workflow and test evidence | Draft / Blocked | Final V3 test scope and legacy-test decision. |
+| #44 | Safe branch reconciliation plan | Draft / Prepared | Component-owner file-treatment confirmation. |
+| #46 | This release evidence index | Draft / Prepared | Final consistency review and later status refresh. |
+| #47 | US-09 scope decision record | Draft / Blocked | Owner-supported A/B/C decision. |
+| #48 | Database/PostgreSQL verification record | Draft / Prepared template | Owner review, then executed evidence. |
+| #50 | Coordinated review and closeout package | Draft / Prepared | Actual later reviews; no approval is currently recorded. |
+| #52 | V3 design and architecture reference | Draft / Prepared | Component-owner confirmation and external-artifact links where available. |
+| #54 | Agile delivery, demo, feedback and retrospective record | Draft / Prepared | Component-history confirmation and retained evidence. |
+| #58 | Development toolchain and dependency reference | Draft / Prepared | Component-owner toolchain confirmation. |
+
+## 6. Automated tests and CI
+
+| Check | Source | Result | Status | Next evidence |
 |---|---|---:|---|---|
-| V3 API test collection and execution | Issue #34 / PR #35, workflow run `31082762154` | `12 collected`, `12 passed` on Python 3.11.15 | `Verified` for the tested PR merge ref only | Re-run the agreed final suite for the eventual release commit. |
-| Complete repository audit | Same workflow | `18 collected`, `12 passed`, `6 failed` | `Blocked` | Zaikun decides whether `test_mock.py` is updated, archived or formally excluded, and records the canonical command. |
-| Tracked-file integrity after CI tests | Same workflow | `git diff --exit-code` passed | `Verified` for the tested PR ref | Repeat for the final release test run. |
-| CI workflow adoption | Draft PR #35 | Workflow exists on a Draft branch | `Prepared` | Backend/test-owner review, final suite decision and non-author approval before merge. |
-| Final release-commit CI | No retained result | Not executed | `Not Run` | Successful clean-environment run for the frozen release candidate. |
+| V3 API suite | Issue #34 / PR #35, run `31082762154` | `12 collected`, `12 passed` | `Verified` for that PR merge ref | Repeat on the frozen release candidate. |
+| Complete repository suite | Same run | `18 collected`, `12 passed`, `6 failed` | `Blocked` | Zaikun records the V3 disposition of `test_mock.py` and canonical command. |
+| Tracked-file integrity | Same run | `git diff --exit-code` passed | `Verified` for that PR ref | Repeat for the release candidate. |
+| CI workflow adoption | PR #35 | Workflow exists on Draft branch | `Prepared` | Owner decision and actual review before merge. |
+| Release-candidate CI | No result | Not executed | `Not Run` | Run the agreed full suite on the frozen candidate. |
 
-### Test evidence restriction
+The passing subset must not be described as a passing complete repository suite.
 
-The passing `test_server.py` subset must not be described as a passing complete repository suite. PR #35 must remain Draft while the final test scope is unresolved.
+## 7. Requirements and scope decisions
 
-## 6. User Story scope evidence
-
-| Area | Source | Current status | Owner input required |
+| Area | Source | Current state | Completion requirement |
 |---|---|---|---|
-| US-09 Budget Alternatives | Issue #40 | `Scope confirmation required` / `Blocked` | Zaikun records algorithm/API/test impact; Guanyu records UI/E2E impact; the team selects retain, revise or defer. |
-| Other V3 stories | `docs/requirements-traceability.md` | Use the current traceability status, not historical README labels | Each technical owner confirms implementation and verification statements affecting their component. |
+| US-09 Budget Alternatives | Issue #40 / PR #47 | `Blocked` / scope confirmation required | Zaikun and Guanyu provide component impact; the team records Option A, B or C. |
+| Requirements traceability | Merged governance document | Current baseline exists | Refresh after final scope, verification and release outcomes are known. |
+| Schedule and iteration evidence | Issue #53 / PR #54 | `Prepared` | Confirm component history; add only retained evidence. |
 
-Until Issue #40 is resolved, US-09 must not be marked `Done`, `Verified` or a confirmed V3 release requirement.
+## 8. Database, catalogue and PostgreSQL
 
-## 7. Database, catalogue and PostgreSQL evidence
-
-| Area | Current state | Source | Required next evidence |
+| Area | Current state | Tracking | Required next evidence |
 |---|---|---|---|
-| Yuyang's V3 database, catalogue and importer work | `Implemented` on `feature/product-database` | Issue #41 and Issue #43 ownership record | Exact tested commit, environment and retained query outputs. |
-| `products = 11,000` | Release verification pending | Issue #41 | Actual database query and output for the tested environment. |
-| `product_specs = 2,000` | Release verification pending | Issue #41 | Actual query plus join, missing-link and orphan checks. |
-| ProductID uniqueness and referential integrity | `Unverified` for release | Issue #41 | Actual queries and outputs. |
-| Importer repeatability | `Not Run` for release evidence | Issue #41 | Two consecutive executions with before/after counts and duplicate checks. |
-| Data source, licence and retrieval record | Evidence requested | Issue #41 | Dataset name, licence, retrieval date, `DataSource` retention and limitations. |
-| Render PostgreSQL engine | `Unverified` | Issue #41 / Issue #42 | Deployed commit, confirmation that `DATABASE_URL` is configured without exposing secrets, and safe engine evidence. |
-| Persistence across restart/redeploy | `Not Run` | Issue #41 | User, Favorite, History and Feedback checks before and after restart or redeploy. |
-| Backup and recovery | `Unverified` | Issue #41 | Current backup method, tested or documented recovery steps and rollback plan. |
+| Yuyang's V3 database/catalogue/importer | `Implemented` | Issue #41 / PR #48 | Exact tested commit, environment and actual query output. |
+| `products = 11,000` | Pending release verification | Issue #41 | Actual query and retained result. |
+| `product_specs = 2,000` | Pending release verification | Issue #41 | Actual query, joins, missing-link and orphan checks. |
+| ProductID integrity | `Unverified` for release | Issue #41 | Uniqueness and referential-integrity outputs. |
+| Importer repeatability | `Not Run` for release | Issue #41 | Consecutive runs, before/after counts and duplicate checks. |
+| Provenance and price limitations | Evidence requested | Issue #41 | Dataset, licence, retrieval date, DataSource and historical-price statement. |
+| Render PostgreSQL identity | `Unverified` | Issue #41 / #42 | Deployed commit, safe engine evidence and configuration confirmation without secrets. |
+| Persistence after restart/redeploy | `Not Run` | Issue #41 | User, Favorite, History and Feedback before/after evidence. |
+| Backup, recovery and rollback | `Unverified` | Issue #41 | Current procedure and safe retained evidence. |
 
-### Database ownership restriction
+Implementation presence is not the same as release verification, and Yuyang is not being asked to rebuild completed V3 work.
 
-This index records that Yuyang's work is already implemented on the V3 branch. It does not ask her to rebuild it. Verification evidence and any data, importer or deployment changes remain under Yuyang's ownership.
+## 9. Deployment and E2E
 
-## 8. Deployed frontend, API and E2E evidence
-
-| Item | Candidate value | Status | Source / next step |
+| Item | Candidate value/state | Status | Next action |
 |---|---|---|---|
-| GitHub Pages URL | `https://chu-junjie.github.io/CP3407-PROJECT/` | `Unverified` as V3 identity | Issue #42 requires Guanyu to confirm source branch, folder and deployed commit. |
-| Render API URL | `https://cp3407-api.onrender.com` | Candidate endpoint only | Issue #42 and Issue #41 require deployed commit and environment confirmation. |
-| Frontend-to-API integration | Repository configuration exists | `Not Run` as deployed E2E | Execute the merged E2E template and retain Network evidence. |
-| Authentication and privacy flows | Implemented in V3 | `Not Run` as deployed E2E | Register/login/logout, unauthenticated rejection and safe cross-user isolation checks. |
-| Recommendation, Top 5 and pagination | Implemented in V3 | `Not Run` as deployed E2E | Execute against the confirmed deployed commit and API. |
-| Compare, favorites and history | Implemented in V3 | `Not Run` as deployed E2E | Execute create/read/restore/delete and privacy scenarios. |
-| Feedback and share restoration | Implemented/candidate | `Not Run` as deployed E2E | Execute in a second browser or isolated session without leaking private data. |
-| Desktop/mobile/accessibility observations | Template prepared | `Not Run` | Record desktop, mobile, keyboard, focus, labels and zoom observations. |
+| GitHub Pages | `https://chu-junjie.github.io/CP3407-PROJECT/` | `Unverified` as V3 | Confirm source branch/folder and exact deployed commit. |
+| Render API | `https://cp3407-api.onrender.com` | Candidate endpoint only | Confirm deployed commit and environment. |
+| Production database | PostgreSQL support exists in code | `Unverified` | Confirm deployed engine safely. |
+| Frontend-to-API integration | Repository configuration exists | `Not Run` as release E2E | Execute the Issue #42 matrix. |
+| Authentication/privacy | Implemented in V3 | `Not Run` as deployed E2E | Test register/login/logout, rejection and cross-user isolation. |
+| Recommendation, Top 5, pagination | Implemented in V3 | `Not Run` as deployed E2E | Execute on the confirmed candidate. |
+| Compare, favorites, history | Implemented in V3 | `Not Run` as deployed E2E | Execute create/read/restore/delete flows. |
+| Feedback and share | Implemented/candidate | `Not Run` | Execute in isolated browser state and check privacy. |
+| Responsive/accessibility | Design and CSS evidence prepared | `Not Run` as acceptance | Record desktop, mobile, keyboard, focus, labels and zoom observations. |
 
-Repository URLs and API configuration are not deployment verification by themselves. Every Issue #42 scenario remains `Not Run` until executed.
+## 10. Design, delivery and toolchain references
 
-## 9. External acceptance evidence
+| Reference | Source | Current state | Main boundary |
+|---|---|---|---|
+| Architecture, database and interface design | Issue #51 / PR #52 | `Prepared`, pending review | Describes current implementation; does not verify deployment or PostgreSQL persistence. |
+| Agile delivery and retrospective history | Issue #53 / PR #54 | `Prepared`, pending review | Missing historical dates, effort, demonstrations or feedback remain explicitly missing. |
+| Development toolchain and dependencies | Issue #55 / PR #58 | `Prepared`, pending review | Commands are operating procedures, not automatic pass claims. |
+| Coordinated closeout process | Issue #49 / PR #50 | `Prepared`, pending review | Defines later sequence; records no actual review or merge. |
+
+## 11. External acceptance
 
 | Requirement | Current state | Required evidence |
 |---|---|---|
-| Two non-team participant sessions | Template merged in PR #37 | Two separately identified, non-sensitive participant records using identical task scripts. |
-| Independent completion and prompted completion | `Not Run` | Recorded outcome for each task and participant. |
-| Confusion, ratings and observed limitations | `Not Run` | Retained notes and limitation/defect decisions. |
-| UAT release gate | Open | Explicit accept, block or accepted-limitation decision based on actual sessions. |
+| Stable deployed candidate | Not confirmed | Exact frontend, API and database identities. |
+| Non-team participant sessions | `Not Run` | Separate participant records using the same task script. |
+| Independent/prompted completion | `Not Run` | Outcome for each task and participant. |
+| Confusion, ratings and limitations | `Not Run` | Retained observations and defect/limitation decisions. |
+| Acceptance decision | Open | Explicit accept, block or accepted-limitation outcome. |
 
-The existence of `docs/v3-external-uat-record.md` is preparation evidence only.
+## 12. Branch reconciliation and release integration
 
-## 10. Branch reconciliation and release integration
-
-| Gate | Current status | Source | Completion condition |
+| Gate | Current state | Source | Completion condition |
 |---|---|---|---|
-| File-level reconciliation plan | Draft | Issue #43 / PR #44 | All affected owners confirm the proposed source and treatment of overlapping files. |
-| Preserve Yuyang V3 work | Required | Issue #43 / PR #44 | V3 database, catalogue and importer remain authoritative unless Yuyang approves otherwise. |
-| Preserve useful `main` evidence | Planned | Issue #43 / PR #44 | Historical evidence is selected without restoring obsolete implementation or status claims. |
-| Reconciliation branch | Not created | Issue #43 | Explicit approval after the plan is reviewed. |
-| Reconciliation PR | Not created | Issue #43 | Owner-controlled conflict resolution, complete tests and required verification. |
-| Merge to `main` | Blocked | Issue #43 and release checklist | All technical, deployment, acceptance and review gates have actual evidence. |
+| File-level reconciliation plan | `Prepared` Draft | Issue #43 / PR #44 | Owners confirm overlapping-file treatment. |
+| Preserve completed V3 data work | Required | PR #44 | Do not replace Yuyang's current V3 database/catalogue/importer with obsolete `main` versions. |
+| Preserve useful historical evidence | Planned | PR #44 | Select evidence without restoring obsolete implementation. |
+| Reconciliation branch | Not created | Issue #43 | Explicit approval after plan review and technical gates. |
+| Reconciliation PR | Not created | Issue #43 | Controlled conflict resolution, tests and verification. |
+| Merge to `main` | `Blocked` | Issue #43 and release checklist | Actual review, test, database, deployment, E2E and acceptance evidence. |
 
-## 11. Current blocker register
+## 13. Remaining blocker register
 
-| Blocker | Owner(s) | Current next action |
+| Blocker | Owner(s) | Coordinator responsibility |
 |---|---|---|
-| Final test scope and legacy `test_mock.py` | Zaikun; Junjie tracks | Record the owner decision in Issue #34 and review PR #35. |
-| US-09 release scope | Zaikun, Guanyu and Junjie | Select Option A, B or C in Issue #40 with impact and estimate. |
-| Database/PostgreSQL release verification | Yuyang; Junjie tracks | Add commands, outputs, environment and persistence evidence to Issue #41. |
-| Deployed V3 identity and E2E | Guanyu plus relevant API/database owners | Confirm deployed commits/environments, then execute Issue #42. |
-| Safe `main`/V3 reconciliation | All affected owners; Junjie coordinates | Review Issue #43 / PR #44 before any integration branch is created. |
-| External UAT | Junjie coordinates; two non-team participants | Execute the merged participant template after the deployed candidate is stable. |
+| Final suite and legacy `test_mock.py` | Zaikun | Keep evidence accurate and do not hide failures. |
+| US-09 release scope | Zaikun, Guanyu and team | Maintain pending status until a supported decision exists. |
+| Database/PostgreSQL release verification | Yuyang | Track evidence without editing data, importer or deployment configuration. |
+| Deployed V3 identity and E2E | Guanyu plus API/database owners | Keep scenarios `Not Run` until execution. |
+| External acceptance | Junjie coordinates | Run only after the candidate is stable. |
+| Safe reconciliation | All affected owners; Junjie coordinates | Do not create or merge the branch prematurely. |
+| Actual PR reviews | Relevant non-author teammates | Do not infer approval from the user's planning assumption or reviewer silence. |
 
-## 12. Final coordinated reviewer matrix
+## 14. Conditional closeout after actual reviews
 
-| Reviewer | Required review scope |
+1. Resolve actual review comments and merge independently approved prepared documents into `feature/product-database`.
+2. Resolve Issue #40 before merging the completed US-09 decision record.
+3. Resolve Issue #34 before adopting the final CI workflow as release evidence.
+4. Freeze a V3 release-candidate commit.
+5. Execute the canonical suite, database/PostgreSQL verification, deployed E2E and external acceptance.
+6. Update README, project status, requirements traceability and final acceptance records from actual results.
+7. Create the Issue #43 reconciliation branch only after explicit approval.
+8. Preserve V3 implementation, selectively retain useful `main` evidence and re-run final checks.
+9. Obtain final sign-off, merge to `main`, create a release tag and retain the submission package.
+
+## 15. Current completion assessment
+
+| Area | State |
 |---|---|
-| Guanyu (`Guanyu-Lu`) | Frontend ownership, deployed GitHub Pages identity, current/historical UI wording, US-09 presentation, responsive/accessibility and E2E scenarios. |
-| Zaikun (`ZhengZaikun`) | Backend/API/authentication/privacy wording, CI workflow, final test scope, `test_mock.py`, dependencies and US-09 algorithm/API impact. |
-| Yuyang (`tiantian09091`) | V3 catalogue/database/importer preservation, counts and joins, provenance, PostgreSQL identity, persistence, backup and recovery wording. |
-| Junjie (`Chu-Junjie`) | Governance consistency, Issue/PR links, evidence status, schedule, review completion and release-gate decisions. |
+| Coordinator-owned planning and engineering references | Substantially prepared |
+| Actual team reviews | Deferred / pending |
+| Technical owner decisions | Several pending |
+| Release verification | Incomplete |
+| Integration to `main` | Not started |
+| Project release | Not complete |
 
-A reviewer should not be asked to approve another owner's technical implementation on that owner's behalf. Final review should confirm both the shared release package and each reviewer's own component statements.
+## 16. Non-authorization statement
 
-## 13. Planned review-package sequence
-
-1. Keep PR #35 and PR #44 as Draft.
-2. Prepare the remaining coordinator-owned evidence and decision-record Draft PRs.
-3. Record owner responses in Issues #34, #40, #41 and #42 without fabricating missing results.
-4. Update Draft documents only where owner evidence supports the change.
-5. Request Guanyu, Zaikun and Yuyang together for the coordinated review package.
-6. Resolve comments and obtain at least one non-author approval for each PR.
-7. Merge approved documentation and workflow PRs into `feature/product-database`, not directly into `main`.
-8. Freeze a release-candidate commit only after the final test scope and US-09 scope are resolved.
-9. Execute release-commit CI, deployed E2E, database persistence and external UAT.
-10. Create the integration branch and PR only after Issue #43 prerequisites are satisfied.
-11. Merge to `main` only when the final acceptance and release checklist is supported by retained evidence.
-
-## 14. Non-authorization statement
-
-This index does not authorize:
-
-- modifying teammate-owned backend, frontend, tests, datasets, database files, importers or deployment settings;
-- selecting a conflict resolution for a component owner;
-- changing README or User Story statuses before the associated decision;
-- marking a test, deployment, persistence or acceptance scenario as passed without execution;
-- merging a Draft PR;
-- creating the reconciliation branch;
-- merging `feature/product-database` into `main`.
+This index does not authorize fabricated approvals, edits to teammate-owned implementation, hidden test failures, unexecuted verification claims, automatic batch merge, creation of the reconciliation branch or merge to `main`.
