@@ -3,536 +3,260 @@
 **Tracking Issue:** #41  
 **Database/data owner:** Yuyang Zhou (`tiantian09091`)  
 **Coordinator:** Chu Junjie  
-**Current implementation branch:** `feature/product-database`  
-**Verification status:** `Not Run` / `Unverified` unless an executed result is entered below
+**Authoritative implementation branch:** `feature/product-database`  
+**Repository baseline:** `7c406515bd4b657372fe519869596825cdf91d56`  
+**Current status:** Repository verification completed; deployed PostgreSQL verification pending
 
 ## 1. Purpose
 
-This document is the version-controlled execution record for V3 catalogue, database, importer, provenance and PostgreSQL release verification.
+This record separates facts that can be verified directly from the repository from checks that require a running SQLite or PostgreSQL environment.
 
-Yuyang's V3 database, catalogue and importer work is already implemented on `feature/product-database`. This record does not ask her to rebuild completed work. It defines the evidence required before those implementation statements can be promoted to release verification.
+Yuyang's catalogue, importer and database implementation is already present on the V3 branch. No reimplementation is requested by this document.
 
-## 2. Evidence rules
+## 2. Repository-derived findings
 
-Every executed check must record:
+### 2.1 Database selection and initialization
 
-- evidence ID;
-- exact branch and full commit SHA;
-- date, time and timezone;
-- executor;
-- environment;
-- command or query;
-- relevant non-sensitive output;
-- evidence location;
-- result status;
-- related defect or blocker Issue where applicable.
+`server.py`:
 
-Allowed result values:
+- uses PostgreSQL when `DATABASE_URL` is configured;
+- converts `postgres://` and `postgresql://` values to the SQLAlchemy psycopg dialect;
+- falls back to `digital_products.db` for local use;
+- creates tables through SQLAlchemy metadata;
+- seeds `products` and `product_specs` only when the target tables are empty;
+- returns row counts for products, specifications, users, favorites, history and feedback.
 
-- `Not Run`
-- `Passed`
-- `Failed`
-- `Blocked`
-- `Unverified`
-- `Accepted Limitation`
+**Repository result:** Implemented  
+**Deployed engine result:** Unverified
 
-Do not use `Passed` merely because code, CSV files, SQLAlchemy models or importer logic exist.
+### 2.2 Schema inventory
 
-## 3. Tested baseline
+The V3 schema defines:
 
-| Field | Value |
-|---|---|
-| Branch | Pending |
-| Full commit SHA | Pending |
-| Verification date/timezone | Pending |
-| Executor | Pending |
-| Python version | Pending |
-| SQLAlchemy version | Pending |
-| Local database engine | Pending |
-| Render database engine | Pending |
-| Render service commit | Pending |
-| Evidence folder or Issue comment | Pending |
+1. `products`
+2. `product_specs`
+3. `users`
+4. `favorites`
+5. `search_history`
+6. `search_results`
+7. `feedback`
 
-Results from different commits or database engines must be recorded separately.
+The repository defines primary keys, foreign keys and the user/product uniqueness constraint for favorites.
 
-## 4. Environment separation
+**Repository result:** Verified from source  
+**Actual deployed schema:** Not Run
 
-### 4.1 Local SQLite verification
+### 2.3 Catalogue construction target
 
-| Field | Value |
-|---|---|
-| Database path | Pending |
-| Fresh database or existing database | Pending |
-| Setup/import command | Pending |
-| Status | `Not Run` |
-| Evidence | Pending |
+`import_real_catalog.py` defines a 2,000-row recommendation catalogue using these quotas:
 
-### 4.2 Render PostgreSQL verification
+| Category | Target rows |
+|---|---:|
+| Laptops | 800 |
+| Smartphones | 833 |
+| Smart Watches | 300 |
+| Headphones | 61 |
+| Tablets | 6 |
+| **Total** | **2,000** |
 
-| Field | Value |
-|---|---|
-| Render service | Pending |
-| Deployed commit SHA | Pending |
-| `DATABASE_URL` configured | `Unverified` |
-| Database engine confirmed safely | `Unverified` |
-| Table initialization method | Pending |
-| Catalogue import method | Pending |
-| Status | `Not Run` |
-| Evidence | Pending |
+Imported catalogue IDs begin at `10,000,001`. The importer retains the original behavioural product rows below that range, replaces the imported catalogue range and rebuilds `product_specs`.
 
-Do not store or paste the connection string, password, JWT secret or any private credential in this record.
+The implementation therefore targets:
 
-## 5. Table and row-count verification
+- 9,000 retained behavioural rows;
+- 2,000 imported catalogue rows;
+- 11,000 total product rows;
+- 2,000 recommendation-ready specification rows.
 
-### DB-COUNT-01 — Required table inventory
+**Repository result:** Deterministic implementation target  
+**Observed database counts:** Not Run
 
-**Status:** `Not Run`
+### 2.4 Built-in importer validation
 
-Record the actual table-list query and output for the tested environment.
+The importer contains `verify_database()` and checks:
 
-| Expected area | Observed table | Status |
+- `product_specs` count equals the total quota of 2,000;
+- joined category counts exactly match the quota table;
+- `users`, `search_history`, `favorites` and `feedback` are empty in the generated catalogue artifact;
+- distinct `DataSource` values are reported.
+
+This is executable validation logic, but the repository does not retain a current command output for the release commit.
+
+**Repository result:** Validation implemented  
+**Release execution result:** Not Run
+
+### 2.5 Repeatability and destructive-operation boundary
+
+The importer:
+
+- copies the source database to `digital_products_real.db` by default;
+- deletes prior imported product rows with IDs at or above `10,000,001`;
+- deletes and rebuilds all specification rows;
+- deletes private users, favorites, saved results, history and feedback from the generated catalogue artifact;
+- inserts deterministic IDs and writes `real_product_catalog.csv`.
+
+This design makes repeated catalogue builds structurally repeatable when run against a build copy. It must not be used directly against a live production database containing user data.
+
+**Operational decision:**
+
+- use the importer to build or refresh a clean catalogue artifact;
+- use `server.py` initialization to seed an empty PostgreSQL database from the reviewed bundled SQLite artifact;
+- do not point the importer at the production PostgreSQL database;
+- back up any target file before a manual catalogue rebuild.
+
+### 2.6 Provenance and price treatment
+
+The importer records four public dataset sources:
+
+| Catalogue area | Recorded source | Licence recorded in code |
 |---|---|---|
-| Product catalogue | Pending | `Not Run` |
-| Product specifications | Pending | `Not Run` |
-| Users | Pending | `Not Run` |
-| Favorites | Pending | `Not Run` |
-| Search history | Pending | `Not Run` |
-| Saved result snapshots | Pending | `Not Run` |
-| Feedback | Pending | `Not Run` |
+| Laptops | Kaggle laptop-price-dataset | Apache-2.0 |
+| Smartphones | Kaggle smartphone-dataset | Apache-2.0 |
+| Smart watches | Flipkart fitness trackers | CC BY-SA 4.0 |
+| Headphones/tablets | Datafiniti electronics pricing | CC0 |
 
-**Command/query:** Pending  
-**Output:** Pending  
-**Evidence:** Pending
+Recorded price rules:
 
-### DB-COUNT-02 — Product count
+- EUR to USD: `1.08`;
+- INR per USD: `83.0`;
+- USD source prices remain USD;
+- final imported prices are rounded to two decimal places;
+- prices are historical dataset snapshots, not live prices or inventory.
 
-**Expected implementation statement:** 11,000 products  
-**Status:** `Not Run`
+**Repository result:** Source and transformation rules documented in executable code  
+**Independent licence/source-page review:** Pending
 
-**Command/query:** Pending  
-**Observed count:** Pending  
-**Evidence:** Pending
+### 2.7 Data completeness behaviour
 
-### DB-COUNT-03 — Specification count
+The importer keeps missing descriptive fields as `Not specified` rather than inventing values. It filters invalid or non-positive prices and removes obvious accessory records for headphone/tablet selection.
 
-**Expected implementation statement:** 2,000 product specifications  
-**Status:** `Not Run`
+`product_specs` fields are declared non-null in the SQLAlchemy schema, so importer fallbacks are necessary for seed compatibility.
 
-**Command/query:** Pending  
-**Observed count:** Pending  
-**Evidence:** Pending
+## 3. Integrity expectations derived from the schema
 
-### DB-COUNT-04 — Category distribution
-
-**Status:** `Not Run`
-
-Record category names and actual counts used by the recommendation system.
-
-| Category | Product rows | Specification rows | Recommendation-ready joined rows | Status |
-|---|---:|---:|---:|---|
-| Pending | Pending | Pending | Pending | `Not Run` |
-
-## 6. ProductID integrity and joins
-
-### DB-INT-01 — ProductID uniqueness in products
-
-**Status:** `Not Run`
-
-- Query: Pending
-- Duplicate count: Pending
-- Expected: `0`
-- Evidence: Pending
-
-### DB-INT-02 — ProductID uniqueness in product specifications
-
-**Status:** `Not Run`
-
-- Query: Pending
-- Duplicate count: Pending
-- Expected: `0`
-- Evidence: Pending
-
-### DB-INT-03 — Specification rows without a product
-
-**Status:** `Not Run`
-
-- Query: Pending
-- Orphan count: Pending
-- Expected: `0`, unless an approved limitation is documented
-- Evidence: Pending
-
-### DB-INT-04 — Products without specifications
-
-**Status:** `Not Run`
-
-- Query: Pending
-- Missing-specification count: Pending
-- Interpretation: Pending
-- Evidence: Pending
-
-This count may be non-zero if only a subset is recommendation-ready. The result must be explained rather than automatically treated as a defect.
-
-### DB-INT-05 — Recommendation-ready joined count
-
-**Status:** `Not Run`
-
-- Query matching the actual recommendation join: Pending
-- Joined row count: Pending
-- Expected implementation statement: 2,000, subject to actual query evidence
-- Evidence: Pending
-
-## 7. Required field completeness
-
-Record null, empty and invalid-value checks for fields used by the API or frontend.
-
-| Field | Table | Check | Observed invalid rows | Status | Evidence |
-|---|---|---|---:|---|---|
-| ProductID | Pending | Null/empty/type | Pending | `Not Run` | Pending |
-| Product name/title | Pending | Null/empty | Pending | `Not Run` | Pending |
-| Category | Pending | Null/empty/known values | Pending | `Not Run` | Pending |
-| Price | Pending | Null/non-numeric/negative | Pending | `Not Run` | Pending |
-| DataSource | Pending | Null/empty | Pending | `Not Run` | Pending |
-| PurchaseURL or source URL | Pending | Required/optional contract | Pending | `Not Run` | Pending |
-| Specification fields used in ranking | Pending | Null/type/range | Pending | `Not Run` | Pending |
-
-## 8. Importer execution and repeatability
-
-### DB-IMP-01 — First clean import
-
-**Status:** `Not Run`
-
-| Field | Value |
-|---|---|
-| Importer | `import_real_catalog.py` |
-| Command | Pending |
-| Starting database state | Pending |
-| Products before | Pending |
-| Product specifications before | Pending |
-| Products after | Pending |
-| Product specifications after | Pending |
-| Users/favorites/history/feedback affected | Pending |
-| Exit code | Pending |
-| Evidence | Pending |
-
-### DB-IMP-02 — Immediate second import
-
-**Status:** `Not Run`
-
-| Field | Value |
-|---|---|
-| Command | Pending |
-| Products before | Pending |
-| Product specifications before | Pending |
-| Products after | Pending |
-| Product specifications after | Pending |
-| Duplicate ProductIDs introduced | Pending |
-| Duplicate specification rows introduced | Pending |
-| Unrelated user data changed | Pending |
-| Exit code | Pending |
-| Evidence | Pending |
-
-### DB-IMP-03 — Failure and rollback behaviour
-
-**Status:** `Not Run`
-
-Record one safe failure-path test or an owner-approved explanation where destructive testing is inappropriate.
-
-- Failure condition: Pending
-- Transaction behaviour: Pending
-- Partial rows left behind: Pending
-- Recovery command or process: Pending
-- Evidence: Pending
-
-## 9. Provenance, licence and price limitations
-
-### DB-PROV-01 — Dataset identity
-
-**Status:** `Unverified`
-
-| Field | Value |
-|---|---|
-| Dataset/source name | Pending |
-| Source owner/publisher | Pending |
-| Source location | Pending |
-| Licence or usage permission | Pending |
-| Retrieval date | Pending |
-| Retained source file | Pending |
-| Evidence | Pending |
-
-### DB-PROV-02 — DataSource retention
-
-**Status:** `Not Run`
-
-- Query: Pending
-- Distinct `DataSource` values: Pending
-- Missing DataSource rows: Pending
-- Evidence: Pending
-
-### DB-PROV-03 — Currency conversion
-
-**Status:** `Unverified`
-
-| Field | Value |
-|---|---|
-| Original currencies present | Pending |
-| Display/storage currency | Pending |
-| EUR conversion rule | Pending |
-| INR conversion rule | Pending |
-| USD conversion rule | Pending |
-| Rate date/source | Pending |
-| Rounding rule | Pending |
-| Evidence | Pending |
-
-### DB-PROV-04 — Historical price wording
-
-**Status:** `Not Run`
-
-Confirm that database fields, API responses, frontend labels and documentation do not imply live inventory, live retailer availability or real-time pricing where only historical/sourced catalogue values exist.
-
-- Checked locations: Pending
-- Observed wording: Pending
-- Limitation wording approved: Pending
-- Evidence: Pending
-
-## 10. PostgreSQL deployment verification
-
-### DB-PG-01 — Deployment identity
-
-**Status:** `Unverified`
-
-| Field | Value |
-|---|---|
-| Render service name | Pending |
-| Deployed branch | Pending |
-| Deployed commit SHA | Pending |
-| Deployment date/timezone | Pending |
-| Evidence | Pending |
-
-### DB-PG-02 — Engine confirmation
-
-**Status:** `Unverified`
-
-Use a safe method that reveals only the engine/dialect or a redacted startup log.
-
-- `DATABASE_URL` present: Pending
-- Dialect/engine observed: Pending
-- No connection string exposed: Pending
-- Evidence: Pending
-
-### DB-PG-03 — Schema initialization
-
-**Status:** `Not Run`
-
-- Initialization command/process: Pending
-- Tables created: Pending
-- Migration/version method: Pending
-- Exit result: Pending
-- Evidence: Pending
-
-### DB-PG-04 — Catalogue initialization
-
-**Status:** `Not Run`
-
-- Import command/process: Pending
-- Products observed: Pending
-- Specifications observed: Pending
-- Import duration: Pending
-- Errors/warnings: Pending
-- Evidence: Pending
-
-## 11. Persistence across restart or redeploy
-
-Use non-sensitive demonstration accounts and data.
-
-### DB-PERSIST-01 — User account
-
-**Status:** `Not Run`
-
-- Test account identifier: Redacted/non-sensitive
-- Created before restart: Pending
-- Available after restart/redeploy: Pending
-- Evidence: Pending
-
-### DB-PERSIST-02 — Favorite
-
-**Status:** `Not Run`
-
-- ProductID: Pending
-- Favorite created before restart: Pending
-- Favorite present after restart/redeploy: Pending
-- Evidence: Pending
-
-### DB-PERSIST-03 — Search history and saved result snapshot
-
-**Status:** `Not Run`
-
-- History entry created before restart: Pending
-- Snapshot restored before restart: Pending
-- History entry present after restart/redeploy: Pending
-- Snapshot restored after restart/redeploy: Pending
-- Evidence: Pending
-
-### DB-PERSIST-04 — Feedback
-
-**Status:** `Not Run`
-
-- Non-sensitive feedback record created: Pending
-- Record present after restart/redeploy: Pending
-- Evidence: Pending
-
-### DB-PERSIST-05 — Cross-user isolation
-
-**Status:** `Not Run`
-
-Where safe, verify that one account cannot read or mutate another account's favorites or history.
-
-- Test method: Pending
-- Result: Pending
-- Evidence: Pending
-
-If this cannot be tested safely, record `Blocked` or `Accepted Limitation`; do not infer privacy from schema design alone.
-
-## 12. Backup, recovery and free-tier limitations
-
-### DB-OPS-01 — Backup method
-
-**Status:** `Unverified`
-
-- Current backup mechanism: Pending
-- Frequency/retention: Pending
-- Manual export command or provider method: Pending
-- Evidence: Pending
-
-### DB-OPS-02 — Restore procedure
-
-**Status:** `Not Run`
-
-- Restore target/environment: Pending
-- Procedure: Pending
-- Validation query after restore: Pending
-- Result: Pending
-- Evidence: Pending
-
-### DB-OPS-03 — Rollback plan
-
-**Status:** `Unverified`
-
-- Application rollback method: Pending
-- Database rollback method: Pending
-- Catalogue re-import method: Pending
-- Responsible owner: Pending
-- Evidence: Pending
-
-### DB-OPS-04 — Hosting limitations
-
-**Status:** `Unverified`
-
-Record relevant Render/PostgreSQL plan limitations without exposing billing or private account data.
-
-- Sleep/spin-down behaviour: Pending
-- Storage limit: Pending
-- Backup limitation: Pending
-- Expiry/retention risk: Pending
-- Mitigation: Pending
-
-## 13. Secret and repository-safety check
-
-### DB-SEC-01 — Repository scan
-
-**Status:** `Not Run`
-
-Check tracked files and relevant history for:
-
-- full PostgreSQL connection strings;
-- database passwords;
-- JWT production secrets;
-- private API keys;
-- personal test data;
-- exported database backups containing private data.
-
-| Check | Result | Evidence |
+| Check | Repository expectation | Runtime evidence |
 |---|---|---|
-| Current tracked files | Pending | Pending |
-| Relevant recent history | Pending | Pending |
-| GitHub Actions/workflow values | Pending | Pending |
-| Documentation and screenshots | Pending | Pending |
+| Product ID uniqueness | `products.ProductID` primary key | Not Run |
+| Specification ID uniqueness | `product_specs.ProductID` primary key | Not Run |
+| Specification orphan prevention | Foreign key to `products.ProductID` | Not Run for deployed engine |
+| Recommendation-ready joined rows | 2,000 target | Not Run |
+| Duplicate favorites | Prevented by unique user/product constraint | Not Run for deployed engine |
+| User-owned history | Foreign key to users with cascade delete | Not Run for deployed engine |
+| Saved result cleanup | Cascade from history to results | Not Run for deployed engine |
+| Feedback reference cleanup | Nullable references with `SET NULL` | Not Run for deployed engine |
 
-Any discovered credential must be treated as compromised and rotated by the responsible owner. Do not copy it into an Issue or PR.
+SQLite and PostgreSQL can differ in foreign-key enforcement and delete behaviour. Actual PostgreSQL checks remain required.
 
-## 14. Defect and blocker log
+## 4. Commands for final local verification
 
-| Evidence ID | Status | Problem | Owner | Related Issue | Retest required |
-|---|---|---|---|---|---|
-| Pending | Pending | Pending | Pending | Pending | Pending |
+Run against a disposable copy, not the only working database:
 
-Component ownership:
+```bash
+python import_real_catalog.py \
+  --source digital_products.db \
+  --output digital_products_real.db \
+  --csv-output real_product_catalog.csv
+```
 
-- data/catalogue/importer/PostgreSQL: Yuyang;
-- backend/API/auth/history/favorites: Zaikun;
-- frontend display or source wording: Guanyu;
-- coordination/evidence/release status: Junjie.
+Then record non-sensitive output from:
 
-## 15. Release decision summary
+```sql
+SELECT COUNT(*) FROM products;
+SELECT COUNT(*) FROM product_specs;
+SELECT ProductCategory, COUNT(*)
+FROM products
+WHERE ProductID >= 10000001
+GROUP BY ProductCategory
+ORDER BY ProductCategory;
 
-Complete only after the required checks are executed.
+SELECT COUNT(*) - COUNT(DISTINCT ProductID) FROM products;
+SELECT COUNT(*) - COUNT(DISTINCT ProductID) FROM product_specs;
 
-| Area | Final status | Evidence |
+SELECT COUNT(*)
+FROM product_specs s
+LEFT JOIN products p ON p.ProductID = s.ProductID
+WHERE p.ProductID IS NULL;
+
+SELECT COUNT(*)
+FROM products p
+JOIN product_specs s ON s.ProductID = p.ProductID;
+```
+
+Expected catalogue-build results:
+
+- products: 11,000;
+- product specifications: 2,000;
+- imported category distribution: 800 / 833 / 300 / 61 / 6;
+- duplicate IDs: 0;
+- orphan specifications: 0;
+- joined recommendation-ready rows: 2,000.
+
+These remain expected values until actual command output is retained.
+
+## 5. PostgreSQL release checks still required
+
+GitHub source cannot establish the following runtime facts:
+
+- whether the Render service currently has `DATABASE_URL` configured;
+- the exact deployed API commit;
+- whether the active database dialect is PostgreSQL;
+- whether all seven tables were initialized in the deployed database;
+- actual deployed counts and joins;
+- persistence after restart or redeployment;
+- cross-user authorization behaviour in the deployed environment;
+- provider backup availability and restore success.
+
+These items remain `Not Run` or `Unverified`; they must not be converted to `Passed` from repository inspection alone.
+
+## 6. Required deployed persistence scenario
+
+For a frozen release candidate:
+
+1. confirm the deployed API commit without exposing credentials;
+2. confirm the database dialect through `/api/health` or a redacted log;
+3. create one non-sensitive test account;
+4. save one favorite, one history record and one feedback record;
+5. record the entries before restart/redeploy;
+6. restart or redeploy the service;
+7. confirm the same account data remains;
+8. confirm a second account cannot access the first account's history or favorites;
+9. delete the demonstration data where appropriate.
+
+## 7. Backup and recovery position
+
+Repository-supported recovery assets are:
+
+- the authoritative importer;
+- the retained public-catalogue source mapping;
+- the bundled SQLite seed artifact;
+- deterministic imported ProductIDs;
+- SQLAlchemy table creation and empty-database seeding.
+
+These assets support catalogue reconstruction. They do not constitute a backup of production user data.
+
+Before production use, the team must retain a provider export or documented `pg_dump`/restore process for user-owned data. Until then, production backup and restore remain `Unverified`.
+
+## 8. Secret-safety position
+
+The code reads `DATABASE_URL` and `JWT_SECRET_KEY` from environment configuration. No connection string or production secret should be copied into Issues, Pull Requests, screenshots or test logs.
+
+A final repository/history secret scan remains required before release.
+
+## 9. Current release-gate summary
+
+| Area | Current status | Basis |
 |---|---|---|
-| Catalogue counts | Pending | Pending |
-| ProductID integrity and joins | Pending | Pending |
-| Importer repeatability | Pending | Pending |
-| Provenance and licence | Pending | Pending |
-| Currency and historical-price limitations | Pending | Pending |
-| PostgreSQL deployment identity | Pending | Pending |
-| Persistence | Pending | Pending |
-| Backup and recovery | Pending | Pending |
-| Secret scan | Pending | Pending |
-| Database release gate | Pending | Pending |
+| Schema and database-selection implementation | Implemented | `server.py` |
+| Catalogue quotas and deterministic build | Implemented | `import_real_catalog.py` |
+| Provenance and conversion rules | Implemented in code | Importer constants and source metadata |
+| Built-in catalogue validation | Implemented | `verify_database()` |
+| Actual SQLite release counts | Not Run | No retained release-command output |
+| Actual PostgreSQL identity and counts | Unverified | Requires deployed environment |
+| Restart/redeploy persistence | Not Run | Requires deployed environment |
+| Cross-user deployed isolation | Not Run | Requires deployed E2E |
+| Production backup and restore | Unverified | Provider/process evidence absent |
+| **Database release gate** | **Blocked on runtime verification** | Repository inspection cannot replace execution |
 
-Allowed final database release-gate values:
+## 10. Ownership boundary
 
-- `Passed`
-- `Blocked`
-- `Accepted Limitation`
-
-Do not use `Passed` while any required critical check remains `Not Run`, `Failed` or `Unverified`.
-
-## 16. Reviewer checklist
-
-### Yuyang
-
-- [ ] The document accurately separates implemented work from release verification.
-- [ ] Queries and commands match the actual V3 schema and importer.
-- [ ] Provenance, price and PostgreSQL wording is technically accurate.
-- [ ] No secret or private data is included.
-- [ ] Entered results match retained evidence.
-
-### Zaikun
-
-- [ ] User-owned tables and API persistence expectations match the backend contract.
-- [ ] Cross-user isolation checks match authentication and authorization behaviour.
-- [ ] No backend result is inferred from database structure alone.
-
-### Guanyu
-
-- [ ] Product source and historical-price wording matches the frontend presentation.
-- [ ] Any database-related frontend limitation is represented accurately.
-
-### Junjie
-
-- [ ] Every status is evidence-based.
-- [ ] Failed and blocked checks link to owner-controlled Issues.
-- [ ] The database release gate is not closed prematurely.
-- [ ] No teammate-owned data, importer, database or deployment file is modified.
-
-## 17. Non-authorization statement
-
-This verification record does not authorize Junjie to:
-
-- edit datasets, CSV files, SQLite/PostgreSQL data, importers or schema;
-- access or publish secrets;
-- change Render configuration;
-- restart or redeploy a service;
-- create test accounts without the agreed execution process;
-- mark any check passed without actual evidence;
-- merge database work to `main`.
+This record changes no dataset, CSV, database, importer, schema, backend or deployment configuration. It documents repository-derived facts and the exact remaining runtime checks.
