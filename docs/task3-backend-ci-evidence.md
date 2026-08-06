@@ -1,4 +1,4 @@
-# Task 3 Backend CI and Test Evidence
+# Backend CI and Test Evidence
 
 ## Document control
 
@@ -11,7 +11,7 @@
 | Coordinator scope | Dependency, test, CI-readiness, traceability, and handoff evidence only |
 | Coordinator evidence Pull Request | `#25` |
 | Backend implementation Pull Request | Not confirmed |
-| Overall Task 3 status | **In Progress** |
+| Overall status | **In Progress** |
 
 No backend or test implementation was manually authored as part of this coordinator evidence update. Merge commit `e907354` inherited `server.py`, `index.html`, and `product_specs.csv` from `main` commit `fbd733c`; those files were not manually edited by the coordinator. `test_server.py` and `test_mock.py` remain unchanged.
 
@@ -145,7 +145,7 @@ The dependency-reconciliation baseline records five failures and one pass in `te
 
 The `test_usNN` prefixes reflect the legacy test numbering. They are listed exactly as collected; where the current story definition differs, the limitation is stated.
 
-| User Story | Actual collected tests or evidence | Current Task 3 status |
+| User Story | Actual collected tests or evidence | Current status |
 |---|---|---|
 | US-01 | `test_us01_parse_explicit_budget`; `test_us01_parse_no_budget`; `test_us01_parse_budget_with_comma` | Blocked by fixture setup |
 | US-02 | `test_us02_database_setup_imports_rows`; `test_us02_database_setup_does_not_duplicate_rows`; `test_us02_health_endpoint_reports_database` | Blocked by fixture setup |
@@ -159,7 +159,7 @@ The `test_usNN` prefixes reflect the legacy test numbering. They are listed exac
 
 The additional passing recommend mock is a narrow compatibility result. It does not provide complete acceptance evidence for US-01 through US-09, so the statuses above remain unchanged.
 
-## Task 3 completion gates
+## Completion gates
 
 | Completion gate | Current status | Evidence or blocker |
 |---|---|---|
