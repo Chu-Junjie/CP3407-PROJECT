@@ -1,4 +1,4 @@
-# V3 Release Record Consistency Audit
+# Release Record Consistency Audit
 
 **Project:** Smart Digital Product Recommendation Platform  
 **Audit date:** 6 August 2026  
