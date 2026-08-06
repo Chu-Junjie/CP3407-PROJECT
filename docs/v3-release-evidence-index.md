@@ -1,4 +1,4 @@
-# V3 Release Evidence Index
+# Release Evidence Index
 
 **Project:** Smart Digital Product Recommendation Platform  
 **Authoritative implementation baseline:** `feature/product-database`  
