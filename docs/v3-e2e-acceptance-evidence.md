@@ -1,4 +1,4 @@
-# V3 End-to-End Acceptance Evidence
+# End-to-End Acceptance Evidence
 
 **Project:** Smart Digital Product Recommendation Platform  
 **Authoritative baseline:** `feature/product-database`  
