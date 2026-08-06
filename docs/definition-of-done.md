@@ -1,191 +1,259 @@
-# Definition of Done
+# Definition of Done — Teacher Feedback Revision v3.0
 
 **Project:** Smart Digital Product Recommendation Platform  
-**Applies to:** All User Stories, bugs, documentation tasks, and Iteration 3 release work
+**Applies to:** All User Stories, bugs, data work, documentation tasks, deployment work and the final release  
+**Authoritative implementation baseline:** `feature/product-database`
 
 ## 1. Purpose
 
-This Definition of Done prevents a task from being marked complete merely because code was written. It aligns implementation with testing, integration, documentation, version control, deployment, and acceptance evidence.
+This Definition of Done prevents code presence, a local screenshot or an unreviewed test result from being reported as complete. It aligns requirements, implementation, data, security, testing, integration, version control, deployment, documentation and acceptance evidence.
 
-## Task 1 application note
+## 2. V3 baseline rule
 
-The Yuyang database / US-05 baseline is currently `Candidate`, not `Done`.
+The adopted v3 direction includes:
 
-For the Task 1 foundation work to be marked Done:
+- Flask and SQLAlchemy;
+- SQLite for the bundled local demonstration;
+- PostgreSQL through `DATABASE_URL` for persistent production use;
+- 11,000 `products` rows, including 2,000 joined recommendation-ready public-dataset records;
+- 2,000 `product_specs` rows with source information;
+- accounts, JWT authentication, favorites, private search history, saved result snapshots and feedback;
+- paginated recommendations with a separate Top 5;
+- GitHub Pages frontend and Render API deployment.
 
-- the adoption decision and frozen contracts must be committed on `docs/project-foundation-yuyang-unified`;
-- the branch must be pushed to GitHub;
-- the Pull Request must identify the 9,000/33 data limitation, removal of `brand_links`, `/api/compare` rules, `server.py` ownership transition and old-test compatibility risks;
-- at least one non-author teammate must review the Pull Request;
-- review comments must be resolved;
-- the Pull Request must be merged into `main`;
-- Project Board and Requirements Traceability statuses must match the real evidence.
+The earlier 9,000/33 Yuyang Unified baseline is historical and must not be described as the current final design.
 
-Copying candidate files into a branch is not sufficient evidence that implementation or tests are complete.
+The v3 baseline is not Done until it is reviewed, merged, tested in the intended complete environment, deployed where applicable and accepted with retained evidence.
 
-## Task 1 closeout result
-
-The Task 1 project-foundation work satisfies its governance Definition of Done:
-
-- [x] the project contracts were committed on a dedicated documentation branch;
-- [x] the branch was pushed to GitHub;
-- [x] the Pull Request documented the database structure, data limitations, comparison rules, ownership transition and test compatibility risks;
-- [x] a non-author teammate reviewed the Pull Request;
-- [x] review comments were resolved;
-- [x] the Pull Request was merged into `main`;
-- [x] the Tracking Issue was closed;
-- [x] the Project Board was updated to `Done`;
-- [x] Requirements Traceability and project status were updated.
-
-This closeout confirms completion of Task 1 governance work. It does not represent verification of the complete technical implementation.
-
-## 2. User Story Definition of Done
-
-A User Story may be moved to **Done** only when every applicable item below is complete.
-
-### Requirements
-
-- [ ] The User Story is written clearly and has a justified priority and estimate.
-- [ ] Acceptance criteria are written before final implementation.
-- [ ] Scope matches the actual dataset and technology.
-- [ ] Unsupported claims have been removed or explicitly recorded as limitations.
-
-### Design
-
-- [ ] Relevant API, database, architecture, or UI design is documented.
-- [ ] Field and component names match the frozen project contracts.
-- [ ] The design explains why the selected approach is appropriate.
-- [ ] Any required diagram has been updated to match the implemented system.
-
-### Implementation
-
-- [ ] The feature works with real project data, not final-interface mock data.
-- [ ] The implementation satisfies every acceptance criterion.
-- [ ] Existing completed behaviour has not been broken.
-- [ ] Error, empty, and boundary cases are handled.
-- [ ] No secrets, passwords, or private credentials are committed.
-
-### Automated testing
-
-- [ ] Tests cover normal behaviour.
-- [ ] Tests cover at least one invalid or boundary case.
-- [ ] A regression test exists for any fixed bug.
-- [ ] All relevant automated tests have actually been executed.
-- [ ] Test evidence records the command, date, number passed, and number failed.
-- [ ] The team does not claim TDD unless the failing test was genuinely written and observed before the implementation fix.
-
-### Integration and acceptance
-
-- [ ] Frontend, backend, and database behaviour agree with the API contract.
-- [ ] The feature passes a manual end-to-end acceptance test.
-- [ ] The feature works in the integrated application.
-- [ ] The feature works in the deployed application when deployment applies.
-- [ ] Any user feedback or tester feedback is recorded honestly with date and tester role.
-
-### Version control
-
-- [ ] Work was completed on a feature/fix/documentation branch.
-- [ ] Commits use descriptive messages.
-- [ ] A Pull Request links the relevant Issue.
-- [ ] The PR includes a summary, acceptance criteria, test evidence, and screenshots or API examples where relevant.
-- [ ] At least one non-author teammate reviews the PR.
-- [ ] Review comments are resolved before merge.
-- [ ] The PR is merged into `main` and the related Issue is closed.
-
-### Documentation
-
-- [ ] README and `docs/` pages match the final implementation.
-- [ ] Installation and run instructions are accurate.
-- [ ] Known limitations are stated.
-- [ ] The Requirements Traceability Matrix is updated.
-- [ ] The responsible member has written the technical explanation for their own component.
-
-## 3. Bug Definition of Done
-
-A bug is Done only when:
-
-1. The issue contains clear reproduction steps.
-2. A test reproduces the failure when practical.
-3. The root cause is documented.
-4. The smallest correct fix is implemented.
-5. The regression test passes.
-6. The full relevant test suite passes.
-7. A teammate reviews the change.
-8. The fix is verified in the integrated application.
-9. The issue is closed with evidence.
-
-## 4. Documentation-task Definition of Done
-
-A documentation task is Done only when:
-
-- the document is based on real repository evidence;
-- planned work and completed work are clearly distinguished;
-- diagrams match actual components and data;
-- terminology is consistent with code and API fields;
-- broken, outdated, or contradictory claims are corrected;
-- links and screenshots work;
-- a teammate reviews technical accuracy.
-
-## 5. Release Definition of Done
-
-The final release may be tagged only when:
-
-- [ ] All required User Stories have an honest final status.
-- [ ] All blocking defects are closed or clearly documented.
-- [ ] The final static interface no longer uses fixed mock recommendations.
-- [ ] The real frontend-to-Flask-to-SQLite path works.
-- [ ] Automated tests run successfully in a clean environment or CI.
-- [ ] Required dependencies are documented in `requirements.txt` or equivalent.
-- [ ] GitHub Actions shows a successful test workflow.
-- [ ] The deployed application has been smoke-tested.
-- [ ] At least two non-team acceptance tests have been recorded if available before submission.
-- [ ] Architecture, database, interface, testing, tools, agile, deployment, and user-guide documentation are linked from README.
-- [ ] A changelog and release tag are created.
-- [ ] A final ZIP backup is created and opened to verify its contents.
-
-## 6. Status definitions
+## 3. Status definitions
 
 | Status | Meaning |
 |---|---|
-| `Todo` | Not started or no evidence of active work. |
-| `In Progress` | Actively being designed, implemented, tested, or reviewed. |
-| `Blocked` | Cannot proceed because a named dependency is unresolved. |
-| `Implemented` | Code exists, but integration, tests, deployment, or evidence remain incomplete. |
-| `Done` | Every applicable Definition of Done item is satisfied. |
-| `Deferred` | Removed from the final scope with an explicit reason and impact statement. |
+| `Todo` | Not started or no active evidence exists. |
+| `Planned` | Requirement and owner are agreed, but implementation has not started. |
+| `Candidate` | An artifact exists, but applicable verification is incomplete. |
+| `In Progress` | Work is actively being implemented, tested, reviewed or documented. |
+| `Blocked` | A named dependency prevents progress or verification. |
+| `Implemented` | Code/data exists on the authoritative branch, but one or more review, test, deployment or acceptance gates remain open. |
+| `Verified` | Named evidence passed for a specified commit and environment. |
+| `Done` | Every applicable item in this document is satisfied. |
+| `Deferred` | Removed from final scope with an approved reason and impact statement. |
 
-`Implemented` and `Done` are intentionally different. A feature that exists only in mock data, only locally, or without tests must not be marked Done.
+`Implemented`, `Verified` and `Done` are not interchangeable.
 
-## 7. Evidence record template
+## 4. User Story Definition of Done
+
+A User Story is Done only when every applicable section below is satisfied.
+
+### 4.1 Requirements and scope
+
+- [ ] Final wording and acceptance criteria are recorded.
+- [ ] Priority, estimate, owner and dependencies are recorded.
+- [ ] Teacher-feedback changes are reflected in the final scope.
+- [ ] Any replaced v2 requirement is identified as historical or deferred.
+- [ ] Unsupported product, price, licence or deployment claims are removed.
+
+### 4.2 Design and contract
+
+- [ ] API, database, architecture and UI documents match the implementation.
+- [ ] Field, route and table names match the v3 contract.
+- [ ] Security, privacy and persistence behaviour is documented where applicable.
+- [ ] Error, empty, boundary and authorization behaviour is defined.
+- [ ] Relevant diagrams have been updated.
+
+### 4.3 Implementation
+
+- [ ] The feature works with the v3 database and real integrated API path.
+- [ ] Every acceptance criterion is implemented.
+- [ ] Existing required behaviour has not regressed.
+- [ ] Errors and boundary cases are handled safely.
+- [ ] No secrets, passwords, tokens or production credentials are committed.
+- [ ] Missing data is displayed honestly and is not invented.
+
+### 4.4 Automated testing
+
+- [ ] Normal behaviour is covered.
+- [ ] At least one invalid or boundary case is covered.
+- [ ] Authorization/privacy cases are covered for user-owned data.
+- [ ] A regression test exists for each fixed defect where practical.
+- [ ] All intended test files are collected and executed.
+- [ ] The command, date, commit SHA, environment, exit code and passed/failed counts are saved.
+- [ ] Tests leave tracked database and data files unchanged.
+- [ ] A clean environment or CI run passes.
+- [ ] TDD is claimed only when a failing test was genuinely observed before the implementation.
+
+### 4.5 Integration and acceptance
+
+- [ ] Frontend, backend and database agree with the v3 API contract.
+- [ ] The feature passes a manual end-to-end test.
+- [ ] The feature works in the deployed application when deployment applies.
+- [ ] Browser Network/API evidence is retained for frontend flows.
+- [ ] Tester name/role, date, steps and observed result are recorded.
+- [ ] Failures are linked to an Issue or explicitly accepted limitation.
+
+### 4.6 Version control and review
+
+- [ ] Work is completed on an appropriate feature/fix/docs branch.
+- [ ] Commits use descriptive messages.
+- [ ] The Pull Request identifies scope, acceptance criteria, evidence and limitations.
+- [ ] The PR links the applicable Issue or traceability entry.
+- [ ] At least one non-author teammate reviews the work.
+- [ ] Review comments are resolved or documented.
+- [ ] The PR is merged into the agreed target branch.
+- [ ] Related project status and traceability records are updated.
+
+### 4.7 Documentation
+
+- [ ] README and `docs/` pages match the final implementation.
+- [ ] Installation, local run, test and deployment instructions are accurate.
+- [ ] Known limitations and historical-data pricing are stated.
+- [ ] Requirements Traceability is updated.
+- [ ] The responsible member explains their own technical component.
+- [ ] Links, screenshots and commands have been checked.
+
+## 5. V3 database and catalogue Definition of Done
+
+The data/database revision is Done only when:
+
+- [ ] `products` and `product_specs` exact release counts are recorded.
+- [ ] The intended 11,000/2,000 counts are independently verified for the release commit.
+- [ ] Every active recommendation specification has a valid joined ProductID.
+- [ ] Duplicate ProductIDs and required-column checks pass.
+- [ ] `DataSource`, source licence and transformation notes are reviewed.
+- [ ] Historical prices are not described as live retail prices.
+- [ ] Missing fields remain honest values such as `Not specified`.
+- [ ] `import_real_catalog.py` reproduces the expected catalogue or its prerequisites/limitations are documented.
+- [ ] Repeated local initialization does not create duplicates.
+- [ ] PostgreSQL initialization/seed is tested when production uses PostgreSQL.
+- [ ] Production persistence survives a restart or redeploy test.
+- [ ] Backup and rollback/recovery instructions are documented.
+
+## 6. V3 accounts, privacy and security Definition of Done
+
+Accounts and user-owned data are Done only when:
+
+- [ ] Passwords are stored as hashes, never plaintext.
+- [ ] Registration validates required fields and duplicate username/email behaviour.
+- [ ] Login accepts the documented identifier and rejects invalid credentials.
+- [ ] JWT authentication rejects missing, malformed and invalid tokens.
+- [ ] Production `JWT_SECRET_KEY` is a random environment value of at least 32 characters.
+- [ ] No development/default secret is relied on in production.
+- [ ] A user cannot read, delete or compare another user's private history/favorites.
+- [ ] History and favorites persist in the production database.
+- [ ] Logs and error responses do not expose passwords, tokens or internal secrets.
+- [ ] CORS permits the intended frontend origin without unnecessarily broad credentials access.
+
+## 7. V3 recommendation, pagination and comparison Definition of Done
+
+- [ ] Recommendation results contain the documented identity, category, brand, price, score, reason, specification, URL and source fields.
+- [ ] `page` and `per_page` boundaries are validated.
+- [ ] Default page size and maximum page size match the contract.
+- [ ] `total_candidates`, `total_pages`, page data and separate Top 5 are internally consistent.
+- [ ] Empty and out-of-range results are handled.
+- [ ] Comparison accepts exactly 2 or 3 unique valid joined product IDs.
+- [ ] Invalid, duplicate, missing and unjoined IDs are rejected consistently.
+- [ ] Favorites comparison verifies ownership and same-category rules.
+- [ ] Excluded brands are applied consistently from text and explicit fields.
+
+## 8. V3 frontend Definition of Done
+
+- [ ] The production frontend calls the deployed API rather than fixed final mock data.
+- [ ] Registration, login, logout/account state and error states are usable.
+- [ ] Recommendation pagination works across first, middle, last and empty states.
+- [ ] Top 5 and full paginated results are clearly distinguished.
+- [ ] History can be opened and deleted by its owner.
+- [ ] Favorites can be added, removed and compared under the documented rules.
+- [ ] Product/source links use safe `http` or `https` URLs and a clear fallback.
+- [ ] Share/restore works with special characters and exclusions in another browser.
+- [ ] Loading, success, empty, validation, timeout and backend-error states are visible.
+- [ ] Mobile layout, keyboard navigation and basic accessibility are checked.
+- [ ] Browser Network screenshots or equivalent request/response evidence are retained.
+
+## 9. Bug Definition of Done
+
+A bug is Done only when:
+
+1. Reproduction steps and environment are recorded.
+2. The root cause is identified.
+3. A failing regression test is added where practical.
+4. The responsible technical owner implements the smallest correct fix.
+5. The regression test passes.
+6. The full relevant suite passes.
+7. Data/database files remain unchanged unless the change is intentional and reviewed.
+8. A non-author reviews the fix.
+9. The integrated or deployed application is rechecked.
+10. The Issue is closed with evidence.
+
+## 10. Documentation-task Definition of Done
+
+A documentation task is Done only when:
+
+- it is based on real repository or test evidence;
+- planned, implemented, verified and Done work are distinguished;
+- terminology matches the v3 implementation;
+- outdated v2 statements are identified as historical rather than silently mixed with v3;
+- owner-authored technical claims are preserved or reviewed by the responsible owner;
+- links, file paths, commands and screenshots work;
+- a non-author reviews technical accuracy.
+
+## 11. Coordinator governance boundary
+
+Junjie's governance work may update planning, project status, traceability, Definition of Done, acceptance records and release records.
+
+It must not directly change teammate-owned:
+
+- backend or recommendation implementation;
+- authentication implementation;
+- frontend implementation;
+- automated test implementation;
+- datasets, catalogue importer or database files;
+- teammate technical explanations.
+
+A discovered technical problem is recorded and assigned to its owner. It is not silently fixed in a governance commit.
+
+## 12. Release Definition of Done
+
+The final release may be tagged only when:
+
+- [ ] The final scope and deferred requirements are approved.
+- [ ] All required stories have honest final statuses.
+- [ ] All blocking defects are closed or formally accepted with impact.
+- [ ] The authoritative v3 baseline is reviewed and merged into `main`.
+- [ ] The intended complete automated suite passes in a clean environment or CI.
+- [ ] GitHub Actions shows a successful run for the release commit.
+- [ ] The release commit leaves tracked database/data files in the intended state.
+- [ ] GitHub Pages → Render → PostgreSQL end-to-end flow is smoke-tested.
+- [ ] Accounts, history and favorites persist across a production restart/redeploy check.
+- [ ] No secrets are present in the repository.
+- [ ] At least two non-team acceptance tests are recorded where available before submission.
+- [ ] Architecture, ERD/database, API, testing, deployment, agile evidence and user guide are linked from README.
+- [ ] A changelog and release tag are created.
+- [ ] A final ZIP backup is created, opened and checked.
+- [ ] Final known limitations are recorded.
+
+## 13. Completion evidence template
 
 ```markdown
 ## Completion Evidence
 
-- User Story / Issue:
+- Requirement / Issue:
 - Owner:
 - Branch:
+- Commit SHA:
 - Pull Request:
+- Reviewer:
 - Acceptance criteria:
 - Automated test command:
-- Automated test result:
-- Manual acceptance result:
+- Environment:
+- Automated result and exit code:
+- Manual acceptance steps/result:
 - Deployment evidence:
+- Data/database integrity result:
 - Documentation updated:
-- Reviewer:
 - Known limitations:
+- Final status:
 ```
 
-## 8. Integrity rule
+## 14. Integrity rule
 
-The team must not fabricate past client feedback, test results, commits, TDD history, deployment results, dataset licences, or iteration evidence. Retrospective evidence must be labelled as retrospective, and current acceptance testing must use its actual date.
-
-
-## Yuyang Unified Additional Checks
-
-For US-05/07 database work, Done also requires:
-
-- product_specs import and 33-row integrity evidence;
-- ProductID join integrity;
-- /api/compare validation for exactly 2 or 3 IDs;
-- PurchaseURL limitations documented;
-- old tests reconciled with the new two-table setup.
+The team must not fabricate client feedback, test results, commit history, TDD history, deployment results, licence claims, security verification or iteration evidence. Retrospective evidence must be labelled retrospective. A missing check remains unchecked.
