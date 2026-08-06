@@ -18,7 +18,7 @@ The responsibilities and interpretation rules are documented in the team meeting
 - @Guanyu-Lu confirms frontend, interface, GitHub Pages and browser interpretation.
 - @Chu-Junjie maintains meeting notes, historical status, traceability and release-record separation.
 
-## 3. Historical Task 1 status
+## 3. Historical governance status
 
 | Item | Historical record |
 |---|---|
@@ -35,7 +35,7 @@ The responsibilities and interpretation rules are documented in the team meeting
 
 This documentation work recorded an agreed direction only. It did not prove implementation, deployment or acceptance.
 
-## 4. Historical Task 2 status
+## 4. Historical database status
 
 | Item | Historical record |
 |---|---|
@@ -50,7 +50,7 @@ This documentation work recorded an agreed direction only. It did not prove impl
 
 @tiantian09091 confirms the database interpretation of this historical record. It is not a substitute for the current 11,000/2,000 V3 database verification.
 
-## 5. Historical Task 3 status
+## 5. Historical backend and CI status
 
 | Item | Historical record |
 |---|---|
@@ -99,7 +99,7 @@ This is a historical branch state. Current V3 records on `feature/product-databa
 | Frontend integration and live-interface claims | @Guanyu-Lu |
 | Meeting notes, historical/current separation and release wording | @Chu-Junjie |
 
-## 9. Current V3 direction
+## 9. Current release direction
 
 For current work, use:
 
