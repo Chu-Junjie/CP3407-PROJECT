@@ -9,7 +9,7 @@
 
 This document consolidates the records required to review the V3 release candidate in a controlled and traceable manner. It links the project scope, architecture, implementation evidence, testing evidence, database verification, deployment checks, acceptance records and release controls without replacing the detailed source documents.
 
-The package is intended to support a professional review process in which each component owner confirms the accuracy of the records related to their work before the final integration into `main`.
+The package supports a professional review process in which each component owner confirms the accuracy of the records related to their work before final integration into `main`.
 
 ## 2. Submission package
 
@@ -69,7 +69,7 @@ The current release supports maximum-budget filtering but does not promise a sep
 Repository inspection confirms:
 
 - SQLAlchemy supports SQLite locally and PostgreSQL through `DATABASE_URL`;
-- the application defines products, product specifications, users, favorites, search history, saved search results and feedback tables;
+- the application defines products, product specifications, users, favorites, search history, saved results and feedback tables;
 - the importer defines a 2,000-record public catalogue comprising 800 laptops, 833 smartphones, 300 smart watches, 61 headphones and 6 tablets;
 - the implementation target is 11,000 product rows and 2,000 joined product-specification rows;
 - source, licence and fixed currency-conversion rules are retained;
