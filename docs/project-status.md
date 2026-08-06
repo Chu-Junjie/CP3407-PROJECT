@@ -1,4 +1,4 @@
-# V3 Project Status
+# Project Status
 
 **Project:** Smart Digital Product Recommendation Platform  
 **Authoritative implementation branch:** `feature/product-database`  
@@ -22,7 +22,7 @@ Meeting decisions do not replace GitHub Reviews, CI output, deployed-environment
 
 @Chu-Junjie does not modify implementation maintained by @ZhengZaikun, @tiantian09091 or @Guanyu-Lu without their explicit approval.
 
-## 3. Current V3 position
+## 3. Current project position
 
 | Area | Current status | Evidence or next action |
 |---|---|---|
