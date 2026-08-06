@@ -1,342 +1,210 @@
 # Final Acceptance and Release Checklist
 
 **Project:** Smart Digital Product Recommendation Platform  
-**Release coordinator:** Chu Junjie  
+**Release coordination and meeting record:** @Chu-Junjie  
 **Authoritative implementation branch:** `feature/product-database`  
-**Checklist state:** Prepared; incomplete items must remain unchecked until evidence exists
+**Checklist state:** Incomplete items remain unchecked until actual evidence exists
 
-## 1. Release identification
+## 1. Evidence rule
 
-| Field | Value |
-|---|---|
-| Release name/version | Pending |
-| Release-candidate branch | Pending |
-| Release-candidate SHA | Pending |
-| Freeze date/timezone | Pending |
-| Target branch | `main` |
-| Final `main` SHA | Pending |
-| Release tag | Pending |
-| Frontend URL | Pending verification |
-| API URL | Pending verification |
-| Production database | Pending verification |
-| Release decision | Pending |
+This checklist is maintained from repository evidence and the team meeting notes recorded by @Chu-Junjie. Meeting decisions and formal document reviews do not replace executed CI, database, deployment, E2E or external-acceptance evidence.
 
-## 2. Scope and requirements
+## 2. Release identification
 
-- [x] Current V3 scope is recorded in `docs/requirements-traceability.md`.
-- [x] Implemented, deferred and runtime-pending requirements are distinguished.
-- [x] US-09 Budget Alternatives is recorded as Deferred / `Unscheduled`.
-- [x] Current-release US-09 limitation wording is defined.
-- [ ] Technical owners approve the requirement mappings.
-- [ ] Every current-release requirement has implementation evidence.
-- [ ] Every mandatory requirement has applicable runtime acceptance evidence.
-- [ ] Accepted limitations are approved and visible in final documentation.
-- [ ] No historical iteration statement is presented as current release status.
+- [ ] @Chu-Junjie records the release-candidate branch.
+- [ ] @Chu-Junjie records the full release-candidate SHA.
+- [ ] @Chu-Junjie records the freeze date and timezone.
+- [ ] @Chu-Junjie records included Pull Requests and merge commits.
+- [ ] @Chu-Junjie records known limitations, including deferred US-09.
+- [ ] @Chu-Junjie confirms no feature change entered after freeze without a new candidate SHA.
 
-## 3. Architecture and design
+## 3. Formal GitHub reviews
 
-- [x] System context is documented.
-- [x] Logical component architecture is documented.
-- [x] Deployment architecture is documented.
-- [x] Database entities and relationships are documented.
-- [x] Authentication and privacy boundaries are documented.
-- [x] Recommendation and pagination flow is documented.
-- [x] Desktop/mobile interface structure is documented.
-- [x] Major engineering decisions and limitations are documented.
-- [ ] Zaikun approves backend/API/authentication descriptions.
-- [ ] Yuyang approves schema/catalogue/PostgreSQL descriptions.
-- [ ] Guanyu approves interface/responsive/accessibility descriptions.
-- [ ] Any required external UML, ERD or prototype links are current and accessible.
+- [ ] @ZhengZaikun approves PR #35 for CI and the canonical test scope.
+- [ ] @ZhengZaikun and @Guanyu-Lu approve PR #47 for the US-09 scope decision.
+- [ ] @tiantian09091 and @ZhengZaikun approve PR #48 for database and API integration wording.
+- [ ] @ZhengZaikun, @tiantian09091 and @Guanyu-Lu approve PR #52 for their named architecture sections.
+- [ ] @ZhengZaikun, @tiantian09091 and @Guanyu-Lu approve PR #54 for their named iteration records.
+- [ ] @ZhengZaikun, @tiantian09091 and @Guanyu-Lu approve PR #58 for their named toolchain sections.
+- [ ] @ZhengZaikun, @tiantian09091 and @Guanyu-Lu approve PR #44 for reconciliation boundaries.
+- [ ] @ZhengZaikun, @tiantian09091 and @Guanyu-Lu approve PR #60 for technical mappings.
+- [ ] @ZhengZaikun, @tiantian09091 and @Guanyu-Lu approve PR #46 for the evidence index.
+- [ ] @ZhengZaikun, @tiantian09091 and @Guanyu-Lu approve PR #50 for the project closeout review record.
+- [ ] @Chu-Junjie confirms every Approval applies to the current PR head.
 
-## 4. Code and implementation integrity
+## 4. Approved record merges into V3
 
-- [ ] Release-candidate SHA is frozen.
-- [ ] Working tree is clean for the candidate.
-- [ ] No unreviewed feature change entered after freeze.
-- [ ] V3 backend implementation is preserved.
-- [ ] V3 frontend implementation is preserved.
-- [ ] V3 database, catalogue and importer implementation is preserved.
-- [ ] Owner-controlled technical conflicts are resolved by the relevant owner.
-- [ ] No development credentials or secrets are committed.
-- [ ] Generated and binary files have an approved release treatment.
+- [ ] @Chu-Junjie merges approved PRs in the recorded sequence.
+- [ ] @Chu-Junjie records every merged PR number and commit SHA.
+- [ ] @Chu-Junjie confirms changed files match each approved scope.
+- [ ] @Chu-Junjie confirms no unapproved implementation maintained by @ZhengZaikun, @tiantian09091 or @Guanyu-Lu was changed.
 
-## 5. Dependencies and environment
+## 5. Canonical CI
 
-- [x] Runtime dependencies are documented.
-- [x] Supported Python version is recorded.
-- [x] Local setup procedure is documented.
-- [x] Production start command is documented.
-- [x] Environment-variable names are documented without values.
-- [ ] Clean-environment dependency installation succeeds for the candidate.
-- [ ] `python -m pip check` succeeds or any limitation is recorded.
-- [ ] Final dependency list is retained.
-- [ ] Zaikun approves backend/runtime dependency strategy.
-- [ ] Yuyang approves PostgreSQL driver and database configuration.
+- [ ] @ZhengZaikun runs `python -m pytest --collect-only -q test_server.py` for the frozen candidate.
+- [ ] @ZhengZaikun runs `python -m pytest -q test_server.py` for the frozen candidate.
+- [ ] @ZhengZaikun runs `git diff --exit-code` after tests.
+- [ ] @ZhengZaikun records the workflow run ID, tested SHA/ref, runner, Python version and pytest version.
+- [ ] @ZhengZaikun records 12 tests collected and 12 tests passed.
+- [ ] @ZhengZaikun records tracked-file integrity as passed.
+- [ ] @Chu-Junjie links the final CI evidence from the release index.
 
-## 6. Automated testing
+The historical `test_mock.py` audit remains non-release evidence and must not be reported as a V3 regression.
 
-Canonical command:
+## 6. Catalogue and local database integrity
 
-```bash
-python -m pytest -q test_server.py
-```
+Run against a disposable copy only.
 
-Historical audit:
+- [ ] @tiantian09091 records `products = 11,000`.
+- [ ] @tiantian09091 records `product_specs = 2,000`.
+- [ ] @tiantian09091 records 2,000 joined recommendation-ready rows.
+- [ ] @tiantian09091 records category counts `800 / 833 / 300 / 61 / 6`.
+- [ ] @tiantian09091 confirms duplicate product IDs = 0.
+- [ ] @tiantian09091 confirms duplicate specification IDs = 0.
+- [ ] @tiantian09091 confirms orphan specifications = 0.
+- [ ] @tiantian09091 confirms source metadata is present.
+- [ ] @tiantian09091 confirms generated private tables are empty.
+- [ ] @tiantian09091 records repeated-generation behaviour.
+- [ ] @tiantian09091 confirms no tracked source database was unintentionally modified.
 
-```bash
-python -m pytest -q test_mock.py
-```
+## 7. Deployed frontend, API and PostgreSQL identity
 
-- [x] Canonical V3 test scope is defined.
-- [x] Historical V2 mock audit is retained separately.
-- [x] Workflow run `31096706920` recorded 12/12 passing for a named PR ref.
-- [x] Tracked-file integrity passed for the recorded workflow run.
-- [ ] Canonical suite is rerun for the final release candidate.
-- [ ] Candidate test collection count is recorded.
-- [ ] Candidate test result and duration are recorded.
-- [ ] Candidate tracked-file integrity passes.
-- [ ] Required GitHub Actions checks are successful.
-- [ ] Zaikun approves the final automated-test result.
+- [ ] @Guanyu-Lu records the GitHub Pages URL, source branch/folder and visible frontend commit.
+- [ ] @ZhengZaikun records the Render API URL, deployed commit, build command and start command.
+- [ ] @ZhengZaikun records the non-sensitive `/api/health` response.
+- [ ] @tiantian09091 confirms `DATABASE_URL` is configured without exposing its value.
+- [ ] @tiantian09091 confirms the active deployed database dialect is PostgreSQL.
+- [ ] @tiantian09091 confirms all expected tables exist.
+- [ ] @tiantian09091 records deployed product and specification counts.
+- [ ] @ZhengZaikun confirms the API is using the recorded PostgreSQL environment.
+- [ ] @Chu-Junjie confirms the deployment evidence is tied to the frozen candidate or approved release commit.
 
-## 7. Catalogue and local database verification
+## 8. Persistence and privacy
 
-Run catalogue checks only against a disposable copy.
+Use non-sensitive demonstration accounts and do not retain credentials or tokens.
 
-- [ ] Importer command and environment are recorded.
-- [ ] Input and output database paths are recorded without personal data.
-- [ ] `products` count is 11,000.
-- [ ] `product_specs` count is 2,000.
-- [ ] Joined recommendation candidates count is 2,000.
-- [ ] Category distribution is 800 laptops, 833 smartphones, 300 smart watches, 61 headphones and 6 tablets.
-- [ ] Duplicate product IDs count is 0.
-- [ ] Duplicate specification IDs count is 0.
-- [ ] Orphan specification count is 0.
-- [ ] Missing source metadata count is 0.
-- [ ] Generated catalogue artifact contains no private user rows.
-- [ ] Repeated generation behaviour is recorded.
-- [ ] Original tracked database remains unchanged unless an approved update is intended.
-- [ ] Yuyang approves the catalogue verification result.
+- [ ] @ZhengZaikun verifies registration and login for Account A.
+- [ ] @ZhengZaikun verifies creation of a favorite, history entry, saved result snapshot and feedback record.
+- [ ] @tiantian09091 records the data before restart or redeployment.
+- [ ] @tiantian09091 confirms the account data remains after restart or redeployment.
+- [ ] @ZhengZaikun verifies Account B cannot access Account A history or favorites.
+- [ ] @Guanyu-Lu verifies the corresponding browser behaviour before and after logout.
+- [ ] @Chu-Junjie records evidence IDs and statuses without private values.
 
-## 8. Deployment identity
+## 9. Deployed browser E2E
 
-### GitHub Pages
+### Foundation
 
-- [ ] Frontend URL is recorded.
-- [ ] Source branch and deployed commit are identified.
-- [ ] Deployment date/time is recorded.
-- [ ] Page loads without blocking console errors.
-- [ ] Browser Network evidence confirms the intended API destination.
-
-### Render API
-
-- [ ] API URL is recorded.
-- [ ] Deployed commit is identified.
-- [ ] Build command is confirmed.
-- [ ] Start command is confirmed.
-- [ ] Service state is healthy.
-- [ ] `/api/health` succeeds.
-- [ ] No credential value is retained in evidence.
-
-## 9. PostgreSQL verification
-
-- [ ] `DATABASE_URL` is configured without exposing its value.
-- [ ] `/api/health` reports PostgreSQL.
-- [ ] Expected application tables exist.
-- [ ] Deployed product/specification counts are recorded.
-- [ ] Schema initialization succeeds for the candidate.
-- [ ] The web service is not relying on ephemeral SQLite for user data.
-- [ ] Yuyang approves the deployed database result.
-- [ ] Zaikun approves API/database integration behaviour.
-
-## 10. Persistence and privacy
-
-Using non-sensitive demonstration accounts:
-
-- [ ] Account A can register and log in.
-- [ ] Account A can save a favorite.
-- [ ] Account A can create a search-history record.
-- [ ] Account A can restore its saved result snapshot.
-- [ ] Account A can submit feedback.
-- [ ] Before-restart evidence is retained.
-- [ ] Service restart or redeploy is performed.
-- [ ] Account A can log in after restart/redeploy.
-- [ ] Favorite persists.
-- [ ] History and snapshot persist.
-- [ ] Feedback persists.
-- [ ] Account B has no access to Account A favorites.
-- [ ] Account B cannot access Account A history ID.
-- [ ] Tokens, passwords and personal data are absent from retained evidence.
-
-## 11. Browser end-to-end acceptance
-
-### Foundation and network
-
-- [ ] Frontend loads successfully.
-- [ ] Intended API receives requests.
-- [ ] Loading state is observed.
-- [ ] Empty state is observed.
-- [ ] Error state is observed.
-- [ ] Source and historical-price wording is accurate.
+- [ ] @Guanyu-Lu confirms the frontend loads without blocking console errors.
+- [ ] @Guanyu-Lu confirms Network requests reach the intended Render API.
+- [ ] @Guanyu-Lu records loading, empty and error states.
+- [ ] @tiantian09091 confirms product-source and historical-price wording is accurate.
 
 ### Authentication
 
-- [ ] Register succeeds.
-- [ ] Login succeeds.
-- [ ] Current identity is displayed correctly.
-- [ ] Invalid credentials are rejected.
-- [ ] Protected endpoints reject unauthenticated access.
-- [ ] Logout removes access to private views.
+- [ ] @Guanyu-Lu completes register, login, current identity and logout flows.
+- [ ] @ZhengZaikun confirms unauthenticated protected requests are rejected.
 
 ### Recommendation
 
-- [ ] Valid recommendation request succeeds.
-- [ ] Returned category matches the request.
-- [ ] Returned prices obey the maximum budget.
-- [ ] Excluded brand does not appear.
-- [ ] Separate Top 5 is visible.
-- [ ] Next and previous page controls work.
-- [ ] Pagination retains the same query and filters.
-- [ ] Invalid input and no-result behaviour are acceptable.
+- [ ] @Guanyu-Lu submits a valid recommendation request.
+- [ ] @ZhengZaikun confirms category and budget compliance.
+- [ ] @Guanyu-Lu confirms the separate Top 5 is identifiable.
+- [ ] @Guanyu-Lu confirms next/previous pagination preserves the query.
+- [ ] @ZhengZaikun confirms invalid input and invalid-page responses follow the API contract.
 
-### Comparison
+### Compare, favorites and history
 
-- [ ] Two products can be compared.
-- [ ] Three products can be compared.
-- [ ] Invalid comparison is rejected.
-- [ ] Available specifications are displayed accurately.
-
-### Favorites and history
-
-- [ ] Favorite can be added.
-- [ ] Favorite can be removed.
-- [ ] Same-category favorites can be compared.
-- [ ] History entry is created.
-- [ ] History snapshot can be restored.
-- [ ] History entry can be deleted.
+- [ ] @Guanyu-Lu compares two products.
+- [ ] @Guanyu-Lu compares three products.
+- [ ] @ZhengZaikun confirms invalid comparison is rejected.
+- [ ] @Guanyu-Lu adds and removes a favorite.
+- [ ] @Guanyu-Lu compares supported same-category favorites.
+- [ ] @Guanyu-Lu creates, restores and deletes history.
+- [ ] @ZhengZaikun confirms API authorization for favorites and history.
 
 ### Feedback and sharing
 
-- [ ] Helpful or Not Helpful feedback succeeds.
-- [ ] Share state can be generated.
-- [ ] Shared state opens in an isolated session.
-- [ ] Private account data is not exposed by sharing.
-- [ ] US-09 is not presented as an active feature.
+- [ ] @Guanyu-Lu submits positive or negative feedback.
+- [ ] @ZhengZaikun confirms the API response and validation.
+- [ ] @tiantian09091 confirms feedback persistence.
+- [ ] @Guanyu-Lu opens shared recommendation state in an isolated session.
+- [ ] @ZhengZaikun confirms private account data is not exposed.
 
 ### Responsive and accessibility
 
-- [ ] Critical flow succeeds on desktop.
-- [ ] Critical flow succeeds on mobile viewport/device.
-- [ ] Major controls are keyboard accessible.
-- [ ] Visible focus is present.
-- [ ] Labels and errors are readable.
-- [ ] Basic zoom/reflow behaviour is acceptable or documented.
+- [ ] @Guanyu-Lu completes the critical flow on desktop.
+- [ ] @Guanyu-Lu completes the critical flow on mobile.
+- [ ] @Guanyu-Lu records keyboard access and visible focus.
+- [ ] @Guanyu-Lu records label, error-text and zoom/reflow observations.
 
-## 12. External acceptance
+## 10. External acceptance
 
-### Participant 1
+- [ ] @Chu-Junjie records two non-team participant IDs without unnecessary personal information.
+- [ ] @Chu-Junjie records date, device and browser for each participant.
+- [ ] Each participant attempts account, recommendation, pagination, comparison, favorite, history, feedback and share tasks.
+- [ ] @Chu-Junjie records independent completion, prompts, observations and defects.
+- [ ] Frontend defects are assigned to @Guanyu-Lu.
+- [ ] Backend/API/test defects are assigned to @ZhengZaikun.
+- [ ] Database/PostgreSQL defects are assigned to @tiantian09091.
+- [ ] @Chu-Junjie records retest outcomes.
 
-- [ ] Non-team participant confirmed.
-- [ ] Device/browser recorded.
-- [ ] Required tasks attempted.
-- [ ] Independent completion recorded.
-- [ ] Prompts and difficulties recorded.
-- [ ] Feedback recorded without unnecessary personal data.
-- [ ] Related defects created and retested where required.
+## 11. Security and recovery
 
-### Participant 2
+- [ ] @Chu-Junjie confirms repository and evidence records contain no passwords, JWTs, cookies or connection strings.
+- [ ] @ZhengZaikun confirms runtime secrets are read from environment configuration.
+- [ ] @tiantian09091 records the database backup and recovery approach.
+- [ ] @tiantian09091 confirms the importer was not run against production user data.
+- [ ] @Chu-Junjie records rollback steps for the candidate and final merge.
 
-- [ ] Non-team participant confirmed.
-- [ ] Device/browser recorded.
-- [ ] Required tasks attempted.
-- [ ] Independent completion recorded.
-- [ ] Prompts and difficulties recorded.
-- [ ] Feedback recorded without unnecessary personal data.
-- [ ] Related defects created and retested where required.
+## 12. Release decision
 
-## 13. Defect and risk closure
+- [ ] @ZhengZaikun confirms backend/API/test gates.
+- [ ] @tiantian09091 confirms database/PostgreSQL/persistence gates.
+- [ ] @Guanyu-Lu confirms frontend/browser/accessibility gates.
+- [ ] @Chu-Junjie confirms external acceptance, open defects and known limitations.
+- [ ] @Chu-Junjie records `Go`, `Conditional Go` or `No-Go` in the team meeting notes and release record.
 
-- [ ] Every failed or blocked check has an Issue or accepted limitation.
-- [ ] Severity and release impact are recorded.
-- [ ] Defects are assigned to the correct technical owner.
-- [ ] Release-blocking defects are closed and retested.
-- [ ] Accepted limitations have explicit rationale and approval.
-- [ ] No critical unresolved defect remains.
+`Go` requires every mandatory gate to pass. `Conditional Go` permits only explicitly accepted non-critical limitations. `No-Go` applies when a mandatory gate fails or evidence is incomplete.
 
-## 14. Documentation consistency
+## 13. Reconciliation to `main`
 
-- [ ] README clearly identifies the current V3 release.
-- [ ] Historical iteration material is labelled as historical.
-- [ ] README test commands match the approved strategy.
-- [ ] README deployment links identify the intended environment.
-- [ ] Project status matches actual evidence.
-- [ ] Requirements traceability matches actual evidence.
-- [ ] Architecture and toolchain records are current.
-- [ ] Release evidence index is current.
-- [ ] Deferred US-09 wording is consistent.
-- [ ] No unsupported completion claim remains.
+- [ ] @Chu-Junjie creates the approved reconciliation branch from the verified candidate.
+- [ ] @Chu-Junjie refreshes the branch comparison and changed-file inventory.
+- [ ] @ZhengZaikun approves backend/test/dependency conflict decisions.
+- [ ] @tiantian09091 approves database/catalogue/importer conflict decisions.
+- [ ] @Guanyu-Lu approves frontend conflict decisions.
+- [ ] @Chu-Junjie updates README, meeting notes, status, traceability and release records.
+- [ ] Affected CI and smoke checks are rerun.
+- [ ] @ZhengZaikun, @tiantian09091 and @Guanyu-Lu approve the final PR to `main`.
+- [ ] The final PR passes required checks and is merged.
 
-## 15. Reconciliation to `main`
+## 14. Final tag and package
 
-- [ ] Reviewed V3 package is merged into `feature/product-database`.
-- [ ] Release candidate is frozen and verified.
-- [ ] Reconciliation branch is created from V3.
-- [ ] `main`-only files are inventoried and classified.
-- [ ] Useful historical evidence is retained.
-- [ ] Older code does not overwrite V3 implementation.
-- [ ] Backend conflicts are resolved by Zaikun.
-- [ ] Database/catalogue conflicts are resolved by Yuyang.
-- [ ] Frontend conflicts are resolved by Guanyu.
-- [ ] Coordinator documentation conflicts are resolved by Junjie.
-- [ ] Final reconciliation PR includes evidence and rollback information.
-- [ ] Final PR has required approvals.
-- [ ] Required tests/checks pass.
-- [ ] Final PR is merged to `main`.
+- [ ] @Chu-Junjie records the final `main` SHA.
+- [ ] @Chu-Junjie creates the release tag and release notes.
+- [ ] @Guanyu-Lu confirms the deployed frontend reference.
+- [ ] @ZhengZaikun confirms the final CI/API reference.
+- [ ] @tiantian09091 confirms the database/recovery reference.
+- [ ] @Chu-Junjie creates the final archive without secrets, virtual environments or temporary test data.
+- [ ] @Chu-Junjie records the checksum.
+- [ ] @Chu-Junjie closes completed Issues and retains deferred items in the backlog.
 
-## 16. Release package
+## 15. Final record
 
-- [ ] Final `main` SHA is recorded.
-- [ ] Release tag is created.
-- [ ] Release notes identify scope and limitations.
-- [ ] Final project archive is created.
-- [ ] Virtual environments, secrets and temporary test data are excluded.
-- [ ] Archive checksum is recorded.
-- [ ] Database backup/recovery information is retained.
-- [ ] Final deployed version is identified where applicable.
-- [ ] Completed Issues are closed.
-- [ ] Deferred backlog items remain traceable.
+```text
+Final main commit:
+Release tag:
+Canonical CI:
+Catalogue verification:
+PostgreSQL identity and counts:
+Persistence and privacy:
+Desktop/mobile E2E:
+External acceptance:
+Known limitations:
+Release decision:
+Final archive:
+Checksum:
+```
 
-## 17. Go/No-Go decision
-
-| Gate | Result | Evidence |
-|---|---|---|
-| Formal team review | Pending | Pending |
-| Canonical CI for candidate | Pending | Pending |
-| Catalogue integrity | Pending | Pending |
-| PostgreSQL identity/counts | Pending | Pending |
-| Persistence/privacy | Pending | Pending |
-| Desktop/mobile E2E | Pending | Pending |
-| External acceptance | Pending | Pending |
-| Critical defects | Pending | Pending |
-| Accepted limitations | Pending | Pending |
-
-**Decision:** Pending  
-**Decision date/timezone:** Pending  
-**Release coordinator:** Chu Junjie  
-**Technical-owner confirmations:** Pending
-
-Decision values:
-
-- **Go:** every mandatory gate passes;
-- **Conditional Go:** only approved non-critical limitations remain;
-- **No-Go:** a mandatory gate fails, evidence is incomplete or a release-blocking defect remains.
-
-## 18. Sign-off
-
-| Role | Name | Outcome | Date | GitHub evidence |
-|---|---|---|---|---|
-| Project Manager / Release Coordinator | Chu Junjie | Pending | Pending | Pending |
-| Backend / Algorithm / Test Owner | Zaikun Zheng | Pending | Pending | Pending |
-| Database / Catalogue / PostgreSQL Owner | Yuyang Zhou | Pending | Pending | Pending |
-| Frontend / UI / Browser Verification Owner | Guanyu Lu | Pending | Pending | Pending |
-
-This checklist is ready for execution. Unchecked items must not be completed from implementation presence, informal agreement or inference alone.
+No unchecked item may be inferred as complete from a meeting decision, implementation presence or document approval.
