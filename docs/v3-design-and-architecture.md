@@ -1,4 +1,4 @@
-# V3 Design and Architecture
+# Design and Architecture
 
 **Project:** Smart Digital Product Recommendation Platform  
 **Authoritative implementation baseline:** `feature/product-database`  
