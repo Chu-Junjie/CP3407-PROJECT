@@ -1,223 +1,111 @@
 # US-09 Budget Alternatives — V3 Scope Decision Record
 
 **Tracking Issue:** #40  
-**Current status:** `Scope confirmation required`  
+**Current status:** `Deferred from V3 release`  
 **Coordinator:** Chu Junjie  
-**Decision date:** Not decided  
-**Selected option:** Not decided
+**Decision date:** 6 August 2026, Singapore time (UTC+8)  
+**Selected option:** Option C — Defer
 
-## 1. Purpose
+## 1. Decision
 
-This document is the version-controlled decision record for whether US-09 Budget Alternatives remains in the V3 release scope.
+US-09 Budget Alternatives is not part of the current V3 release commitment. It remains in the product backlog with an `Unscheduled` milestone.
 
-It does not select an option in advance and does not claim that the feature is implemented, verified or required for release.
+The current V3 release may provide recommendation filtering by budget, ranked results, a separate Top 5 and pagination. It must not claim that the API selects or returns a cheaper qualifying alternative.
 
-## 2. Current evidence boundary
+## 2. Repository-derived basis
 
-- The historical README labels US-09 as `In-Progress`.
-- The current V3 governance baseline records that scope confirmation is required.
-- No final V3 acceptance criteria, automated-test evidence or deployed-E2E evidence has been approved for US-09.
-- Zaikun and Guanyu have been asked in Issue #40 to record component impact and recommend Option A, B or C.
+The decision is based on the authoritative `feature/product-database` implementation rather than an unrecorded verbal assumption.
 
-Until the team completes this record, US-09 must not be described as `Done`, `Verified` or a confirmed V3 release requirement.
+### Backend and API evidence
 
-## 3. Decision options
+- `api-contract.md` documents recommendation filters, pagination, Top 5, history, comparison, favorites and feedback, but does not define a budget-alternative response field.
+- `/api/recommend` in `server.py` returns `filters`, `count`, `total_candidates`, pagination fields, `top_recommendations`, `data` and optional `history_id`.
+- The response does not calculate or return `budget_alternative`.
+- No deterministic eligibility rule exists for percentage/amount cheaper, same-category qualification or protected specifications.
 
-### Option A — Retain the original feature
+### Automated-test evidence
 
-V3 must provide a cheaper qualifying alternative for recommendation results.
+- `test_server.py` verifies budget parsing and filtering.
+- It does not contain an acceptance test for selecting a cheaper alternative.
+- The retained V3 API suite therefore does not support a claim that US-09 is implemented or verified.
 
-The final requirement must define:
+### Frontend evidence
 
-- the percentage or absolute price difference that counts as cheaper;
-- whether the alternative must be in the same product category;
-- which use-case requirements and core specifications cannot be sacrificed;
-- whether an alternative is evaluated for every Top-5 result or only where a valid candidate exists;
-- API response fields;
-- frontend presentation and comparison wording;
-- empty-state behaviour;
-- automated and deployed acceptance evidence;
-- delivery estimate and release impact.
+- `index.html` contains a `budgetAlternative` display region and accepts an optional `budget_alternative` or `budgetAlternative` field.
+- The display code is compatibility/presentation scaffolding only.
+- Because the current backend contract does not produce the field, the frontend element does not establish an end-to-end feature.
 
-### Option B — Revise the feature
+## 3. Final requirement wording
 
-Replace the historical story with a V3-compatible optional-alternative requirement.
+> US-09 is deferred from the current V3 release. The release supports budget-constrained recommendation filtering but does not promise a separately selected cheaper alternative. A future implementation must define deterministic eligibility, API fields, presentation, automated tests and deployed acceptance before the story can re-enter a release scope.
 
-The final requirement must define:
+## 4. Reason for deferral
 
-- exact user value and final story wording;
-- eligibility and ranking rules;
-- API and UI behaviour;
-- relationship to the separate Top 5 and paginated result list;
-- acceptance criteria and tests;
-- delivery estimate and release impact.
+Keeping US-09 in the current release would require new backend ranking rules, a revised API contract, automated tests, frontend states and deployed browser acceptance. Those requirements are not present in the current implementation baseline.
 
-### Option C — Defer the feature
+Deferral avoids:
 
-Remove US-09 from the current V3 release commitment while retaining it in the product backlog.
+- presenting dormant frontend scaffolding as a completed feature;
+- adding unplanned algorithm and API changes during release preparation;
+- weakening the distinction between budget filtering and alternative selection;
+- delaying verification of the implemented V3 account, catalogue, pagination and persistence work.
 
-The final record must define:
+## 5. Component impact
 
-- reason for deferral;
-- user and assessment impact;
-- V3 limitation wording;
-- README/status correction required later;
-- future milestone or `Unscheduled`;
-- demonstration wording that avoids implying the feature is present.
-
-## 4. Backend, recommendation and API owner input
-
-**Owner:** Zaikun (`ZhengZaikun`)  
-**Issue #40 response:** Pending
-
-### Required response
-
-- Recommended option: Pending
-- Reason: Pending
-- Price eligibility rule: Pending / Not applicable
-- Category constraint: Pending / Not applicable
-- Core specification safeguards: Pending / Not applicable
-- Ranking behaviour: Pending / Not applicable
-- API fields or contract change: Pending / Not applicable
-- Backend implementation change: Pending / Not applicable
-- Automated tests required: Pending / Not applicable
-- Estimate: Pending
-- Main risk: Pending
-- Release impact: Pending
-
-## 5. Frontend, interaction and browser-E2E owner input
-
-**Owner:** Guanyu (`Guanyu-Lu`)  
-**Issue #40 response:** Pending
-
-### Required response
-
-- Recommended option: Pending
-- Reason: Pending
-- Alternative-card presentation: Pending / Not applicable
-- Price-difference wording: Pending / Not applicable
-- Empty-state behaviour: Pending / Not applicable
-- Top-5 relationship: Pending / Not applicable
-- Pagination relationship: Pending / Not applicable
-- Desktop/mobile interaction: Pending / Not applicable
-- Accessibility impact: Pending / Not applicable
-- Browser-E2E scenarios required: Pending / Not applicable
-- Estimate: Pending
-- Main risk: Pending
-- Release impact: Pending
-
-## 6. Coordinator scope and schedule assessment
-
-**Owner:** Junjie (`Chu-Junjie`)  
-**Assessment status:** Pending owner input
-
-The coordinator assessment must record:
-
-- whether the selected option is achievable without bypassing current CI, database, deployment and E2E blockers;
-- whether new implementation would violate the current change-control period;
-- whether the work changes the release-candidate date;
-- whether separate backend and frontend Issues/branches/PRs are required;
-- whether the feature should be included in the final demonstration or recorded as a known limitation.
-
-The coordinator does not estimate or select technical implementation on behalf of the component owners.
-
-## 7. Final team decision
-
-Complete only after owner input exists.
-
-| Field | Final value |
+| Area | V3 release treatment |
 |---|---|
-| Selected option | Pending |
-| Final requirement wording | Pending |
-| Reason | Pending |
-| Backend/API impact | Pending |
-| Frontend impact | Pending |
-| Automated-test impact | Pending |
-| Deployed-E2E impact | Pending |
-| Release/schedule impact | Pending |
-| Known limitation | Pending |
-| Future backlog/milestone | Pending |
-| Decision participants | Pending |
-| Decision date and timezone | Pending |
+| Backend/recommendation | No new alternative-selection algorithm is required for the current release. |
+| API | No `budget_alternative` field is part of the current V3 contract. |
+| Frontend | Existing optional rendering scaffolding may remain, but release documentation and demonstrations must not imply the field is produced. |
+| Automated tests | No US-09 acceptance test is required in the current canonical V3 suite. |
+| Deployed E2E | E2E verifies budget filtering only; it must not record US-09 as passed. |
+| Schedule | No additional implementation is added to the current release candidate. |
 
-## 8. Acceptance criteria if Option A or B is selected
+## 6. Known limitation wording
 
-Do not populate as approved criteria until the team selects Option A or B.
+Use the following statement in current release material:
 
-- [ ] Eligibility rule is deterministic and documented.
-- [ ] Alternative belongs to the approved category relationship.
-- [ ] Required use-case constraints and core specifications are preserved.
-- [ ] API response contract is documented.
-- [ ] Frontend presentation and empty state are documented.
-- [ ] Top-5 and pagination interaction is unambiguous.
-- [ ] Automated tests cover valid alternative, no valid alternative, boundary values and invalid data.
-- [ ] Deployed E2E confirms the intended API request and UI response.
-- [ ] Source and historical-price wording does not imply live retail data.
-- [ ] Owner-controlled implementation PRs receive review and pass agreed release checks.
+> The current release filters recommendations by a user's maximum budget. It does not separately identify a cheaper alternative that preserves equivalent specifications.
 
-## 9. Completion criteria if Option C is selected
+## 7. Backlog definition
 
-- [ ] Deferral reason is recorded.
-- [ ] Current V3 scope explicitly excludes US-09.
-- [ ] Historical README `In-Progress` wording is scheduled for correction.
-- [ ] Demonstration and report limitations are approved.
-- [ ] Backlog status or future milestone is recorded.
-- [ ] No implementation is removed merely to support the decision without the technical owner's approval.
+**Backlog status:** Deferred  
+**Milestone:** Unscheduled
 
-## 10. Documents requiring later correction
+Before future implementation begins, the backlog item must define:
 
-The following may require a separately approved update after the decision:
+- cheaper-by percentage or absolute threshold;
+- same-category requirement;
+- protected use-case and core-specification rules;
+- relationship to Top 5 and pagination;
+- response fields and empty-state behaviour;
+- source and historical-price limitations;
+- automated boundary tests;
+- deployed desktop/mobile acceptance.
 
-- `README.md`;
-- `docs/project-status.md`;
-- `docs/requirements-traceability.md`;
-- `docs/v3-execution-plan.md`;
-- `docs/final-acceptance-and-release-checklist.md`;
-- V3 release evidence index;
-- demonstration and final-report wording.
+## 8. Required documentation corrections
 
-No status correction should be committed before the final decision is approved.
+The following coordinator-owned records should be updated during final closeout:
 
-## 11. Implementation process if work is required
+- `README.md` — remove historical V3 `In-Progress` wording for US-09;
+- `docs/project-status.md` — record `Deferred`;
+- `docs/requirements-traceability.md` — replace `Scope confirmation required` with `Deferred`;
+- `docs/v3-execution-plan.md` — remove US-09 from current release gates;
+- `docs/final-acceptance-and-release-checklist.md` — record it as non-applicable for this release;
+- `docs/v3-release-evidence-index.md` — record this repository-derived decision;
+- demonstration and final-report wording — include the known limitation.
 
-1. Record the final Issue #40 decision.
-2. Create separate owner-controlled implementation Issues where required.
-3. Zaikun owns backend, algorithm, API and automated-test work.
-4. Guanyu owns frontend, interaction and browser-E2E implementation work.
-5. Each owner uses an independent branch and Pull Request.
-6. Preserve the current V3 baseline and do not merge directly to `main`.
-7. Execute the agreed complete test suite.
-8. Execute deployed E2E for the final acceptance criteria.
-9. Update governance and README wording only after evidence exists.
+## 9. Completion checklist
 
-## 12. Review checklist
+- [x] Option C is selected.
+- [x] Deferral reason is supported by current repository evidence.
+- [x] Current V3 scope explicitly excludes US-09.
+- [x] Backend, API, frontend and test impacts are recorded.
+- [x] Known limitation wording is defined.
+- [x] Future backlog status is `Unscheduled`.
+- [ ] Coordinator-owned status documents are corrected in the final closeout PR.
+- [ ] This decision record receives actual GitHub review before merge.
 
-### Zaikun
+## 10. Ownership boundary
 
-- [ ] My recommendation and impact assessment are recorded accurately.
-- [ ] Algorithm, API and automated-test requirements are technically feasible and unambiguous.
-- [ ] No backend result is claimed without evidence.
-
-### Guanyu
-
-- [ ] My recommendation and interaction assessment are recorded accurately.
-- [ ] UI, empty-state, responsive and E2E requirements are unambiguous.
-- [ ] No frontend/deployed result is claimed without evidence.
-
-### Junjie
-
-- [ ] The final selected option is explicitly approved by the team.
-- [ ] Schedule and release impact are recorded without inventing owner estimates.
-- [ ] Required later document corrections are identified.
-- [ ] No teammate-owned implementation is modified through this decision record.
-
-## 13. Non-authorization statement
-
-This decision record does not authorize:
-
-- choosing Option A, B or C without the required team decision;
-- modifying backend, recommendation logic, API, tests or frontend;
-- changing README or current status documents;
-- marking US-09 as `Done` or `Verified`;
-- merging a technical implementation;
-- merging V3 to `main`.
+This decision does not remove or modify teammate-owned backend, frontend or test code. The optional frontend renderer remains untouched. Any future US-09 implementation requires a new technical Issue, owner-controlled branch, tests and Pull Request.
