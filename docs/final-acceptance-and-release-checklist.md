@@ -1,347 +1,423 @@
-# Final Acceptance and Release Checklist — V3.0
+# V3 Final Acceptance and Release Checklist
 
 **Project:** Smart Digital Product Recommendation Platform  
 **Coordinator:** Chu Junjie  
-**Authoritative implementation baseline:** `feature/product-database`
+**Authoritative implementation branch:** `feature/product-database`  
+**Status date:** 6 August 2026, Singapore time (UTC+8)
 
-This checklist records release evidence. It does not authorize the coordinator to modify teammate-owned backend, frontend, test, data or database files.
+This checklist records actual release evidence. A checked item must be supported by a commit, workflow, command output, deployment observation, review or acceptance record.
 
-## 1. Release candidate identification
+## 1. Current fixed decisions
+
+- [x] Authoritative implementation branch is `feature/product-database`.
+- [x] Earlier V2 implementation is historical and must not overwrite V3.
+- [x] Canonical V3 automated suite is `python -m pytest -q test_server.py`.
+- [x] `test_mock.py` is retained as a historical non-release compatibility audit.
+- [x] US-09 Budget Alternatives is Deferred from this release.
+- [x] US-09 backlog milestone is `Unscheduled`.
+- [x] The catalogue importer is classified as a build-artifact tool and must not run against live production user data.
+
+Known release limitation:
+
+> The current release filters recommendations by a user's maximum budget. It does not separately identify a cheaper alternative that preserves equivalent specifications.
+
+## 2. Release candidate identity
+
+Complete after the candidate is frozen:
 
 - [ ] Release candidate branch:
 - [ ] Release candidate commit SHA:
-- [ ] Test date and timezone:
-- [ ] Deployment date and timezone:
+- [ ] Freeze date/timezone:
+- [ ] GitHub Pages deployed commit:
+- [ ] Render API deployed commit:
+- [ ] Production database dialect/version:
 - [ ] GitHub Pages URL:
 - [ ] Render API URL:
-- [ ] Production database type:
-- [ ] Reviewer(s):
-- [ ] Known deferred requirements:
-
-## 2. Scope and governance
-
-- [ ] The team confirms `feature/product-database` or its reviewed successor as the final v3 baseline.
-- [ ] The earlier 9,000/33 baseline is labelled historical.
-- [ ] Teacher-feedback changes are recorded.
-- [ ] US-09 is explicitly retained, revised or deferred.
-- [ ] Owner responsibilities are agreed.
-- [ ] Project status, traceability and Definition of Done use the same status vocabulary.
-- [ ] No coordinator governance commit changes teammate implementation.
-- [ ] All release claims are tied to evidence.
+- [ ] Reviewers:
+- [x] Deferred requirement: US-09 Budget Alternatives
+- [ ] Other accepted limitations:
 
 ## 3. Repository and review
 
-- [ ] All final work is on reviewed branches.
-- [ ] Pull Requests identify scope, evidence and limitations.
-- [ ] Each technical component has a non-author review.
-- [ ] Review comments are resolved or documented.
-- [ ] The v3 baseline is merged into `main` without restoring outdated v2 files.
-- [ ] Related Issues are closed or carry an approved remaining-risk statement.
-- [ ] There are no unintended generated files or local secrets in the diff.
-- [ ] The release commit is identified and frozen.
+- [ ] All intended release work is present on reviewed branches.
+- [ ] Each PR states scope, evidence and limitations.
+- [ ] Each affected technical component has an actual non-author review.
+- [ ] Requested changes are resolved or documented.
+- [ ] Coordinator-owned documents are merged into the V3 baseline.
+- [ ] Teammate-owned implementation was not changed from coordinator branches.
+- [ ] Reconciliation plan is approved before an integration branch is created.
+- [ ] V3 is integrated into `main` without restoring obsolete V2 implementation.
+- [ ] Release commit is frozen after integration.
+- [ ] Related Issues are closed or retain an explicit accepted-risk statement.
 
-## 4. Clean-environment automated testing
+Review is currently deferred. No approval is inferred.
 
-### Environment record
+## 4. Canonical CI evidence already retained
 
-- Python version:
-- Operating system / runner:
-- Dependency installation command:
-- Test command:
-- Collected test count:
-- Passed:
-- Failed:
-- Errors:
-- Skipped:
-- Exit code:
-- Elapsed time:
-- Tested commit SHA:
-- Evidence file / workflow URL:
+| Field | Retained result |
+|---|---|
+| Workflow | `V3 Test Evidence` |
+| Run | `31096706920` |
+| Workflow source commit | `4e698826dbeac719b56f1ff5cea060109d0bdd60` |
+| Tested PR merge ref | `8ecdb5fea8829a85521825b864a9bfe6e630a4ff` |
+| Runner | Ubuntu 24.04.4 |
+| Python | 3.11.15 |
+| pytest | 9.1.1 |
+| Canonical test command | `python -m pytest -q test_server.py` |
+| Collected | 12 |
+| Passed | 12 |
+| Failed/errors/skipped | 0 / 0 / 0 |
+| Elapsed | 1.23s |
+| Exit code | 0 |
+| Tracked-file integrity | Passed |
+| Workflow conclusion | Success |
 
-### Checks
+- [x] Runtime dependencies installed in the workflow.
+- [x] pytest installed explicitly.
+- [x] Canonical tests collected.
+- [x] Canonical tests passed.
+- [x] Tracked-file integrity passed.
+- [x] Historical audit failures remained visible.
+- [x] Historical audit was separated from the release gate.
 
-- [ ] Runtime dependencies install successfully.
-- [ ] Test dependencies install successfully.
-- [ ] The intended complete test set is documented.
-- [ ] The disposition of legacy `test_mock.py` is documented.
-- [ ] All intended tests collect.
-- [ ] All blocking tests pass.
-- [ ] No unexpected warning indicates a broken contract or insecure setup.
-- [ ] Tracked `digital_products.db` remains unchanged unless an intentional reviewed release change occurred.
-- [ ] Tracked CSV/catalogue files remain unchanged after tests.
-- [ ] Git status is clean after the test run.
+This run verifies the PR #35 ref, not the final release candidate.
 
-## 5. GitHub Actions / CI
+## 5. Release-candidate CI gate
 
-- [ ] CI runs for Pull Requests.
-- [ ] CI runs for the release integration branch or `main`.
-- [ ] The release commit has a successful workflow run.
-- [ ] Dependency installation succeeded.
-- [ ] Test collection succeeded.
-- [ ] The intended complete suite succeeded.
-- [ ] Workflow logs are retained or accessible.
-- [ ] Failed runs are not described as passed.
-- [ ] Required status checks are enabled or their absence is documented.
+For the frozen release candidate:
 
-## 6. Database and catalogue acceptance
+- [ ] Run `python -m pytest -q test_server.py` in GitHub Actions.
+- [ ] Record workflow/run ID.
+- [ ] Record tested commit SHA.
+- [ ] Record runner, Python, pytest and dependency results.
+- [ ] Confirm 12 intended tests collect, unless a reviewed change updates the count.
+- [ ] Confirm all intended tests pass.
+- [ ] Confirm tracked database and catalogue files remain unchanged.
+- [ ] Confirm overall required workflow conclusion is successful.
+- [ ] Record warnings and accepted limitations.
 
-### Required counts
+Historical `test_mock.py` may continue to fail against removed V2 interfaces and does not block this gate.
 
-| Table | Expected release count | Observed count | Result |
+## 6. Catalogue and local database verification
+
+Run the importer only against a disposable output copy:
+
+```bash
+python import_real_catalog.py \
+  --source digital_products.db \
+  --output digital_products_real.db \
+  --csv-output real_product_catalog.csv
+```
+
+### Expected results derived from source
+
+| Item | Expected | Observed | Result |
 |---|---:|---:|---|
-| `products` | 11,000 |  |  |
-| `product_specs` | 2,000 |  |  |
-| `users` | Environment-dependent |  |  |
-| `favorites` | Environment-dependent |  |  |
-| `search_history` | Environment-dependent |  |  |
-| `search_results` | Environment-dependent |  |  |
-| `feedback` | Environment-dependent |  |  |
+| Total products | 11,000 |  |  |
+| Product specifications | 2,000 |  |  |
+| Imported laptops | 800 |  |  |
+| Imported smartphones | 833 |  |  |
+| Imported smart watches | 300 |  |  |
+| Imported headphones | 61 |  |  |
+| Imported tablets | 6 |  |  |
+| Recommendation-ready joins | 2,000 |  |  |
+| Duplicate product IDs | 0 |  |  |
+| Duplicate specification IDs | 0 |  |  |
+| Orphan specification rows | 0 |  |  |
 
-### Integrity and provenance
+### Verification record
 
-- [ ] Required tables exist.
-- [ ] Required columns exist.
-- [ ] Product/specification IDs are unique where required.
-- [ ] Every active specification joins to a product.
-- [ ] No unintended duplicate rows are introduced by repeated initialization.
-- [ ] `DataSource` is populated for active recommendation records.
-- [ ] Public source names and licences are reviewed.
-- [ ] Transformation and currency-normalization rules are documented.
-- [ ] Historical prices are not represented as live retail prices.
-- [ ] Missing technical fields are not fabricated.
-- [ ] The importer/reproduction path is tested or its prerequisites are documented.
-- [ ] Backup and rollback/recovery instructions exist.
+- [ ] Tested branch and commit recorded.
+- [ ] Python/dependency environment recorded.
+- [ ] Import command and exit result retained.
+- [ ] Built-in `verify_database()` output retained.
+- [ ] Count queries retained.
+- [ ] Duplicate and orphan queries retained.
+- [ ] Distinct `DataSource` values retained.
+- [ ] Missing fields use honest placeholders.
+- [ ] Historical price wording is retained.
+- [ ] Source/licence records are reviewed.
+- [ ] Source database and tracked files remain safe.
+- [ ] Importer was not pointed at a live production user database.
 
-## 7. PostgreSQL production persistence
+## 7. PostgreSQL deployment identity
 
-- [ ] Render PostgreSQL is provisioned.
-- [ ] `DATABASE_URL` is configured as an environment variable.
-- [ ] The application reports PostgreSQL in production health output.
-- [ ] Required tables and catalogue data are initialized.
-- [ ] A user can register and log in.
-- [ ] A search history record persists.
-- [ ] A favorite persists.
-- [ ] Feedback persists.
-- [ ] The service/database is restarted or redeployed.
-- [ ] The same user/history/favorite/feedback records remain available.
-- [ ] No production credentials appear in GitHub.
+- [ ] Render service name recorded.
+- [ ] Deployed API commit recorded.
+- [ ] `DATABASE_URL` presence confirmed without exposing its value.
+- [ ] Active database dialect confirmed as PostgreSQL.
+- [ ] PostgreSQL version recorded where safely available.
+- [ ] All seven required tables exist.
+- [ ] Catalogue counts match the accepted release dataset.
+- [ ] Health output contains no secret or stack trace.
+- [ ] CORS permits the intended production frontend origin.
+- [ ] CORS does not expose unnecessary credential behaviour.
 
-## 8. Authentication and privacy acceptance
+## 8. PostgreSQL persistence and recovery
 
-- [ ] Registration succeeds with valid data.
-- [ ] Required-field validation works.
-- [ ] Duplicate username/email behaviour matches the contract.
-- [ ] Password length/format rule matches the contract.
-- [ ] Stored password data is hashed, not plaintext.
-- [ ] Login works by documented username/email identifier.
-- [ ] Invalid credentials are rejected without revealing sensitive details.
-- [ ] `/api/auth/me` requires a valid bearer token.
-- [ ] Missing, malformed and invalid tokens are rejected.
-- [ ] `JWT_SECRET_KEY` is a random production environment value of at least 32 characters.
+Use non-sensitive demonstration accounts and data.
+
+- [ ] Register a test account.
+- [ ] Create one favorite.
+- [ ] Create one saved search/history record.
+- [ ] Confirm a result snapshot can be restored.
+- [ ] Submit one feedback record.
+- [ ] Record all entries before restart/redeploy.
+- [ ] Restart or redeploy through the approved process.
+- [ ] Confirm account persists.
+- [ ] Confirm favorite persists.
+- [ ] Confirm history and snapshot persist.
+- [ ] Confirm feedback persists.
+- [ ] Record current backup mechanism.
+- [ ] Record recovery/restore procedure.
+- [ ] Record application rollback method.
+- [ ] Record database/catalogue recovery method.
+- [ ] Record hosting limitations and mitigation.
+
+## 9. Authentication and privacy
+
+### Repository/CI evidence
+
+- [x] Registration/login/current-user path has automated coverage.
+- [x] Passwords are designed to be stored as hashes.
+- [x] Private history requires authentication in the canonical tests.
+- [x] Private favorites require authentication in the canonical tests.
+
+### Remaining release evidence
+
+- [ ] Required-field registration validation.
+- [ ] Duplicate username and email behaviour.
+- [ ] Password rule matches the contract.
+- [ ] Invalid credentials are rejected safely.
+- [ ] Missing/malformed/invalid token handling.
+- [ ] Production `JWT_SECRET_KEY` is a random environment value of at least 32 characters.
 - [ ] User A cannot read User B's history.
 - [ ] User A cannot delete User B's history.
-- [ ] User A cannot access or compare User B's favorites.
-- [ ] API/log output does not expose passwords or tokens.
+- [ ] User A cannot read or mutate User B's favorites.
+- [ ] Passwords, bearer tokens and secrets are absent from logs/evidence.
 
-## 9. Recommendation and pagination acceptance
+## 10. Recommendation and pagination
 
-- [ ] A natural-language query returns a successful response.
-- [ ] Category parsing works for supported categories.
-- [ ] Budget parsing works with plain and comma-formatted values.
-- [ ] Invalid numeric values receive the documented response.
-- [ ] Excluded brands are applied.
-- [ ] Explicit and text exclusions combine correctly if both are supplied.
-- [ ] Each result contains required product and source fields.
-- [ ] Match score and explanation are present and understandable.
-- [ ] Default page size is correct.
+### Repository/CI evidence
+
+- [x] Category and budget parsing have automated coverage.
+- [x] Page one returns 20 results in the isolated test dataset.
+- [x] Page two is available.
+- [x] A separate Top 5 is returned.
+
+### Remaining release evidence
+
+- [ ] Invalid numeric values.
+- [ ] Text and explicit brand exclusions.
+- [ ] Combined exclusion behaviour.
+- [ ] Match scores and reasons are understandable.
 - [ ] Maximum page size is enforced.
-- [ ] `total_candidates`, `page`, `per_page` and `total_pages` are consistent.
-- [ ] The separate Top 5 contains no more than five results.
-- [ ] Page 1 works.
-- [ ] A middle page works where available.
-- [ ] The last page works.
-- [ ] Empty/no-match behaviour is clear.
-- [ ] Out-of-range page behaviour matches the contract.
+- [ ] Page metadata is consistent.
+- [ ] Middle, last, empty and out-of-range pages behave as documented.
+- [ ] Deployed Network evidence matches the API contract.
+- [ ] No budget-alternative object is promised or demonstrated.
 
-## 10. Comparison acceptance
+## 11. Comparison
 
-- [ ] Exactly two valid product IDs succeed.
-- [ ] Exactly three valid product IDs succeed.
-- [ ] One ID is rejected.
-- [ ] More than three IDs are rejected.
+### Repository/CI evidence
+
+- [x] One product is rejected.
+- [x] Two valid products succeed.
+- [x] Same-category favorite comparison is covered.
+- [x] Mixed-category favorite comparison is rejected.
+
+### Remaining release evidence
+
+- [ ] Three valid products succeed.
+- [ ] More than three products are rejected.
 - [ ] Duplicate IDs are rejected.
-- [ ] Invalid/non-integer IDs are rejected.
-- [ ] Missing/unjoined IDs are rejected.
-- [ ] Comparison returns required specification fields.
-- [ ] Frontend comparison displays two products correctly.
-- [ ] Frontend comparison displays three products correctly.
-- [ ] Missing values are shown honestly, for example as `N/A` or `Not specified`.
+- [ ] Invalid and missing IDs are rejected.
+- [ ] Required specification fields are returned.
+- [ ] Two-product frontend display works.
+- [ ] Three-product frontend display works.
+- [ ] Missing values display honestly.
 
-## 11. Favorites acceptance
+## 12. Favorites
 
-- [ ] Authenticated user can add a favorite.
-- [ ] Repeated favorite save is idempotent or returns the documented result.
-- [ ] Authenticated user can list favorites.
-- [ ] Authenticated user can remove a favorite.
-- [ ] Unauthenticated requests are rejected.
-- [ ] Another user's favorites are inaccessible.
-- [ ] Two or three owned favorites in the same category can be compared.
-- [ ] Mixed-category favorite comparison is rejected.
-- [ ] Invalid or unowned favorite IDs are rejected.
+### Repository/CI evidence
 
-## 12. Search history acceptance
+- [x] Authenticated add/list/remove is covered.
+- [x] Unauthenticated list is rejected.
+- [x] Same-category favorite comparison is covered.
 
-- [ ] Authenticated page-one search saves history when documented.
-- [ ] Unauthenticated behaviour matches the contract.
-- [ ] History list is private and paginated where applicable.
-- [ ] History detail restores query, filters and result snapshot.
-- [ ] History delete removes only the owner's record.
+### Remaining release evidence
+
+- [ ] Repeated save is idempotent or returns the documented result.
+- [ ] Invalid product ID is rejected.
+- [ ] Unowned favorites cannot be compared.
+- [ ] Cross-user access is rejected.
+- [ ] Deployed frontend state updates correctly.
+- [ ] Favorite persists after restart/redeploy.
+
+## 13. Search history
+
+### Repository/CI evidence
+
+- [x] Authenticated search creates a history record.
+- [x] Unauthenticated history list is rejected.
+- [x] History detail restores query and saved data.
+- [x] Owner can delete history.
+
+### Remaining release evidence
+
+- [ ] History list boundary/pagination behaviour.
 - [ ] Cross-user detail access is rejected.
 - [ ] Cross-user delete is rejected.
-- [ ] Frontend can open a history result.
-- [ ] Frontend can delete a history record and update the list.
+- [ ] Frontend open/delete flow works.
+- [ ] History and snapshots persist after restart/redeploy.
 
-## 13. Feedback acceptance
+## 14. Feedback
 
-- [ ] `up` feedback returns HTTP 201.
-- [ ] `down` feedback returns HTTP 201.
-- [ ] Invalid vote is rejected.
-- [ ] Feedback is stored.
-- [ ] Optional user/history linkage behaves as documented.
-- [ ] Aggregate up/down/total values are correct.
-- [ ] Frontend prevents accidental duplicate submissions while pending.
-- [ ] Frontend displays success and error states.
+### Repository/CI evidence
 
-## 14. Product/source link acceptance
+- [x] `up` feedback returns creation success in the canonical test.
+- [x] Aggregate count is covered.
 
-- [ ] Result contains `purchase_url` and `data_source` where applicable.
-- [ ] Only safe `http` or `https` links are opened.
-- [ ] Links open without replacing the current result page unexpectedly.
-- [ ] Missing/invalid link fallback is clear.
-- [ ] Link wording does not falsely promise live checkout or availability.
-- [ ] Source and historical-price limitations are visible in documentation or UI.
+### Remaining release evidence
 
-## 15. Share and restore acceptance
+- [ ] `down` feedback.
+- [ ] Invalid vote rejection.
+- [ ] Optional user/history/top-product linkage.
+- [ ] Frontend pending/success/error states.
+- [ ] Persistence after restart/redeploy.
 
-- [ ] Share action creates a valid URL.
-- [ ] Plain search query restores in another browser/private window.
+## 15. Product/source links and data limitations
+
+- [x] Importer retains source/licence metadata in code.
+- [x] Fixed EUR/INR conversion rules are documented.
+- [x] Historical-price limitation is documented.
+- [ ] `DataSource` is populated for all active recommendation records in the tested database.
+- [ ] Product/source URLs use safe `http` or `https` schemes.
+- [ ] Invalid/missing URL fallback is clear.
+- [ ] Links do not imply guaranteed checkout, availability or live price.
+- [ ] Frontend and documentation use consistent limitation wording.
+
+## 16. Share and restore
+
+- [ ] Share creates a valid URL.
+- [ ] Query restores in an isolated browser/private window.
 - [ ] Spaces and special characters restore correctly.
-- [ ] Budget restores correctly.
-- [ ] Category and brand restore correctly where encoded.
+- [ ] Budget/category/brand restore correctly.
 - [ ] Multiple excluded brands restore correctly.
-- [ ] Restored state reruns or displays results as designed.
-- [ ] Share URL contains no password, token or private history data.
-- [ ] Failure to use the clipboard has a usable fallback.
+- [ ] Restored state behaves as designed.
+- [ ] URL contains no password, token or private history data.
+- [ ] Clipboard failure has a usable fallback.
 
-## 16. Frontend usability and compatibility
+## 17. Frontend usability and deployed E2E
 
-- [ ] Desktop layout is usable.
-- [ ] Mobile layout is usable.
-- [ ] Registration/login controls are understandable.
-- [ ] Loading state is visible.
-- [ ] Empty state is visible.
-- [ ] Validation error is visible.
-- [ ] Backend unavailable/timeout state is visible.
-- [ ] Buttons cannot be accidentally activated while a request is pending where relevant.
+### Deployment identity
+
+- [ ] GitHub Pages source branch/folder recorded.
+- [ ] GitHub Pages commit recorded.
+- [ ] Render API commit recorded.
+- [ ] PostgreSQL environment recorded.
+
+### Browser checks
+
+- [ ] Desktop layout usable.
+- [ ] Mobile layout usable.
+- [ ] Loading state visible.
+- [ ] Empty state visible.
+- [ ] Validation error visible.
+- [ ] Backend unavailable/timeout state visible.
+- [ ] Registration/login/logout works.
+- [ ] Recommendation and pagination work.
+- [ ] Comparison works.
+- [ ] Favorites work.
+- [ ] History works.
+- [ ] Feedback works.
+- [ ] Share/restore works.
 - [ ] Keyboard navigation reaches primary controls.
 - [ ] Focus indicators are visible.
 - [ ] Important controls have meaningful labels.
 - [ ] Browser console has no release-blocking errors.
-- [ ] Browser Network evidence shows the expected deployed endpoints and status codes.
+- [ ] Network evidence shows intended endpoints and status codes.
 
-## 17. Deployment smoke test
+## 18. External acceptance
 
-| Flow | Result | Evidence |
-|---|---|---|
-| GitHub Pages loads |  |  |
-| Render root/API health returns success |  |  |
-| Registration/login |  |  |
-| Recommendation page 1 |  |  |
-| Recommendation page 2 |  |  |
-| Comparison |  |  |
-| Favorite save/list/compare |  |  |
-| History list/detail/delete |  |  |
-| Feedback |  |  |
-| Share/restore |  |  |
-| Restart/redeploy persistence |  |  |
+### Participant 1
 
-- [ ] CORS permits the production frontend origin.
-- [ ] CORS does not expose unnecessary credential behaviour.
-- [ ] Production API responses contain no stack traces or secrets.
-- [ ] Health output clearly states database backend and data limitations.
-
-## 18. External acceptance testing
-
-### Tester 1
-
-- Name/identifier:
-- Non-team role:
-- Date:
+- Identifier/role:
+- Date/timezone:
 - Device/browser:
-- Tasks completed:
-- Passed observations:
-- Problems found:
+- Independent tasks:
+- Prompted tasks:
+- Problems/observations:
+- Rating:
 - Linked Issues:
-- Retest result:
+- Retest:
 
-### Tester 2
+### Participant 2
 
-- Name/identifier:
-- Non-team role:
-- Date:
+- Identifier/role:
+- Date/timezone:
 - Device/browser:
-- Tasks completed:
-- Passed observations:
-- Problems found:
+- Independent tasks:
+- Prompted tasks:
+- Problems/observations:
+- Rating:
 - Linked Issues:
-- Retest result:
+- Retest:
 
 ### Gate
 
-- [ ] At least two non-team acceptance records are complete where available before submission.
-- [ ] Blocking defects are fixed and retested or formally accepted with impact.
-- [ ] Tester evidence is not fabricated or backdated.
+- [ ] Two non-team participant records are complete.
+- [ ] The same task script was used.
+- [ ] Results were not fabricated or backdated.
+- [ ] Blocking findings were fixed/retested or formally accepted.
 
-## 19. Documentation acceptance
+## 19. Documentation consistency
 
+- [x] Project status reflects canonical CI and US-09 deferral in the Issue #59 branch.
+- [x] Requirements traceability reflects canonical CI and US-09 deferral in the Issue #59 branch.
+- [x] Execution plan reflects the current release path in the Issue #59 branch.
+- [x] This checklist separates completed and open evidence.
+- [ ] Architecture/design PR is reviewed and merged.
+- [ ] Agile delivery record is reviewed and merged.
+- [ ] Development toolchain record is reviewed and merged.
+- [ ] Release evidence index is reviewed and merged.
+- [ ] Database verification record is reviewed and merged.
 - [ ] README matches the final release.
-- [ ] Installation and local-run instructions work.
-- [ ] Test instructions identify runtime and test dependencies.
-- [ ] Architecture document/diagram matches the deployed system.
-- [ ] ERD/database document matches all release tables.
-- [ ] API contract matches final routes and response fields.
-- [ ] Data provenance/licence document is reviewed by Yuyang.
-- [ ] Backend/security explanation is reviewed by Zaikun.
-- [ ] Frontend/user-guide explanation is reviewed by Guanyu.
-- [ ] Project status and traceability match final evidence.
-- [ ] Agile/iteration evidence uses actual dates and results.
-- [ ] Known limitations and deferred scope are listed.
-- [ ] README links all final required documents.
+- [ ] API contract matches the final implementation.
+- [ ] User guide and deployment instructions are current.
+- [ ] Known limitations are listed consistently.
 
-## 20. Security and secret review
+## 20. Security and repository safety
 
-- [ ] No database password is committed.
-- [ ] No JWT secret is committed.
-- [ ] No API token is committed.
-- [ ] No private user password or bearer token appears in evidence screenshots/logs.
-- [ ] `.env` or equivalent secret files are ignored.
-- [ ] Production environment variables are configured outside the repository.
-- [ ] Error messages do not expose internal connection details.
+- [ ] No database password or full connection string is tracked.
+- [ ] No production JWT secret is tracked.
+- [ ] No API token is tracked.
+- [ ] No private account password or bearer token appears in evidence.
+- [ ] `.env` and equivalent secret files are ignored.
+- [ ] Production environment variables are configured outside GitHub source.
+- [ ] Error responses expose no stack traces or connection details.
+- [ ] Relevant tracked files and recent history have been scanned.
+- [ ] Any discovered credential was rotated rather than merely deleted.
 
-## 21. Final release actions
+## 21. Reconciliation and final release
 
-- [ ] All required User Stories have a final honest status.
-- [ ] All blockers are closed or formally accepted.
-- [ ] CI is green for the release commit.
-- [ ] Deployed smoke test passes.
-- [ ] External acceptance is complete.
-- [ ] Changelog is updated.
-- [ ] Release tag is created.
-- [ ] Final ZIP backup is created.
-- [ ] ZIP backup is opened and checked.
-- [ ] Submission/demo links are checked.
-- [ ] Final known limitations are recorded.
-- [ ] Team approves release/submission.
+Requires separate explicit approval before branch creation.
+
+- [ ] Reconciliation branch created from the approved V3 baseline.
+- [ ] V3 database/catalogue/importer implementation preserved.
+- [ ] V3 backend/frontend decisions preserved.
+- [ ] Useful `main` historical evidence retained selectively.
+- [ ] Conflicts resolved by the responsible component owners.
+- [ ] Canonical CI rerun after reconciliation.
+- [ ] Required runtime checks rerun after reconciliation.
+- [ ] Reviewed PR merged into `main`.
+- [ ] Final deployed commits match the release commit.
+- [ ] Changelog updated.
+- [ ] Release tag created.
+- [ ] Final ZIP/package created.
+- [ ] ZIP/package opened and checked.
+- [ ] Final links checked.
+- [ ] Final limitations recorded.
 
 ## 22. Final sign-off
 
@@ -352,6 +428,19 @@ This checklist records release evidence. It does not authorize the coordinator t
 | Backend owner | Zaikun Zheng |  |  |  |
 | Frontend owner | Guanyu Lu |  |  |  |
 
-## 23. Integrity statement
+## 23. Release decision
 
-A blank box means the check is not complete. A local result is not labelled production evidence. A branch-reported result is not labelled CI evidence. No missing test, review, deployment or acceptance result may be inferred or invented.
+Current decision: **Not ready for final release**.
+
+Open critical gates:
+
+- actual review and merge;
+- release-candidate CI;
+- local catalogue output;
+- deployed PostgreSQL identity/persistence;
+- browser E2E;
+- external acceptance;
+- reconciliation to `main`;
+- release tag and package.
+
+A blank box is incomplete. Repository implementation does not substitute for deployment, persistence, review or acceptance evidence.
