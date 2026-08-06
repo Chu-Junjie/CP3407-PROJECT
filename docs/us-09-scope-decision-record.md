@@ -1,111 +1,87 @@
-# US-09 Budget Alternatives — V3 Scope Decision Record
+# US-09 Scope Decision Record
 
-**Tracking Issue:** #40  
-**Current status:** `Deferred from V3 release`  
-**Coordinator:** Chu Junjie  
-**Decision date:** 6 August 2026, Singapore time (UTC+8)  
-**Selected option:** Option C — Defer
+**Project:** Smart Digital Product Recommendation Platform  
+**User story:** US-09 — Budget Alternatives  
+**Record owner:** Chu Junjie — Project Manager and Release Coordinator  
+**Decision:** Deferred from the current V3 release  
+**Backlog milestone:** `Unscheduled`
 
 ## 1. Decision
 
-US-09 Budget Alternatives is not part of the current V3 release commitment. It remains in the product backlog with an `Unscheduled` milestone.
+US-09 is deferred from the current V3 release.
 
-The current V3 release may provide recommendation filtering by budget, ranked results, a separate Top 5 and pagination. It must not claim that the API selects or returns a cheaper qualifying alternative.
+The current release supports maximum-budget filtering and ranks eligible products within the selected constraints. It does not promise a separately selected cheaper alternative that preserves equivalent specifications or user experience.
 
-## 2. Repository-derived basis
+## 2. Repository basis
 
-The decision is based on the authoritative `feature/product-database` implementation rather than an unrecorded verbal assumption.
+- `api-contract.md` does not define a budget-alternative response object.
+- `/api/recommend` returns filters, counts, pagination, Top 5 recommendations, page data and an optional history ID.
+- The backend does not return a separately selected cheaper-equivalent product.
+- `test_server.py` contains no US-09 acceptance case.
+- `index.html` contains optional display scaffolding, but it remains hidden when the backend does not provide an alternative.
+- Interface scaffolding alone is not end-to-end implementation evidence.
 
-### Backend and API evidence
+## 3. Current-release impact
 
-- `api-contract.md` documents recommendation filters, pagination, Top 5, history, comparison, favorites and feedback, but does not define a budget-alternative response field.
-- `/api/recommend` in `server.py` returns `filters`, `count`, `total_candidates`, pagination fields, `top_recommendations`, `data` and optional `history_id`.
-- The response does not calculate or return `budget_alternative`.
-- No deterministic eligibility rule exists for percentage/amount cheaper, same-category qualification or protected specifications.
+- No budget-alternative algorithm is added.
+- No additional API field is promised.
+- No US-09 scenario belongs to the canonical release suite.
+- E2E verifies maximum-budget filtering only.
+- User-facing documentation must not imply that a cheaper equivalent product is automatically generated.
+- US-09 remains visible in the future backlog rather than being reported as completed.
 
-### Automated-test evidence
+The normal ranked result set may contain lower-priced products that satisfy the selected filters. This is standard recommendation behaviour and is not a dedicated budget-alternative feature.
 
-- `test_server.py` verifies budget parsing and filtering.
-- It does not contain an acceptance test for selecting a cheaper alternative.
-- The retained V3 API suite therefore does not support a claim that US-09 is implemented or verified.
+## 4. Future implementation requirements
 
-### Frontend evidence
+A future implementation requires:
 
-- `index.html` contains a `budgetAlternative` display region and accepts an optional `budget_alternative` or `budgetAlternative` field.
-- The display code is compatibility/presentation scaffolding only.
-- Because the current backend contract does not produce the field, the frontend element does not establish an end-to-end feature.
+- same-category eligibility;
+- a defined saving threshold;
+- category-specific core specifications;
+- deterministic selection;
+- visible price savings and trade-offs;
+- an explicit API contract;
+- desktop and mobile interface states;
+- unit, API, E2E and user-acceptance tests;
+- no-result behaviour when no suitable alternative exists.
 
-## 3. Final requirement wording
+## 5. Risk rationale
 
-> US-09 is deferred from the current V3 release. The release supports budget-constrained recommendation filtering but does not promise a separately selected cheaper alternative. A future implementation must define deterministic eligibility, API fields, presentation, automated tests and deployed acceptance before the story can re-enter a release scope.
+Implementing US-09 without a precise equivalence rule could mislead users by presenting a cheaper product as comparable despite missing or inferior core specifications. Deferral avoids an ambiguous release claim and protects recommendation reliability.
 
-## 4. Reason for deferral
+## 6. Traceability
 
-Keeping US-09 in the current release would require new backend ranking rules, a revised API contract, automated tests, frontend states and deployed browser acceptance. Those requirements are not present in the current implementation baseline.
-
-Deferral avoids:
-
-- presenting dormant frontend scaffolding as a completed feature;
-- adding unplanned algorithm and API changes during release preparation;
-- weakening the distinction between budget filtering and alternative selection;
-- delaying verification of the implemented V3 account, catalogue, pagination and persistence work.
-
-## 5. Component impact
-
-| Area | V3 release treatment |
+| Field | Value |
 |---|---|
-| Backend/recommendation | No new alternative-selection algorithm is required for the current release. |
-| API | No `budget_alternative` field is part of the current V3 contract. |
-| Frontend | Existing optional rendering scaffolding may remain, but release documentation and demonstrations must not imply the field is produced. |
-| Automated tests | No US-09 acceptance test is required in the current canonical V3 suite. |
-| Deployed E2E | E2E verifies budget filtering only; it must not record US-09 as passed. |
-| Schedule | No additional implementation is added to the current release candidate. |
+| Current release status | Deferred |
+| Backlog status | Unscheduled |
+| Dedicated API support | Not implemented |
+| Dedicated frontend behaviour | Not active |
+| Automated acceptance | Not included in current release |
+| E2E scope | Budget filtering only |
+| Release documentation | Limitation must be stated clearly |
 
-## 6. Known limitation wording
+## 7. Review checklist
 
-Use the following statement in current release material:
+### Backend and algorithm
 
-> The current release filters recommendations by a user's maximum budget. It does not separately identify a cheaper alternative that preserves equivalent specifications.
+- [ ] Confirm the current API has no dedicated alternative response.
+- [ ] Confirm no current algorithm is represented as satisfying US-09.
+- [ ] Confirm deferral introduces no backend regression.
 
-## 7. Backlog definition
+### Frontend
 
-**Backlog status:** Deferred  
-**Milestone:** Unscheduled
+- [ ] Confirm inactive scaffolding does not mislead users.
+- [ ] Confirm no interface text promises the deferred feature.
+- [ ] Confirm E2E verifies budget filtering only.
 
-Before future implementation begins, the backlog item must define:
+### Project and release
 
-- cheaper-by percentage or absolute threshold;
-- same-category requirement;
-- protected use-case and core-specification rules;
-- relationship to Top 5 and pagination;
-- response fields and empty-state behaviour;
-- source and historical-price limitations;
-- automated boundary tests;
-- deployed desktop/mobile acceptance.
+- [x] Decision and backlog status recorded.
+- [x] Current-release limitation defined.
+- [x] Future implementation requirements retained.
+- [ ] Formal GitHub approvals recorded.
+- [ ] Traceability and final release documentation aligned after merge.
 
-## 8. Required documentation corrections
-
-The following coordinator-owned records should be updated during final closeout:
-
-- `README.md` — remove historical V3 `In-Progress` wording for US-09;
-- `docs/project-status.md` — record `Deferred`;
-- `docs/requirements-traceability.md` — replace `Scope confirmation required` with `Deferred`;
-- `docs/v3-execution-plan.md` — remove US-09 from current release gates;
-- `docs/final-acceptance-and-release-checklist.md` — record it as non-applicable for this release;
-- `docs/v3-release-evidence-index.md` — record this repository-derived decision;
-- demonstration and final-report wording — include the known limitation.
-
-## 9. Completion checklist
-
-- [x] Option C is selected.
-- [x] Deferral reason is supported by current repository evidence.
-- [x] Current V3 scope explicitly excludes US-09.
-- [x] Backend, API, frontend and test impacts are recorded.
-- [x] Known limitation wording is defined.
-- [x] Future backlog status is `Unscheduled`.
-- [ ] Coordinator-owned status documents are corrected in the final closeout PR.
-- [ ] This decision record receives actual GitHub review before merge.
-
-## 10. Ownership boundary
-
-This decision does not remove or modify teammate-owned backend, frontend or test code. The optional frontend renderer remains untouched. Any future US-09 implementation requires a new technical Issue, owner-controlled branch, tests and Pull Request.
+This record is prepared for formal review and merge after the relevant component owners confirm the current API and interface scope.
