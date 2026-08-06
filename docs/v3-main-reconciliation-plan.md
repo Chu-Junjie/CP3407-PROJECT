@@ -1,211 +1,274 @@
-# V3 and `main` Reconciliation Plan
+# V3 to Main Reconciliation Plan
 
 **Project:** Smart Digital Product Recommendation Platform  
-**Coordinator:** Chu Junjie  
-**Tracking:** Issue #43  
-**Working branch:** `docs/junjie-v3-reconciliation-plan`  
-**Target review base:** `feature/product-database`
+**Authoritative V3 baseline:** `feature/product-database`  
+**Target branch:** `main`  
+**Document owner:** Chu Junjie — Project Manager and Release Coordinator  
+**Status:** Prepared for formal review; execution begins only after approval and release-candidate verification
 
 ## 1. Purpose
 
-This document prepares a file-level plan for safely reconciling `main` with the current V3 baseline.
+This plan defines how the completed V3 implementation will be integrated into `main` without overwriting current backend, frontend, database, catalogue, importer or testing work with older branch content.
 
-It is a coordination record only. It does not merge branches, resolve conflicts, select a teammate-owned implementation, change release status or claim that any test, deployment, database or acceptance gate has passed.
+The plan separates technical implementation ownership from release coordination. It authorizes no automatic conflict resolution and no direct modification of teammate-owned implementation.
 
-## 2. Recorded comparison snapshot
+## 2. Branch relationship
 
-At the time this plan was prepared:
+Recorded comparison:
 
-- V3 baseline: `feature/product-database`
-- V3 head: `7c406515bd4b657372fe519869596825cdf91d56`
-- `main` head: `d8f2d3a3f4d0ff6df1be4a1e813f0451c50073b0`
-- merge base: `1c5696fe36a0d6ee4ca875267fa02e0278a51831`
-- branch state: `diverged`
-- V3 was 13 commits ahead of and 22 commits behind `main`
+| Item | Value |
+|---|---|
+| `main` commit | `d8f2d3a3f4d0ff6df1be4a1e813f0451c50073b0` |
+| V3 baseline commit | `7c406515bd4b657372fe519869596825cdf91d56` |
+| Merge base | `1c5696fe36a0d6ee4ca875267fa02e0278a51831` |
+| V3 ahead of `main` | 13 commits |
+| V3 behind `main` | 22 commits |
+| Relationship | Diverged |
 
-These values are a planning snapshot. They must be regenerated immediately before any reconciliation branch is created.
+The final reconciliation must be based on the then-current reviewed V3 release candidate rather than the recorded baseline commit above.
 
-## 3. Reconciliation principle
+## 3. Reconciliation principles
 
-Use `feature/product-database` as the V3 implementation baseline.
+1. `feature/product-database` is the authoritative V3 implementation baseline.
+2. V3 technical implementation must not be replaced by older `main` versions.
+3. Useful `main`-only project evidence may be retained when it does not conflict with V3.
+4. Conflicts in teammate-owned files must be resolved by the relevant component owner.
+5. Documentation-only changes must not be used to alter technical behaviour.
+6. The reconciliation branch must be reviewed and tested before merge to `main`.
+7. No release status may be marked complete before actual verification.
 
-Selectively preserve valid records that exist only on `main`, especially historical Task 3 evidence, without restoring obsolete implementation or obsolete completion claims.
+## 4. V3 implementation to preserve
 
-The following actions are prohibited until the corresponding owners approve them:
+The following V3 areas must be retained as the implementation source of truth unless the relevant owner approves a newer technical change.
 
-- choosing a backend or test version on behalf of Zaikun;
-- choosing a frontend version on behalf of Guanyu;
-- choosing a dataset, database, importer or PostgreSQL version on behalf of Yuyang;
-- merging either full branch into the other;
-- marking any unresolved release gate as Passed, Verified or Done.
+### Backend and API
 
-## 4. Confirmed ownership boundaries
+- `server.py` V3 Flask and SQLAlchemy implementation;
+- JWT registration and login;
+- recommendation, pagination and Top 5 response flow;
+- private search history and saved result snapshots;
+- favorites and favorite comparison;
+- product comparison and feedback endpoints;
+- database selection through `DATABASE_URL`.
 
-| Area | Owner | Coordinator boundary |
+Owner: Zaikun Zheng.
+
+### Database, catalogue and importer
+
+- V3 SQLAlchemy schema and relationships;
+- `import_real_catalog.py`;
+- `real_product_catalog.csv`;
+- `product_specs.csv`;
+- public-data provenance and conversion rules;
+- SQLite/PostgreSQL integration;
+- bundled database only when the database owner confirms the intended release treatment.
+
+Owner: Yuyang Zhou.
+
+### Frontend
+
+- V3 `index.html` interface;
+- structured recommendation filters;
+- pagination and comparison;
+- registration/login interface;
+- favorites and account centre;
+- history restoration and deletion;
+- feedback and sharing;
+- responsive and accessibility behaviour;
+- production API configuration.
+
+Owner: Guanyu Lu.
+
+### Automated tests and CI
+
+- current `test_server.py` V3 contract;
+- historical `test_mock.py` retained without misclassifying V2 incompatibilities as V3 regressions;
+- approved V3 GitHub Actions workflow.
+
+Owner: Zaikun Zheng for technical test content; Chu Junjie for workflow evidence and release coordination.
+
+## 5. `main` content eligible for selective retention
+
+The following `main`-only content may be retained when it is accurate, non-conflicting and useful for project traceability:
+
+- historical practical evidence;
+- coordinator command logs;
+- earlier compilation and dependency-check evidence;
+- frontend field-confirmation records;
+- database evidence records;
+- backend CI evidence records;
+- historical Issue drafts clearly labelled as historical;
+- non-conflicting improvements to project status and traceability.
+
+Retention does not mean that every `main` file must be copied. The reconciliation Pull Request must identify each retained file and its purpose.
+
+## 6. Files requiring owner-controlled comparison
+
+| File or area | Risk | Required owner |
 |---|---|---|
-| Backend, API, recommendation logic and automated tests | Zaikun (`ZhengZaikun`) | Junjie inventories differences and records decisions; Zaikun selects or changes implementation. |
-| Frontend and deployed UI behaviour | Guanyu (`Guanyu-Lu`) | Junjie inventories differences and records decisions; Guanyu selects or changes implementation. |
-| Dataset, catalogue, database, importer, provenance and PostgreSQL verification | Yuyang (`tiantian09091`) | Junjie preserves the V3 baseline and records evidence; Yuyang confirms technical choices. |
-| Governance, scheduling, evidence index and release coordination | Junjie (`Chu-Junjie`) | Junjie may prepare documentation changes, subject to team review. |
+| `server.py` | Older compatibility additions may conflict with V3 API/schema | Zaikun |
+| `index.html` | Later deployment or interface changes may affect V3 behaviour | Guanyu |
+| `requirements.txt` | Duplicate or different dependency strategy | Zaikun, with Yuyang for PostgreSQL driver |
+| `product_specs.csv` | Duplicate or conflicting catalogue specification content | Yuyang |
+| `digital_products.db` | Binary conflict and unclear release treatment | Yuyang |
+| `docs/project-status.md` | Different status snapshots may conflict | Junjie, with owner confirmation for technical claims |
+| `docs/requirements-traceability.md` | User-story status and evidence may conflict | Junjie, with relevant component owners |
+| `docs/definition-of-done.md` | Governance changes may overlap | Junjie |
+| `README.md` | Current V3 and historical claims require final consolidation | All component owners |
 
-## 5. File-level reconciliation matrix
+No conflict in these areas should be resolved solely by the release coordinator where the result changes technical meaning.
 
-### 5.1 V3 implementation and data baseline
+## 7. Pre-reconciliation gates
 
-| Path or area | Proposed source | Owner confirmation | Current planning status | Reason |
-|---|---|---|---|---|
-| `import_real_catalog.py` | `feature/product-database` | Yuyang | Preserve V3 | Yuyang's completed V3 importer is already on the V3 branch and is not missing development work. |
-| `real_product_catalog.csv` | `feature/product-database` | Yuyang | Preserve V3 | Current V3 catalogue source used for the expanded product baseline. |
-| `product_specs.csv` | `feature/product-database` unless Yuyang identifies a later valid correction | Yuyang | Owner confirmation required before integration | Both branch histories contain related specification records; the V3 version must not be overwritten by an older copy. |
-| Catalogue/database schema and SQLAlchemy/PostgreSQL integration | `feature/product-database` | Yuyang + Zaikun where backend code overlaps | Preserve V3 architecture; verification still open | The V3 branch is the authoritative technical baseline, while Issue #41 tracks release evidence. |
-| `digital_products.db` | Do not select by automatic merge | Yuyang | Special handling required | It is a binary tracked database and may contain test-generated changes. Counts and provenance must be verified rather than inferred from the file timestamp. |
-| `server.py` | No automatic choice | Zaikun | Technical-owner decision required | Both branches contain backend changes. The V3 SQLAlchemy/JWT/history/favorites/pagination contract must not be replaced by older implementation, but valid later fixes on `main` must be reviewed. |
-| `test_server.py` | No automatic choice | Zaikun | Technical-owner decision required | V3 currently has 12 passing API tests in PR #35 evidence; `main` also retains historical Task 3 test work. |
-| `test_mock.py` | Remains unresolved under Issue #34 | Zaikun | Blocked | The six legacy tests fail against the V3 contract. They must be updated, archived or formally excluded with recorded reasoning. |
-| `requirements.txt` | No automatic choice | Zaikun | Technical-owner decision required | Runtime and test dependency strategy must be consistent across local instructions, CI and deployment. |
-| `index.html` | No automatic choice | Guanyu | Technical-owner decision required | Both branches contain frontend changes. V3 account, favorites, history, pagination, comparison, feedback and share flows must be preserved where implemented. |
-| `api-contract.md` | V3 baseline, subject to Zaikun review | Zaikun | Review required | Contract wording must match the final backend and deployed API. |
+The reconciliation branch should not be created until the following records are available:
 
-### 5.2 V3 governance and acceptance records
+- formal GitHub review of the V3 documentation package;
+- approved CI workflow and canonical test scope;
+- approved US-09 scope decision;
+- approved database verification record;
+- reviewed V3 architecture and toolchain records;
+- final V3 release-candidate commit identified;
+- canonical test suite passed for the release candidate;
+- deployed frontend/API/database identity recorded;
+- blocking database, persistence, E2E and acceptance defects resolved or explicitly accepted.
 
-| Path | Proposed source | Owner/reviewer | Status | Reason |
-|---|---|---|---|---|
-| `docs/definition-of-done.md` | Reconcile from V3, then review valid `main`-only Task 3 evidence references | Junjie; technical owners review their sections | Documentation reconciliation required | V3 contains the current release vocabulary; `main` may contain later historical evidence additions. |
-| `docs/project-status.md` | Reconcile from V3, then add only verified later events | Junjie; all owners review technical status | Documentation reconciliation required | Current status must distinguish Implemented, Verified, Blocked and Done. |
-| `docs/requirements-traceability.md` | Reconcile from V3, then add only verified later evidence | Junjie; story owners review | Documentation reconciliation required | US-09 remains unresolved under Issue #40. |
-| `docs/v3-execution-plan.md` | V3 | Junjie | Preserve V3 and refresh later | Current execution sequence and release gates are defined here. |
-| `docs/final-acceptance-and-release-checklist.md` | V3 | Junjie + all evidence owners | Preserve unchecked template | Fields must not be populated before a frozen release candidate has actual evidence. |
-| `docs/v3-e2e-acceptance-evidence.md` | V3 | Junjie + Guanyu | Preserve V3 | Template is merged preparation; execution remains under Issue #42. |
-| `docs/v3-external-uat-record.md` | V3 | Junjie | Preserve V3 | Template is not an executed UAT result. |
-| `docs/v3-release-documentation-audit.md` | V3 | Junjie | Preserve V3 | Records documentation inconsistencies and correction order. |
+## 8. Reconciliation workflow
 
-### 5.3 `main`-only historical evidence for selective preservation
+### Step 1 — Freeze the V3 release candidate
 
-The following categories should be retained as historical evidence where valid, without restoring obsolete implementation:
+Record:
 
-| `main`-only area | Proposed treatment | Owner/reviewer | Notes |
-|---|---|---|---|
-| `docs/evidence/task3-*` command, install, compile, collection and test logs | Preserve in an explicitly historical evidence area | Junjie coordinates; Zaikun validates technical interpretation | Keep exact commands/results and failure history. Do not present older results as V3 release evidence. |
-| `docs/evidence/task3-database-side-effect-*` | Preserve as historical side-effect evidence | Junjie + Yuyang/Zaikun review | Useful for explaining why tracked SQLite files require careful restoration and isolation. |
-| `docs/task3-backend-ci-evidence.md` | Preserve or adapt as historical Task 3 evidence | Junjie + Zaikun | Must remain clearly separated from current PR #35 CI evidence. |
-| `docs/task2-database-evidence.md` | Preserve as historical evidence if Yuyang confirms accuracy | Yuyang | Do not use it as a substitute for Issue #41 V3/PostgreSQL verification. |
-| `docs/frontend_task2_field_confirmation.md` | Preserve as historical frontend evidence if Guanyu confirms usefulness | Guanyu | Do not treat it as current deployed V3 acceptance. |
-| `docs/issue-drafts/task3-*` | Retain only if still useful as historical drafts or convert to links to active Issues | Junjie + Zaikun | Avoid duplicating or contradicting active Issue #34. |
-| Later status additions on `main` | Extract verified facts only | Junjie + affected owner | Do not copy obsolete status wording wholesale. |
+- branch;
+- commit SHA;
+- date and timezone;
+- included Pull Requests;
+- known limitations;
+- current test and runtime evidence.
 
-## 6. Conflict classes
+No new feature work should enter the candidate without reopening the relevant release gates.
 
-### Class A — Preserve V3 by default
+### Step 2 — Create a controlled reconciliation branch
 
-Applies to completed V3 assets that do not have an owner-confirmed later correction:
+Create the branch from the reviewed V3 release candidate, not from `main`.
 
-- Yuyang's V3 importer and catalogue;
-- V3 acceptance and release-governance documents;
-- current V3 product/API/data architecture as a baseline.
+Recommended naming:
 
-### Class B — Preserve `main` evidence only
+```text
+release/v3-main-reconciliation
+```
 
-Applies to logs and records that document earlier work but should not replace current implementation:
+### Step 3 — Inventory `main`-only changes
 
-- Task 3 command logs;
-- historical dependency installation and compile evidence;
-- historical failed-suite and database-side-effect evidence.
+For every `main`-only file, classify it as:
 
-### Class C — Owner-controlled technical conflict
+- retain unchanged;
+- adapt as documentation only;
+- superseded by V3;
+- conflict requiring owner decision;
+- exclude from the final release.
 
-Requires the component owner to provide the final selection or owner-controlled commit:
+Record the classification and rationale in the reconciliation Pull Request.
 
-- `server.py`;
-- `test_server.py` and `test_mock.py`;
-- `requirements.txt`;
-- `index.html`;
-- overlapping database/specification files or configuration.
+### Step 4 — Integrate approved non-conflicting evidence
 
-### Class D — Coordinator-owned documentation reconciliation
+Bring in only records that improve traceability without changing the V3 technical implementation.
 
-Junjie may prepare changes on a documentation-only branch, but technical claims remain subject to owner review:
+### Step 5 — Resolve owner-controlled conflicts
 
-- project status;
-- requirements traceability;
-- Definition of Done;
-- release evidence index;
-- reconciliation and release plans.
+- Zaikun resolves backend, API, algorithm and test conflicts;
+- Yuyang resolves database, catalogue, importer and binary-database conflicts;
+- Guanyu resolves frontend and deployment-interface conflicts;
+- Junjie resolves coordinator-owned status, traceability and release-document conflicts.
 
-## 7. Required owner decisions before implementation
+Every technical resolution should have a clear commit and review trail.
 
-### Yuyang
+### Step 6 — Update final project documentation
 
-- confirm the V3 catalogue/specification/importer files that must be preserved;
-- identify any valid `main`-only data or database evidence to retain;
-- confirm handling of the tracked SQLite database;
-- provide Issue #41 verification evidence when available.
+After the technical candidate is stable:
 
-### Zaikun
+- update README to clearly distinguish the current release from historical iterations;
+- align project status and traceability with actual results;
+- record the final test command and evidence;
+- record deployment URLs and commit identities;
+- record accepted limitations;
+- complete only those release checklist items supported by evidence.
 
-- decide the final `test_mock.py` disposition and canonical complete test command;
-- identify valid `main`-only backend fixes, if any;
-- confirm final `server.py`, `test_server.py` and dependency strategy;
-- review CI workflow PR #35.
+### Step 7 — Run final verification
 
-### Guanyu
+Required checks include:
 
-- identify valid `main`-only frontend changes, if any;
-- confirm the V3 frontend version and deployment identity;
-- review the final `index.html` integration choice;
-- participate in Issue #42 deployed E2E execution.
+- canonical V3 test suite;
+- tracked-file integrity;
+- catalogue and schema integrity;
+- deployed health and database identity;
+- authentication and privacy;
+- recommendation, pagination and comparison;
+- favorites, history, feedback and sharing;
+- desktop and mobile smoke tests;
+- accepted E2E and external acceptance scope;
+- secret and packaging review.
 
-### Junjie
+### Step 8 — Open the final Pull Request to `main`
 
-- keep all unresolved gates visible;
-- prepare the evidence and documentation inventory;
-- avoid selecting teammate-owned implementation;
-- create the final review package only after owner inputs are recorded.
+The Pull Request must include:
 
-## 8. Proposed integration sequence
+- release-candidate SHA;
+- reconciliation branch SHA;
+- file-classification summary;
+- owner-controlled conflict decisions;
+- test and runtime evidence;
+- accepted limitations;
+- reviewer approvals;
+- rollback instructions.
 
-1. Keep PR #35 Draft until Zaikun records the final test-scope decision.
-2. Resolve or formally defer US-09 through Issue #40.
-3. Obtain Issue #41 database/PostgreSQL verification evidence.
-4. Confirm the deployed frontend/API identity and execute Issue #42.
-5. Refresh the two-branch comparison and file inventory.
-6. Obtain written file-level decisions from all three technical owners.
-7. Create one separately approved reconciliation branch from the latest V3 baseline.
-8. Bring in `main`-only historical evidence without restoring obsolete implementation.
-9. Apply owner-controlled technical resolutions.
-10. Run the canonical complete test suite and database verification.
-11. Open a reconciliation PR for all affected owners and at least one non-author reviewer.
-12. Merge to `main` only after every applicable release gate has actual evidence.
+### Step 9 — Merge, tag and package
 
-## 9. Review package policy
+After approval and successful required checks:
 
-Draft Issues and Draft PRs may be prepared before the final group review so that owners can review one coordinated package later.
+- merge the reconciliation Pull Request to `main`;
+- confirm the final `main` SHA;
+- create the release tag;
+- produce the final project archive;
+- record checksum and backup location;
+- confirm the deployed version corresponds to the intended release.
 
-Until the review package is ready:
+## 9. Rollback approach
 
-- do not merge Draft PRs;
-- do not request a false approval on incomplete evidence;
-- do not mark unresolved scenarios Passed;
-- record each PR's dependency on Issues #34, #40, #41, #42 and #43 where applicable;
-- keep teammate-owned implementation unchanged unless the owner supplies or explicitly approves the change.
+Before integration:
 
-## 10. Current status
+- retain the V3 release-candidate SHA;
+- retain the pre-merge `main` SHA;
+- retain database backup or restoration instructions;
+- ensure the release can be redeployed from the V3 candidate if reconciliation introduces a defect.
 
-- File-level planning: **Prepared for review**
-- Reconciliation branch implementation: **Not started**
-- Technical conflict resolution: **Not started**
-- Complete release test: **Blocked by Issue #34**
-- US-09 scope: **Pending Issue #40**
-- Database/PostgreSQL verification: **Pending Issue #41**
-- Deployed E2E acceptance: **Pending Issue #42**
-- Merge to `main`: **Not authorized**
+A rollback must not use the catalogue importer against a live database containing user data.
 
-## 11. Completion criteria for this planning document
+## 10. Reconciliation record template
 
-- [ ] Yuyang confirms the data/database/importer entries.
-- [ ] Zaikun confirms the backend/test/dependency entries.
-- [ ] Guanyu confirms the frontend entries.
-- [ ] Junjie updates the matrix using only recorded owner decisions.
-- [ ] The team approves the integration direction.
-- [ ] A separate implementation/reconciliation branch is explicitly authorized.
+| Field | Value |
+|---|---|
+| V3 release-candidate SHA | Pending |
+| Reconciliation branch | Pending |
+| Pre-merge `main` SHA | Pending |
+| Final reconciliation SHA | Pending |
+| Canonical CI result | Pending |
+| Database verification | Pending |
+| Deployed E2E result | Pending |
+| External acceptance | Pending |
+| Accepted limitations | Pending |
+| Reviewer approvals | Pending |
+| Final `main` SHA | Pending |
+| Release tag | Pending |
+| Package/checksum | Pending |
 
-No unchecked item may be inferred as complete from the existence of code or documentation alone.
+## 11. Approval criteria
+
+The reconciliation plan is ready for execution when:
+
+- component owners approve the preservation and conflict boundaries;
+- the V3 submission documentation is merged;
+- the release candidate is frozen and verified;
+- no unresolved critical defect remains;
+- the project team agrees that the recorded limitations are acceptable.
+
+This document prepares the integration process. It does not itself merge branches, resolve technical conflicts or establish release completion.
