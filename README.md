@@ -41,7 +41,7 @@ Use build command `pip install -r requirements.txt` and start command `gunicorn 
 
 Welcome to the Smart Digital Product Recommendation Platform repository. This project aims to help users find the most suitable digital products (e.g., laptops, smartphones, peripherals) that fit their budget and needs through intelligent and personalized assessment algorithms, simplifying the decision-making process in a tech market filled with overwhelming information.
 
-🌟 **Live Demo:** [Click here to experience our Iteration 1 Platform](https://chu-junjie.github.io/CP3407-PROJECT/)
+🌟 **Live Demo:** [Click here to experience our Platform](https://chu-junjie.github.io/CP3407-PROJECT/)
 
 ---
 
