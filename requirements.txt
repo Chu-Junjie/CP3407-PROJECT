@@ -4,3 +4,6 @@ gunicorn>=22,<24
 PyJWT>=2.8,<3.0
 SQLAlchemy>=2.0,<3.0
 psycopg[binary]>=3.1,<4.0
+pandas>=2.0,<3.0
+pytest
+requests

@@ -1,0 +1,29 @@
+Command: python -m pytest --collect-only -q
+Interpreter: C:\Users\29034\AppData\Local\Programs\Python\Python314\python.exe
+Python: 3.14.6
+
+test_mock.py::test_mock_database_setup_imports_csv_when_table_is_missing
+test_mock.py::test_mock_health_endpoint_without_real_database
+test_mock.py::test_mock_recommend_endpoint_without_running_real_engine
+test_mock.py::test_mock_database_query_contains_exclusion_filter
+test_mock.py::test_mock_leaderboard_uses_controlled_candidate_products
+test_mock.py::test_mock_missing_csv_error_response
+test_server.py::test_us01_parse_explicit_budget
+test_server.py::test_us01_parse_no_budget
+test_server.py::test_us01_parse_budget_with_comma
+test_server.py::test_us02_database_setup_imports_rows
+test_server.py::test_us02_database_setup_does_not_duplicate_rows
+test_server.py::test_us02_health_endpoint_reports_database
+test_server.py::test_us03_process_post_filters
+test_server.py::test_us03_accept_intent_as_query
+test_server.py::test_us03_invalid_max_price_falls_back_to_query
+test_server.py::test_us04_match_score_is_between_zero_and_one_hundred
+test_server.py::test_us04_matching_preferences_receive_higher_score
+test_server.py::test_us04_reasons_describe_matching_preferences
+test_server.py::test_us05_candidates_never_exceed_maximum_budget
+test_server.py::test_us05_leaderboard_contains_at_most_five_sorted_items
+test_server.py::test_us05_recommendation_api_returns_required_fields
+
+21 tests collected in 2.12s
+
+Exit code: 0
