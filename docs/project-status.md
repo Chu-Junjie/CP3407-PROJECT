@@ -37,7 +37,7 @@ Meeting decisions do not replace GitHub Reviews, CI output, deployed-environment
 | Deployed frontend identity | Unverified | @Guanyu-Lu records GitHub Pages source and visible commit |
 | Desktop/mobile E2E | Not Run | @Guanyu-Lu executes UI flows; @ZhengZaikun and @tiantian09091 confirm API/data observations |
 | External acceptance | Not Run | @Chu-Junjie coordinates two non-team participants |
-| Reconciliation to `main` | Not started | Governed by Issue #43 and PR #44 |
+| Merged into main through PR #62 / #64 | Governed by Issue #43 and PR #44 |
 | Release tag and final package | Not started | Created only after verified merge to `main` |
 
 ## 4. Current release scope
