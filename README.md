@@ -105,9 +105,9 @@ Velocity is a measure of how much work our team successfully completed in this i
 * US-02 Estimate: 10 Days (Completed)
 * US-03 Estimate: 14 Days (Completed)
 
-**Actual Velocity = 12 + 10 + 14 = 36 Days**
+**Velocity**:36 Days /(20 working days * 4 teammates) =  **0.45**
 
-**Conclusion:** Our team's actual velocity for Iteration 1 exactly matches our initial planned capacity (36 Days). This proves that our task breakdowns and estimations were highly accurate, giving us a reliable baseline (Velocity = 36 Days /(20 working days * 4 teammates) = 0.45) for planning Iteration 2!
+**Conclusion:** Our team's actual velocity for Iteration 1 exactly matches our initial planned capacity (36 Days). This proves that our task breakdowns and estimations were highly accurate, giving us a reliable baseline for planning Iteration 2!
 
 ### 📉 Burn Down Graph
 Below is the Burn Down Graph for tracking the remaining effort during Iteration 1. The total estimated effort starts at 11 days and is planned to burn down linearly to 0 by Day 10.
@@ -148,9 +148,9 @@ At the end of Iteration 2, our team successfully completed all planned tasks foc
 * **US-05 Estimate:** 10 Days (Completed)
 * **US-06 Estimate:** 13 Days (Completed)
 
-**Actual Velocity = 13 + 10 + 13 = 36 Ideal Days**
+**Velocity**:36 Days /(20 working days * 4 teammates) =  **0.45**
 
-**Reflection:** Our actual velocity (36 Days) perfectly matches our projected capacity. This indicates our team's estimation accuracy and focus factor (Velocity:36 Days /(20 working days * 4 teammates) = 0.45) have stabilized. We will use this exact velocity of **36 Days** as the rigid baseline to plan our final sprint (Iteration 3).
+**Reflection:** Our actual velocity (36 Days) perfectly matches our projected capacity. This indicates our team's estimation accuracy and focus factor  have stabilized. We will use this exact velocity of **36 Days** as the rigid baseline to plan our final sprint (Iteration 3).
 
 ### 📉 Iteration 2 Burn Down Graph
 Below is the Burn Down Graph for Iteration 2. The effort started at 36 days and successfully burned down to 0, demonstrating a healthy Agile cadence where tasks were sequentially moved to 'Done'.
@@ -177,8 +177,34 @@ Based on our Iteration 2 Actual Velocity of 36 Days, we have updated the backlog
 | **US-09** | Budget Alternatives | **As a** budget-conscious consumer, **I want to** see a cheaper "budget alternative" for top-tier expensive recommendations, **so that** I can save money without sacrificing core experiences. | 50 | 12 | 🟢 Done |
 | **US-10** | Share Leaderboard | **As a** user helping family or friends choose a device, **I want to** generate a shareable link of the customized leaderboard, **so that** I can easily send the tailored recommendation results for them to view on their own devices. | 50 | 10 | 🟢 Done |
 
-**Total Iteration 3 Effort Estimate = 7 + 7 + 12 + 10 = 36 Days** *(Perfectly aligned with team velocity!)*
+### ⏱️ Actual Velocity Calculation for Iteration 3
 
+At the end of Iteration 3, our team successfully completed all planned tasks focusing on product conversion, user feedback and result sharing.
+
+- **US-07 Estimate:** 7 Days (Completed)
+- **US-08 Estimate:** 7 Days (Completed)
+- **US-09 Estimate:** 12 Days (Completed)
+- **US-10 Estimate:** 10 Days (Completed)
+
+**Velocity**:36 Days /(20 working days * 4 teammates) = **0.45**
+
+**Reflection:**  
+Our actual velocity for Iteration 3 remained consistent with Iteration 1 and Iteration 2, both of which also achieved 36 days of completed work. This shows that the team maintained a stable delivery capacity across all three iterations.
+
+In this iteration, the team extended the system beyond the core recommendation pipeline by adding product/source links, feedback, budget-oriented support and shareable recommendation results. The final velocity of **36 Days** confirms that the Iteration 3 backlog was planned within the team’s established capacity and completed as expected.
+
+### 📉 Iteration 3 Burn Down Graph
+
+Below is the Burn Down Graph for Iteration 3. The total estimated effort started at 36 days and gradually reduced to 0 as US-07, US-08, US-09 and US-10 were completed.
+
+```mermaid
+xychart-beta
+    title "Iteration 3 End-of-Sprint Burn Down"
+    x-axis "Days Left" [20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0]
+    y-axis "Work Left (Days)" 0 --> 40
+    line "Ideal Trend" [36, 32.4, 28.8, 25.2, 21.6, 18.0, 14.4, 10.8, 7.2, 3.6, 0]
+    bar "Actual Remaining" [36, 36, 36, 29, 29, 22, 22, 10, 10, 10, 0]
+```
 ---
 
 ## 7. System Architecture & Modeling
