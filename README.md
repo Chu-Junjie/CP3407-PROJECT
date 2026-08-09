@@ -43,7 +43,8 @@ Welcome to the Smart Digital Product Recommendation Platform repository. This pr
 
 🌟 **Live Demo:** [Click here to experience our Platform](https://chu-junjie.github.io/CP3407-PROJECT/)
 
-📘 **Web Application User Guide and Demo Walkthrough:** [docs/web-application-user-guide.pdf](docs/web-application-user-guide.pdf)
+📘 **Web Application User Guide and Demo Walkthrough:** [docs/web-application-user-guide.pdf](docs/CP3407_Web_Application_User_Guide_Group8.pdf
+)
 
 ---
 
