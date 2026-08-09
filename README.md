@@ -1,5 +1,44 @@
 # CP3407---Smart Digital Product Recommendation Platform
 
+> **Teacher-feedback revision (5 August 2026):** this working copy supersedes the earlier Top-5/CSV prototype described later in this historical README. It now uses SQLAlchemy with PostgreSQL support, stores 2,000 recommendation-ready public-dataset records in the bundled SQLite database, supports registration/login and persistent search history, and exposes every matching result through 20-item pagination. See [Teacher Feedback Change Request](docs/teacher-feedback-change-request.md).
+
+## Current runnable version
+
+- `server.py`: Flask API, authentication, recommendation, comparison, feedback and history.
+- `digital_products.db`: local SQLite database containing 11,000 product rows, including 2,000 joined real-name catalogue/specification records.
+- `index.html`: static frontend for GitHub Pages; production API base URL points to Render.
+- Production database: set `DATABASE_URL` to a Render PostgreSQL connection string. Without it, the app uses local SQLite.
+- Catalogue disclosure: the 2,000 active recommendation records come from attributed public datasets. They are historical snapshots, not live retail inventory or live prices. Missing specifications remain `Not specified` rather than being invented.
+- Account center: the avatar in the top-right opens persistent favorites and search history. Users can compare 2–3 favorite products when they belong to the same product category.
+
+### Run locally
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python server.py
+```
+
+Serve `index.html` from another terminal with `python3 -m http.server 8000`, then open `http://127.0.0.1:8000`. Run automated checks with `.venv/bin/pytest -q`.
+
+### Catalogue sources and transformations
+
+Retrieved 5 August 2026. Each database row retains its source in `product_specs.DataSource`.
+
+| Active category | Rows | Public source | Licence | Price treatment |
+|---|---:|---|---|---|
+| Laptops | 800 | [Laptop Price dataset](https://www.kaggle.com/datasets/ironwolf437/laptop-price-dataset) | Apache 2.0 | Historical EUR converted at fixed `1 EUR = 1.08 USD` |
+| Smartphones | 833 | [Smartphone Dataset](https://www.kaggle.com/datasets/muzammilbaloch/smartphone-dataset) | Apache 2.0 | Historical INR converted at fixed `1 USD = 83 INR` |
+| Smart Watches | 300 | [Fitness Trackers Products Ecommerce](https://www.kaggle.com/datasets/devsubhash/fitness-trackers-products-ecommerce) | CC BY-SA 4.0 | Historical INR converted at fixed `1 USD = 83 INR` |
+| Headphones | 61 | [Datafiniti Electronics Product Pricing](https://www.kaggle.com/datasets/manishkc06/electronics-product-pricing-dataset) | CC0 | Historical USD; median of recorded merchant prices per product |
+| Tablets | 6 | Same Datafiniti source | CC0 | Historical USD; median of recorded merchant prices per product |
+
+`import_real_catalog.py` reproduces the import, outputs `real_product_catalog.csv` for human inspection, sanitizes users/history/favorites/feedback, and validates table/category counts. The 9,000 older behavioural rows remain for project continuity but do not participate in recommendations unless they have a matching `product_specs` row.
+
+### Render configuration
+
+Use build command `pip install -r requirements.txt` and start command `gunicorn server:app`. Add a Render PostgreSQL database and set `DATABASE_URL` and a random 32+ character `JWT_SECRET_KEY` on the web service. A free ephemeral web-service filesystem must not be relied on for user accounts or history; PostgreSQL provides persistence across deploys/restarts.
+
 Welcome to the Smart Digital Product Recommendation Platform repository. This project aims to help users find the most suitable digital products (e.g., laptops, smartphones, peripherals) that fit their budget and needs through intelligent and personalized assessment algorithms, simplifying the decision-making process in a tech market filled with overwhelming information.
 
 🌟 **Live Demo:** [Click here to experience our Iteration 1 Platform](https://chu-junjie.github.io/CP3407-PROJECT/)
@@ -20,14 +59,15 @@ In today's tech market, digital products iterate rapidly with complex specificat
 
 ## 3. Features
 * **Smart Assessment:** Provide a quick, intuitive, personalized questionnaire (e.g., budget range, primary scenarios like 3D modeling/gaming/office work, portability or battery life preferences).
-* **Personalized Recommendations:** Display the top 3 recommended digital products based on matching scores, along with reasons for the recommendation.
+* **Personalized Recommendations:** Rank matching products, highlight the top five, and let users browse every match through pagination with explanations and scores.
 * **Product Comparison:** Allow users to compare multiple recommended products side-by-side, clearly displaying core specs like CPU, GPU, RAM, and price in a table format.
+* **Accounts and History:** Register or log in to preserve searches and reopen result snapshots later.
 ---
 
 ## 4. Technology Stack
-* **Frontend:** to be confirmed
-* **Backend:** Python 
-* **Database:** to be confirmed
+* **Frontend:** HTML, CSS and JavaScript (GitHub Pages)
+* **Backend:** Python, Flask and SQLAlchemy (Render)
+* **Database:** SQLite for the bundled demonstration; PostgreSQL through `DATABASE_URL` for persistent production use
 * **Design/UI:** Figma (for rapid prototyping and testing based on Lean UX principles)
 * **IDE & Tools:** Git/GitHub, PyCharm
 ---
@@ -40,7 +80,7 @@ This project is collaboratively developed by a team of 4 members. The specific r
 | **Junjie Chu** | Project Manager | Overall project schedule management, task allocation, agile iteration advancement, and writing Practical reports. |
 | **Guanyu Lu** | UI/UX Designer & Frontend Developer | UI/UX interaction design (Figma prototypes), frontend page development, and component interaction implementation. |
 | **Zaikun Zheng**| Backend & Algorithm Engineer | Backend API development, core recommendation algorithm, and matching logic design/implementation. |
-| **Yuyang Zhou** | Database Administrator | Digital product dataset cleaning, database schema design, AWS/local database deployment, and performance tuning. |
+| **Yuyang Zhou** | Database Administrator | Public product dataset cleaning/import, database schema design, SQLite/PostgreSQL integration, data-provenance documentation, and verification. |
 
 ---
 
@@ -241,7 +281,9 @@ In Iteration 2, we adopted **Test-Driven Development (TDD)** as our primary engi
 2. **Integration Testing:** We test the Flask API endpoints combined with the SQLite database to ensure the system correctly fetches, filters, and returns JSON payloads.
 3. **Acceptance Testing:** We map our tests directly to the Acceptance Criteria of our User Stories to guarantee business value delivery.
 
-### 📋 Test Cases (15 Cases across 5 User Stories)
+### 📋 Historical test-plan examples
+
+The table below documents the earlier iteration plan. The current executable suite is `test_server.py` (10 tests) and additionally covers account authentication, private/persistent history, deletion, feedback, comparison and multi-page results.
 Below are 15 carefully designed test cases covering both completed (US-01, 02, 03) and upcoming (US-04, 06) user stories, following the exact standard from the textbook.
 
 | User Story | Test Case ID | Test Description | Expected Result |
@@ -252,7 +294,7 @@ Below are 15 carefully designed test cases covering both completed (US-01, 02, 0
 | **US-02: DB Setup** | TC-02.1 | Initialize empty database on startup | System automatically reads CSV and creates the SQLite table. |
 | | TC-02.2 | Check `/api/health` endpoint | Returns HTTP 200 with the exact row count of the database. |
 | | TC-02.3 | Prevent duplicate imports | Running setup twice does not duplicate records in the database. |
-| **US-03: Leaderboard**| TC-03.1 | Request recommendations | API returns exactly 5 (or fewer) product items in a JSON array. |
+| **US-03: Leaderboard**| TC-03.1 | Request recommendations | API returns a page of results and metadata needed to browse every matching item. |
 | | TC-03.2 | Verify sorting order | The returned JSON array is strictly sorted by `match_score` descending. |
 | | TC-03.3 | Verify budget constraint | All 5 returned products have a price lower than or equal to the user's budget. |
 | **US-04: Explanation**| TC-04.1 | Verify reason payload | The JSON response object contains a `reason` string field. |
