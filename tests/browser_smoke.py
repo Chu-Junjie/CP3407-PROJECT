@@ -40,8 +40,8 @@ def main():
 
                 page.route('http://127.0.0.1:5000/api/**', api)
                 page.goto('http://127.0.0.1:8000/')
-                expect(page.locator('html')).to_have_attribute('lang', 'zh-CN')
-                expect(page.locator('#submitBtn')).to_have_text('查找推荐产品')
+                expect(page.locator('html')).to_have_attribute('lang', 'en')
+                expect(page.locator('#submitBtn')).to_have_text('Find My Device')
 
                 def fits():
                     assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'), page.evaluate('({width: innerWidth, scroll: document.documentElement.scrollWidth})')

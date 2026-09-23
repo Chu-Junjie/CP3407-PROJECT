@@ -1,6 +1,6 @@
 # Mobile layout and Chinese language support
 
-The website defaults to Simplified Chinese. The header language selector switches
+The website defaults to English. The header language selector switches
 between Chinese and English immediately and stores the preference in
 `cp3407_language`. Switching languages preserves form values, recommendation
 results, checked products, authentication and the current screen.
@@ -35,7 +35,7 @@ The browser script uses a temporary SQLite database and routes browser API
 requests through the actual Flask test client. It never contacts production or
 writes to the bundled database. Checks cover:
 
-- Chinese default, English switch, persistence across reloads, and retained state.
+- English default, Chinese switch, persistence across reloads, and retained state.
 - Both languages at 320, 375, 390, 430, 768 and 1280 px without page overflow.
 - Registration, recommendations, favorites, comparison, history and feedback.
 - Independent comparison-table scrolling and translated validation messages.

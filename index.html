@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -8,7 +8,7 @@
         content="Smart Digital Product Recommendation System — personalised product recommendations based on a Flask recommendation API."
     >
     <meta name="theme-color" content="#0f62fe">
-    <title>智能数码产品推荐</title>
+    <title>Smart Digital Product Recommendation</title>
 
     <style>
         :root {
@@ -750,7 +750,7 @@
                 <label class="sr-only" for="languageSelect">Language</label>
                 <select id="languageSelect" aria-label="Language">
                     <option value="zh-CN" lang="zh-CN">简体中文</option>
-                    <option value="en" lang="en">English</option>
+                    <option value="en" lang="en" selected>English</option>
                 </select>
             <button id="userMenuBtn" class="user-menu-btn" type="button" hidden aria-label="Open user account">
                 <span id="userAvatar" class="user-avatar" aria-hidden="true">U</span>
@@ -1276,10 +1276,10 @@
 ].map(([pattern, replacement]) => [new RegExp(pattern), replacement]);
         const localizedContent = new WeakMap();
         const localizedAttributes = new WeakMap();
-        let language = "zh-CN";
+        let language = "en";
         try {
-            if (localStorage.getItem("cp3407_language") === "en") language = "en";
-        } catch { /* Use Chinese when browser storage is unavailable. */ }
+            if (localStorage.getItem("cp3407_language") === "zh-CN") language = "zh-CN";
+        } catch { /* Use English when browser storage is unavailable. */ }
 
         function translateText(value) {
             const original = String(value ?? "");
@@ -2446,7 +2446,7 @@
 
         applyLanguage();
         document.getElementById("languageSelect").addEventListener("change", event => {
-            language = event.target.value === "en" ? "en" : "zh-CN";
+            language = event.target.value === "zh-CN" ? "zh-CN" : "en";
             try { localStorage.setItem("cp3407_language", language); } catch { /* Keep session preference. */ }
             applyLanguage();
         });
