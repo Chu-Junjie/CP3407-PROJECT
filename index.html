@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta
         name="description"
         content="Smart Digital Product Recommendation System — personalised product recommendations based on a Flask recommendation API."
     >
     <meta name="theme-color" content="#0f62fe">
-    <title>Smart Digital Product Recommendation</title>
+    <title>智能数码产品推荐</title>
 
     <style>
         :root {
@@ -51,7 +51,7 @@
             color: var(--text);
             font-family:
                 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-                "Segoe UI", sans-serif;
+                "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
         }
 
         button,
@@ -678,6 +678,64 @@
                 width: 100%;
             }
         }
+
+        .brand-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .brand-identity { min-width: 0; }
+        .brand-mark, .user-avatar { flex-shrink: 0; }
+        #languageSelect {
+            min-height: 44px; max-width: 100%; padding: 8px 12px;
+            border: 1px solid var(--border); border-radius: 10px;
+            background: var(--surface); color: var(--text); font: inherit;
+        }
+        button, .link-btn { min-height: 44px; }
+        button:focus-visible, a:focus-visible, select:focus-visible, .table-wrap:focus-visible {
+            outline: 3px solid var(--primary); outline-offset: 3px;
+        }
+        .preference-field, .account-row > div, .favorite-item > div { min-width: 0; }
+        .product-name, .product-meta, .product-specs, .product-reason,
+        .history-item, .favorite-item, .query-summary, .status, #profileDetails {
+            overflow-wrap: anywhere;
+        }
+        .favorite-compare-actions { flex-wrap: wrap; }
+        .table-wrap { overscroll-behavior-x: contain; }
+        th:first-child, td:first-child { position: sticky; left: 0; background: var(--surface-soft); }
+        @media (max-width: 760px) {
+            body {
+                padding: max(16px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+                    max(24px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+            }
+            .brand { flex-wrap: wrap; margin-left: 0; gap: 12px; }
+            .brand-identity { flex: 1 1 100%; }
+            .brand-actions { width: 100%; justify-content: space-between; }
+            .user-menu-btn { max-width: 60%; }
+            #userMenuName { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .panel { padding: 22px 16px; }
+            .section-title { line-height: 1.35; }
+            .section-description { margin-bottom: 20px; }
+            .auth-fields { display: grid; grid-template-columns: minmax(0, 1fr); }
+            .auth-fields input, .auth-fields button { width: 100%; min-height: 44px; font-size: 16px; }
+            .preference-field select { min-width: 0; font-size: 16px; }
+            .product-card { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 10px; padding: 14px; }
+            .product-card .compare-checkbox { grid-column: 1; grid-row: 1; }
+            .product-card .rank { grid-column: 2; grid-row: 1; text-align: left; }
+            .product-card .match-score { grid-column: 3; grid-row: 1; margin: 0; }
+            .product-card .product-info { grid-column: 1 / -1; grid-row: 2; }
+            .compare-checkbox, .favorite-item input[type="checkbox"] { width: 24px; height: 24px; margin: 10px; }
+            .product-actions > * { width: 100%; text-align: center; }
+            .favorite-item { grid-template-columns: 44px minmax(0, 1fr); gap: 8px; }
+            .favorite-item .danger-btn { grid-column: 2; justify-self: start; }
+            .account-block, .account-panel { padding: 12px; }
+            .pagination-actions { display: grid; grid-template-columns: 1fr 1fr; }
+            #pageStatus { grid-column: 1 / -1; grid-row: 1; text-align: center; }
+            #previousPageBtn { grid-column: 1; }
+            #nextPageBtn { grid-column: 2; }
+            .history-actions > button, .feedback-actions > button { flex: 1 1 auto; }
+            .table-wrap th, .table-wrap td { max-width: 240px; overflow-wrap: anywhere; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after { transition: none !important; }
+        }
     </style>
 </head>
 
@@ -688,10 +746,17 @@
                 <span class="brand-mark" aria-hidden="true">S</span>
                 <span>Smart Digital Product Recommendation</span>
             </div>
+            <div class="brand-actions">
+                <label class="sr-only" for="languageSelect">Language</label>
+                <select id="languageSelect" aria-label="Language">
+                    <option value="zh-CN" lang="zh-CN">简体中文</option>
+                    <option value="en" lang="en">English</option>
+                </select>
             <button id="userMenuBtn" class="user-menu-btn" type="button" hidden aria-label="Open user account">
                 <span id="userAvatar" class="user-avatar" aria-hidden="true">U</span>
                 <span id="userMenuName">Account</span>
             </button>
+            </div>
         </div>
 
         <main class="panel">
@@ -707,9 +772,9 @@
                     </div>
                 </div>
                 <div id="authFields" class="auth-fields">
-                    <input id="authUsername" autocomplete="username" placeholder="Username (for registration)">
-                    <input id="authEmail" type="email" autocomplete="email" placeholder="Email">
-                    <input id="authPassword" type="password" autocomplete="current-password" placeholder="Password (8+ characters)">
+                    <input id="authUsername" aria-label="Username (for registration)" autocomplete="username" placeholder="Username (for registration)">
+                    <input id="authEmail" aria-label="Email" type="email" autocomplete="email" placeholder="Email">
+                    <input id="authPassword" aria-label="Password (8+ characters)" type="password" autocomplete="current-password" placeholder="Password (8+ characters)">
                     <button id="loginBtn" class="primary-btn" type="button">Log in</button>
                     <button id="registerBtn" class="secondary-btn" type="button">Register</button>
                 </div>
@@ -897,7 +962,7 @@
                     </button>
                 </div>
 
-                <div id="compareTableContainer" class="table-wrap"></div>
+                <div id="compareTableContainer" class="table-wrap" tabindex="0" role="region" aria-label="Product comparison table"></div>
             </section>
         </main>
 
@@ -908,6 +973,374 @@
 
     <script>
         "use strict";
+
+
+        // Presentation-only localization: API filters, product IDs and stored queries stay unchanged.
+        const ZH_MESSAGES = Object.freeze({
+            "Smart Digital Product Recommendation": "智能数码产品推荐",
+            "Account": "账户",
+            "Open user account": "打开我的账户",
+            "Account & saved history": "账户与搜索记录",
+            "Search without an account, or log in to save and reopen searches.": "无需登录即可搜索；登录后可保存并重新打开搜索记录。",
+            "Search History": "搜索记录",
+            "Log out": "退出登录",
+            "Username (for registration)": "用户名（注册时填写）",
+            "Email": "电子邮箱",
+            "Password (8+ characters)": "密码（至少 8 个字符）",
+            "Log in": "登录",
+            "Register": "注册",
+            "Find My Perfect Device": "找到适合你的数码产品",
+            "Choose your requirements below. The page sends structured filters to the Flask recommendation API and renders products returned from the database-backed service.": "选择产品类型、预算和用途，获取适合你的产品推荐。",
+            "Product type": "产品类型",
+            "Laptop": "笔记本电脑",
+            "Laptops": "笔记本电脑",
+            "Smartphone": "智能手机",
+            "Smartphones": "智能手机",
+            "Tablet": "平板电脑",
+            "Tablets": "平板电脑",
+            "Headphones": "耳机",
+            "Smart watch": "智能手表",
+            "Smart Watches": "智能手表",
+            "Maximum budget": "最高预算（美元）",
+            "No budget limit": "不限预算",
+            "Main use": "主要用途",
+            "Everyday use": "日常使用",
+            "Study": "学习",
+            "Office and business": "办公与商务",
+            "Gaming": "游戏",
+            "Creative and video editing": "创作与视频剪辑",
+            "Travel and portability": "旅行与便携",
+            "Photography and video": "摄影与视频",
+            "Long battery life": "长续航",
+            "Fitness": "健身",
+            "Preferred brand": "偏好品牌",
+            "Any brand": "不限品牌",
+            "Other brands": "其他品牌",
+            "Other Brands": "其他品牌",
+            "Brand to exclude": "排除品牌",
+            "Do not exclude a brand": "不排除品牌",
+            "Find My Device": "查找推荐产品",
+            "Analyzing your request and retrieving recommendations...": "正在分析需求并查找推荐产品…",
+            "No matching products were found. Try increasing your budget or changing your preferences.": "未找到符合条件的产品，请提高预算或调整偏好。",
+            "🏆 Top Recommendations": "🏆 推荐排行",
+            "Select exactly 2 or 3 products to compare their available specifications.": "选择 2 或 3 款产品，对比它们的规格。",
+            "← Start Over": "← 重新选择",
+            "← Previous": "← 上一页",
+            "Next →": "下一页 →",
+            "Recommendation actions": "推荐操作",
+            "⚖️ Compare Selected Products": "⚖️ 对比所选产品",
+            "🔗 Share Results": "🔗 分享结果",
+            "Comparison calls the backend /api/compare endpoint and only displays specifications returned by the database.": "对比仅展示产品资料中已有的规格。",
+            "Was this recommendation helpful?": "这些推荐对你有帮助吗？",
+            "Your vote is stored in the application database and linked to this search when possible.": "你的反馈将帮助我们了解本次推荐是否满足需求。",
+            "👍 Helpful": "👍 有帮助",
+            "👎 Not Helpful": "👎 没有帮助",
+            "My Account": "我的账户",
+            "Manage favorites, compare similar saved products and reopen searches.": "管理收藏、对比同类产品，或重新打开搜索记录。",
+            "← Back": "← 返回",
+            "Profile": "个人资料",
+            "Favorite products": "收藏的产品",
+            "Select 2 or 3 products from the same product type to compare.": "选择同一类型的 2 或 3 款产品进行对比。",
+            "Compare selected favorites": "对比所选收藏",
+            "Search history": "搜索记录",
+            "⚖️ Product Comparison": "⚖️ 产品对比",
+            "Comparison data is returned by /api/compare for the selected ProductID values.": "左右滑动表格，查看所选产品的规格差异。",
+            "← Back to Recommendations": "← 返回推荐",
+            "CP3407 Project · Recommendation results depend on the connected backend data. Product links may be manufacturer pages rather than checkout pages.": "CP3407 项目 · 推荐结果以产品资料为准。产品链接可能指向品牌官网，而非购买页面。",
+            "Finding Devices...": "正在查找…",
+            "Account request failed.": "账户请求失败，请重试。",
+            "Please register or log in before saving favorites.": "请先注册或登录，再收藏产品。",
+            "Favorite could not be updated.": "无法更新收藏，请重试。",
+            "♥ Saved": "♥ 已收藏",
+            "♡ Save favorite": "♡ 收藏",
+            "You have no favorite products yet. Save products from recommendation results.": "暂无收藏。你可以在推荐结果中收藏产品。",
+            "Specifications unavailable": "暂无规格信息",
+            "Remove": "移除",
+            "You can compare up to 3 products.": "最多可对比 3 款产品。",
+            "Loading saved searches...": "正在加载搜索记录…",
+            "No saved searches yet.": "暂无搜索记录。",
+            "Open saved results": "打开已保存的结果",
+            "Delete": "删除",
+            "History could not be loaded.": "无法加载搜索记录。",
+            "Saved result snapshot": "已保存的结果快照",
+            "Unknown brand": "未知品牌",
+            "Unknown category": "未知类型",
+            "General product match.": "符合一般需求。",
+            "general product match": "符合一般需求",
+            "Price unavailable": "暂无价格",
+            "N/A": "暂无数据",
+            "Your request:": "你的需求：",
+            "Budget Alternative:": "更低价选择：",
+            "A cheaper product in the same category is available.": "该类型有价格更低的产品可选。",
+            "Public dataset": "公开数据集",
+            "Detailed specifications are not available for this product.": "此产品暂无详细规格。",
+            "View Product / Manufacturer Page": "查看产品／品牌官网",
+            "Product link unavailable": "暂无产品链接",
+            "Brand": "品牌",
+            "Category": "类型",
+            "Price": "价格（美元）",
+            "Match Score": "匹配度",
+            "RAM": "内存",
+            "Storage": "存储",
+            "Screen": "屏幕",
+            "Battery": "续航",
+            "Weight": "重量",
+            "Use Case": "适用场景",
+            "Feature": "规格",
+            "Preferred brand and excluded brand cannot be the same.": "偏好品牌与排除品牌不能相同。",
+            "No matching products were found.": "未找到符合条件的产品。",
+            "Unable to retrieve recommendations. Please try again.": "无法获取推荐，请重试。",
+            "Please select exactly 2 or 3 products before comparing.": "请先选择 2 或 3 款产品再进行对比。",
+            "Comparing...": "正在对比…",
+            "Unable to compare selected products.": "无法对比所选产品。",
+            "Feedback could not be saved.": "无法保存反馈，请重试。",
+            "Favorites could not be compared.": "无法对比所选收藏。",
+            "You are logged out.": "你已退出登录。",
+            "Share link copied. It restores the recommendation query in another browser.": "分享链接已复制，可在其他浏览器中打开相同的推荐条件。",
+            "Clipboard copy failed.": "复制失败。",
+            "The production recommendation API has not been configured yet.": "推荐服务尚未配置。",
+            "The backend returned invalid JSON.": "推荐服务返回了无效数据。",
+            "The backend service took too long to respond.": "服务响应超时，请稍后重试。",
+            "Failed to fetch": "网络连接失败，请检查网络后重试。",
+            "Recommendations retrieved.": "已获取推荐结果。",
+            "Login is required.": "请先登录。",
+            "The login session is invalid or expired.": "登录已失效，请重新登录。",
+            "Username must have 3 characters, email must be valid, and password must have at least 8 characters.": "用户名至少 3 个字符，请填写有效邮箱，密码至少 8 个字符。",
+            "Username or email already exists.": "用户名或邮箱已被使用。",
+            "Invalid username/email or password.": "用户名、邮箱或密码错误。",
+            "User no longer exists.": "该用户不存在。",
+            "History record not found.": "未找到该搜索记录。",
+            "Product not found.": "未找到该产品。",
+            "Favorite not found.": "未找到该收藏。",
+            "Every selected product must be in your favorites.": "请选择已收藏的产品。",
+            "Favorite comparison requires products from the same category.": "收藏对比需要选择同一类型的产品。",
+            "Select exactly 2 or 3 unique products.": "请选择 2 或 3 款不同的产品。",
+            "An internal server error occurred.": "服务器发生错误，请稍后重试。",
+            "high customer satisfaction": "用户满意度高",
+            "strong purchase frequency": "购买频率高",
+            "positive purchase intent": "购买意愿积极",
+            "study": "学习",
+            "office": "办公",
+            "gaming": "游戏",
+            "creative": "创作",
+            "portable": "便携",
+            "camera": "摄影",
+            "battery": "续航",
+            "fitness": "健身",
+            "travel": "旅行",
+            "Product comparison table": "产品规格对比表",
+            "Language": "语言",
+            "laptop": "笔记本电脑",
+            "smartphone": "智能手机",
+            "tablet": "平板电脑",
+            "pair of headphones": "耳机",
+            "smart watch": "智能手表"
+});
+        const ZH_PATTERNS = [
+            [
+                        "^Under \\$(.+)$",
+                        "$1 美元以下"
+            ],
+            [
+                        "^Signed in as (.+)\\. New searches are saved automatically\\.$",
+                        "已登录为 $1。新搜索将自动保存。"
+            ],
+            [
+                        "^Welcome, (.+)\\.$",
+                        "欢迎，$1。"
+            ],
+            [
+                        "^Select favorite (.+)$",
+                        "选择收藏产品 $1"
+            ],
+            [
+                        "^Select (.+) for comparison$",
+                        "选择 $1 进行对比"
+            ],
+            [
+                        "^Choose products only from (.+)\\.$",
+                        "请只选择$1类型的产品。"
+            ],
+            [
+                        "^(\\d+) (.+) selected\\.$",
+                        "已选择 $1 款$2产品。"
+            ],
+            [
+                        "^(\\d+) matches$",
+                        "$1 个匹配结果"
+            ],
+            [
+                        "^Saved result snapshot · (\\d+) original matches\\.$",
+                        "已保存的结果快照 · 原有 $1 个匹配结果。"
+            ],
+            [
+                        "^(.+) Showing page (\\d+) of (\\d+)\\.$",
+                        "$1 当前第 $2 页，共 $3 页。"
+            ],
+            [
+                        "^page (\\d+) of (\\d+)$",
+                        "第 $1 页，共 $2 页"
+            ],
+            [
+                        "^Found (\\d+) matching products\\.$",
+                        "找到 $1 款符合条件的产品。"
+            ],
+            [
+                        "^(.+)% Match$",
+                        "匹配度 $1%"
+            ],
+            [
+                        "^N/A Match$",
+                        "暂无匹配度"
+            ],
+            [
+                        "^You can compare up to (\\d+) products at a time\\.$",
+                        "每次最多可对比 $1 款产品。"
+            ],
+            [
+                        "^Thanks — your feedback was saved\\.(.*)$",
+                        "感谢反馈，已保存。$1"
+            ],
+            [
+                        "^Feedback ID: (.+)\\.$",
+                        "反馈编号：$1。"
+            ],
+            [
+                        "^Copy failed\\. Share this URL manually: (.+)$",
+                        "复制失败，请手动分享此链接：$1"
+            ],
+            [
+                        "^API request failed \\((\\d+)\\)\\.$",
+                        "服务请求失败（$1）。"
+            ],
+            [
+                        "^matches category: (.+)$",
+                        "符合产品类型：$1"
+            ],
+            [
+                        "^matches preferred brand: (.+)$",
+                        "符合偏好品牌：$1"
+            ],
+            [
+                        "^within budget \\$(.+)$",
+                        "在 $1 美元预算内"
+            ],
+            [
+                        "^fits (.+)$",
+                        "适合$1"
+            ],
+            [
+                        "^Category: (.+)$",
+                        "类型：$1"
+            ],
+            [
+                        "^Preferred brand: (.+)$",
+                        "偏好品牌：$1"
+            ],
+            [
+                        "^Budget: (.+)$",
+                        "预算：$1"
+            ],
+            [
+                        "^Excluded brands: (.+)$",
+                        "排除品牌：$1"
+            ],
+            [
+                        "^(RAM|Storage|Screen|Battery|Weight): (.+)$",
+                        "$1：$2"
+            ],
+            [
+                        "^(Laptops|Smartphones|Tablets|Headphones|Smart Watches) \\((\\d+)\\)$",
+                        "$1（$2）"
+            ],
+            [
+                        "^I need (?:a|an) (laptop|smartphone|tablet|pair of headphones|smart watch)$",
+                        "我需要$1"
+            ],
+            [
+                        "^for (.+)$",
+                        "用于$1"
+            ],
+            [
+                        "^under \\$(.+)$",
+                        "预算 $1 美元以内"
+            ],
+            [
+                        "^prefer (.+)$",
+                        "偏好 $1"
+            ],
+            [
+                        "^no (.+)$",
+                        "排除 $1"
+            ]
+].map(([pattern, replacement]) => [new RegExp(pattern), replacement]);
+        const localizedContent = new WeakMap();
+        const localizedAttributes = new WeakMap();
+        let language = "zh-CN";
+        try {
+            if (localStorage.getItem("cp3407_language") === "en") language = "en";
+        } catch { /* Use Chinese when browser storage is unavailable. */ }
+
+        function translateText(value) {
+            const original = String(value ?? "");
+            if (language === "en") return original;
+            const text = original.trim().replace(/\s+/g, " ");
+            if (Object.hasOwn(ZH_MESSAGES, text)) return ZH_MESSAGES[text];
+            for (const [pattern, replacement] of ZH_PATTERNS) {
+                const match = text.match(pattern);
+                if (match) return replacement.replace(/\$(\d+)/g, (_, index) => translateText(match[Number(index)]));
+            }
+            for (const separator of [" · ", "; ", ", "]) {
+                if (text.includes(separator)) return text.split(separator).map(translateText).join(separator);
+            }
+            if (text.startsWith("💡 ")) return "💡 " + translateText(text.slice(3));
+            return original;
+        }
+
+        function setText(element, source) {
+            localizedContent.set(element, source);
+            element.textContent = translateText(source);
+        }
+
+        function localizedText(source) {
+            const node = document.createTextNode(translateText(source));
+            localizedContent.set(node, source);
+            return node;
+        }
+
+        function setLocalizedAttribute(element, name, source) {
+            const attributes = localizedAttributes.get(element) || {};
+            attributes[name] = source;
+            localizedAttributes.set(element, attributes);
+            element.setAttribute(name, translateText(source));
+        }
+
+        function applyLanguage() {
+            document.documentElement.lang = language;
+            document.title = translateText("Smart Digital Product Recommendation");
+            // Revisit existing bindings without rebuilding controls, losing selection, or refetching data.
+            function visit(node) {
+                if (node.nodeType === Node.ELEMENT_NODE && (["SCRIPT", "STYLE"].includes(node.tagName) || node.dataset.rawText === "true")) return;
+                if (localizedContent.has(node)) {
+                    const source = localizedContent.get(node);
+                    if (node.nodeType === Node.TEXT_NODE) node.nodeValue = translateText(source);
+                    else node.textContent = translateText(source);
+                } else if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim()) {
+                    localizedContent.set(node, node.nodeValue);
+                    node.nodeValue = translateText(node.nodeValue);
+                } else {
+                    Array.from(node.childNodes).forEach(visit);
+                }
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    for (const name of ["placeholder", "aria-label", "title"]) {
+                        const source = localizedAttributes.get(node)?.[name] ?? node.getAttribute(name);
+                        if (source) setLocalizedAttribute(node, name, source);
+                    }
+                }
+            }
+            visit(document.body);
+            document.getElementById("languageSelect").value = language;
+        }
 
         const APP_CONFIG = Object.freeze({
             productionApiBaseUrl: "https://cp3407-api.onrender.com",
@@ -1117,12 +1550,15 @@
             userMenuBtn.hidden = !loggedIn;
             if (loggedIn) {
                 userAvatar.textContent = currentUser.username.slice(0, 1);
+                userAvatar.dataset.rawText = "true";
                 userMenuName.textContent = currentUser.username;
+                userMenuName.dataset.rawText = "true";
                 profileDetails.textContent = `${currentUser.username} · ${currentUser.email}`;
+                profileDetails.dataset.rawText = "true";
             }
-            accountStatus.textContent = loggedIn
+            setText(accountStatus, loggedIn
                 ? `Signed in as ${currentUser.username}. New searches are saved automatically.`
-                : "Search without an account, or log in to save and reopen searches.";
+                : "Search without an account, or log in to save and reopen searches.");
         }
 
         function saveSession(payload) {
@@ -1207,7 +1643,7 @@
 
         function updateFavoriteButton(button, id) {
             const saved = favoriteIds.has(String(id));
-            button.textContent = saved ? "♥ Saved" : "♡ Save favorite";
+            setText(button, saved ? "♥ Saved" : "♡ Save favorite");
             button.classList.toggle("saved", saved);
             button.setAttribute("aria-pressed", String(saved));
         }
@@ -1216,7 +1652,7 @@
             favoriteList.replaceChildren();
             favoriteCompareSelected = [];
             compareFavoritesBtn.hidden = true;
-            favoriteSelectionStatus.textContent = "";
+            setText(favoriteSelectionStatus, "");
             const data = await refreshFavoriteIds();
             if (!data.length) {
                 favoriteStatus.className = "status empty";
@@ -1233,7 +1669,7 @@
                 const group = document.createElement("section");
                 group.className = "favorite-group";
                 const heading = document.createElement("h4");
-                heading.textContent = `${category} (${products.length})`;
+                setText(heading, `${category} (${products.length})`);
                 group.appendChild(heading);
                 products.forEach(product => {
                     const item = document.createElement("article");
@@ -1242,19 +1678,20 @@
                     checkbox.type = "checkbox";
                     checkbox.value = product.id;
                     checkbox.dataset.category = category;
-                    checkbox.setAttribute("aria-label", `Select favorite ${product.name}`);
+                    setLocalizedAttribute(checkbox, "aria-label", `Select favorite ${product.name}`);
                     checkbox.addEventListener("change", () => handleFavoriteCompareSelection(checkbox));
                     const info = document.createElement("div");
                     const name = document.createElement("strong");
                     name.textContent = product.name;
+                name.dataset.rawText = "true";
                     const meta = document.createElement("p");
                     meta.className = "small-note";
-                    meta.textContent = `${product.brand} · ${formatPrice(product.price)} · ${buildSpecSummary(product) || "Specifications unavailable"}`;
+                    setText(meta, `${product.brand} · ${formatPrice(product.price)} · ${buildSpecSummary(product) || "Specifications unavailable"}`);
                     info.append(name, meta);
                     const remove = document.createElement("button");
                     remove.type = "button";
                     remove.className = "danger-btn";
-                    remove.textContent = "Remove";
+                    setText(remove, "Remove");
                     remove.addEventListener("click", async () => {
                         await requestJson(`/api/favorites/${product.id}`, { method: "DELETE" });
                         favoriteIds.delete(String(product.id));
@@ -1274,9 +1711,9 @@
                 const selectedCategory = favoriteCompareSelected[0]?.category;
                 if ((selectedCategory && selectedCategory !== category) || favoriteCompareSelected.length >= APP_CONFIG.maximumCompareItems) {
                     checkbox.checked = false;
-                    favoriteSelectionStatus.textContent = selectedCategory && selectedCategory !== category
+                    setText(favoriteSelectionStatus, selectedCategory && selectedCategory !== category
                         ? `Choose products only from ${selectedCategory}.`
-                        : "You can compare up to 3 products.";
+                        : "You can compare up to 3 products.");
                     return;
                 }
                 favoriteCompareSelected.push({ id, category });
@@ -1284,9 +1721,9 @@
                 favoriteCompareSelected = favoriteCompareSelected.filter(item => item.id !== id);
             }
             compareFavoritesBtn.hidden = favoriteCompareSelected.length < 2;
-            favoriteSelectionStatus.textContent = favoriteCompareSelected.length
+            setText(favoriteSelectionStatus, favoriteCompareSelected.length
                 ? `${favoriteCompareSelected.length} ${category} selected.`
-                : "";
+                : "");
         }
 
         async function loadHistory() {
@@ -1310,21 +1747,21 @@
                     const item = document.createElement("article");
                     item.className = "history-item";
                     const title = document.createElement("strong");
-                    title.textContent = record.query_text;
+                    setText(title, record.query_text);
                     const details = document.createElement("p");
                     details.className = "small-note";
-                    details.textContent = `${record.total_candidates} matches · ${new Date(record.created_at).toLocaleString()}`;
+                    setText(details, `${record.total_candidates} matches · ${new Date(record.created_at).toLocaleString()}`);
                     const actions = document.createElement("div");
                     actions.className = "history-actions";
                     const open = document.createElement("button");
                     open.className = "primary-btn";
                     open.type = "button";
-                    open.textContent = "Open saved results";
+                    setText(open, "Open saved results");
                     open.addEventListener("click", () => openHistory(record.history_id));
                     const remove = document.createElement("button");
                     remove.className = "danger-btn";
                     remove.type = "button";
-                    remove.textContent = "Delete";
+                    setText(remove, "Delete");
                     remove.addEventListener("click", () => deleteHistory(record.history_id));
                     actions.append(open, remove);
                     item.append(title, details, actions);
@@ -1356,7 +1793,7 @@
             renderLeaderboard(currentRecommendations);
             renderQuerySummary(currentQuery, currentFilters, `Saved result snapshot · ${record.total_candidates} original matches.`);
             renderBudgetAlternative(null);
-            pageStatus.textContent = "Saved result snapshot";
+            setText(pageStatus, "Saved result snapshot");
             previousPageBtn.hidden = true;
             nextPageBtn.hidden = true;
             historySection.style.display = "none";
@@ -1378,7 +1815,7 @@
             renderLeaderboard(currentRecommendations);
             renderQuerySummary(currentQuery, currentFilters, `${result.message} Showing page ${currentPage} of ${Math.max(1, currentTotalPages)}.`);
             renderBudgetAlternative(result.budgetAlternative);
-            pageStatus.textContent = `${result.totalCandidates} matches · page ${currentPage} of ${Math.max(1, currentTotalPages)}`;
+            setText(pageStatus, `${result.totalCandidates} matches · page ${currentPage} of ${Math.max(1, currentTotalPages)}`);
             previousPageBtn.hidden = currentPage <= 1;
             nextPageBtn.hidden = currentPage >= currentTotalPages;
         }
@@ -1470,20 +1907,20 @@
         }
 
         function showStatus(element, message, display = "block") {
-            element.textContent = message;
+            setText(element, message);
             element.style.display = display;
         }
 
         function clearStatus() {
             [loader, errorBox, emptyBox, compareStatus, feedbackStatus, shareStatus].forEach(element => {
                 element.style.display = "none";
-                if (element !== loader && element !== emptyBox) element.textContent = "";
+                if (element !== loader && element !== emptyBox) setText(element, "");
             });
         }
 
         function setLoading(isLoading) {
             submitBtn.disabled = isLoading;
-            submitBtn.textContent = isLoading ? "Finding Devices..." : "Find My Device";
+            setText(submitBtn, isLoading ? "Finding Devices..." : "Find My Device");
             loader.style.display = isLoading ? "block" : "none";
         }
 
@@ -1492,8 +1929,8 @@
 
             const queryLine = document.createElement("div");
             const queryLabel = document.createElement("strong");
-            queryLabel.textContent = "Your request: ";
-            queryLine.append(queryLabel, document.createTextNode(query));
+            setText(queryLabel, "Your request: ");
+            queryLine.append(queryLabel, localizedText(query));
             querySummary.appendChild(queryLine);
 
             const details = [];
@@ -1513,13 +1950,13 @@
 
             if (details.length > 0) {
                 const detailLine = document.createElement("div");
-                detailLine.textContent = details.join(" · ");
+                setText(detailLine, details.join(" · "));
                 querySummary.appendChild(detailLine);
             }
 
             if (message) {
                 const messageLine = document.createElement("div");
-                messageLine.textContent = message;
+                setText(messageLine, message);
                 querySummary.appendChild(messageLine);
             }
         }
@@ -1534,16 +1971,16 @@
             }
 
             const title = document.createElement("strong");
-            title.textContent = "Budget Alternative: ";
+            setText(title, "Budget Alternative: ");
 
-            const text = document.createTextNode(
+            const text = localizedText(
                 `${currentBudgetAlternative.name} · ${currentBudgetAlternative.brand} · ${formatPrice(currentBudgetAlternative.price)}`
             );
 
             budgetAlternative.append(title, text);
 
             const reason = document.createElement("div");
-            reason.textContent = currentBudgetAlternative.reason || "A cheaper product in the same category is available.";
+            setText(reason, currentBudgetAlternative.reason || "A cheaper product in the same category is available.");
             budgetAlternative.appendChild(reason);
 
             budgetAlternative.style.display = "block";
@@ -1563,13 +2000,13 @@
                 checkbox.type = "checkbox";
                 checkbox.className = "compare-checkbox";
                 checkbox.value = product.id;
-                checkbox.setAttribute("aria-label", `Select ${product.name} for comparison`);
+                setLocalizedAttribute(checkbox, "aria-label", `Select ${product.name} for comparison`);
                 checkbox.addEventListener("change", () => handleCompareSelection(checkbox, card));
 
                 const rank = document.createElement("div");
                 rank.className = "rank";
                 const absoluteRank = (currentPage - 1) * APP_CONFIG.pageSize + index + 1;
-                rank.textContent = absoluteRank === 1 ? "🥇" : absoluteRank === 2 ? "🥈" : absoluteRank === 3 ? "🥉" : `#${absoluteRank}`;
+                setText(rank, absoluteRank === 1 ? "🥇" : absoluteRank === 2 ? "🥈" : absoluteRank === 3 ? "🥉" : `#${absoluteRank}`);
 
                 const info = document.createElement("div");
                 info.className = "product-info";
@@ -1577,20 +2014,21 @@
                 const name = document.createElement("h3");
                 name.className = "product-name";
                 name.textContent = product.name;
+                name.dataset.rawText = "true";
 
                 const meta = document.createElement("p");
                 meta.className = "product-meta";
                 const sourceLabel = /Kaggle|Datafiniti|Flipkart/i.test(product.dataSource) ? " · Public dataset" : "";
-                meta.textContent = `${product.brand} · ${product.category} · ${formatPrice(product.price)}${sourceLabel}`;
+                setText(meta, `${product.brand} · ${product.category} · ${formatPrice(product.price)}${sourceLabel}`);
 
                 const specText = buildSpecSummary(product);
                 const specs = document.createElement("p");
                 specs.className = "product-specs";
-                specs.textContent = specText || "Detailed specifications are not available for this product.";
+                setText(specs, specText || "Detailed specifications are not available for this product.");
 
                 const reason = document.createElement("p");
                 reason.className = "product-reason";
-                reason.textContent = `💡 ${product.reason}`;
+                setText(reason, `💡 ${product.reason}`);
 
                 const actions = document.createElement("div");
                 actions.className = "product-actions";
@@ -1602,12 +2040,12 @@
                     link.href = safeUrl;
                     link.target = "_blank";
                     link.rel = "noopener noreferrer";
-                    link.textContent = "View Product / Manufacturer Page";
+                    setText(link, "View Product / Manufacturer Page");
                     actions.appendChild(link);
                 } else {
                     const unavailable = document.createElement("span");
                     unavailable.className = "small-note";
-                    unavailable.textContent = "Product link unavailable";
+                    setText(unavailable, "Product link unavailable");
                     actions.appendChild(unavailable);
                 }
 
@@ -1622,7 +2060,7 @@
 
                 const score = document.createElement("div");
                 score.className = "match-score";
-                score.textContent = `${formatScore(product.matchScore)} Match`;
+                setText(score, `${formatScore(product.matchScore)} Match`);
 
                 card.append(checkbox, rank, info, score);
                 productList.appendChild(card);
@@ -1679,13 +2117,14 @@
 
             const featureHeader = document.createElement("th");
             featureHeader.scope = "col";
-            featureHeader.textContent = "Feature";
+            setText(featureHeader, "Feature");
             headerRow.appendChild(featureHeader);
 
             items.forEach(product => {
                 const heading = document.createElement("th");
                 heading.scope = "col";
                 heading.textContent = product.name;
+                heading.dataset.rawText = "true";
                 headerRow.appendChild(heading);
             });
 
@@ -1694,13 +2133,13 @@
             visibleRows.forEach(([label, getter]) => {
                 const row = document.createElement("tr");
                 const labelCell = document.createElement("td");
-                labelCell.textContent = label;
+                setText(labelCell, label);
                 row.appendChild(labelCell);
 
                 items.forEach(product => {
                     const value = getter(product);
                     const cell = document.createElement("td");
-                    cell.textContent = value === null || value === undefined || value === "" ? "N/A" : String(value);
+                    setText(cell, value === null || value === undefined || value === "" ? "N/A" : String(value));
                     row.appendChild(cell);
                 });
 
@@ -1797,7 +2236,7 @@
             }
 
             compareBtn.disabled = true;
-            compareBtn.textContent = "Comparing...";
+            setText(compareBtn, "Comparing...");
 
             try {
                 const rawItems = await fetchComparison(selectedForCompare.map(id => Number(id)));
@@ -1816,7 +2255,7 @@
                 );
             } finally {
                 compareBtn.disabled = false;
-                compareBtn.textContent = "⚖️ Compare Selected Products";
+                setText(compareBtn, "⚖️ Compare Selected Products");
             }
         });
 
@@ -2005,6 +2444,12 @@
             }
         }
 
+        applyLanguage();
+        document.getElementById("languageSelect").addEventListener("change", event => {
+            language = event.target.value === "en" ? "en" : "zh-CN";
+            try { localStorage.setItem("cp3407_language", language); } catch { /* Keep session preference. */ }
+            applyLanguage();
+        });
         updateAccountUi();
         refreshFavoriteIds();
         restoreSharedQuery();
